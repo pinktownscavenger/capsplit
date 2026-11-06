@@ -4,6 +4,7 @@ from .core import (
     split,
     sequence_temper,
     excess_score,
+    excess_score_families,
     label_2x2,
 )
 
@@ -13,5 +14,6 @@ __all__ = [
     "split",
     "sequence_temper",
     "excess_score",
+    "excess_score_families",
     "label_2x2",
 ]

@@ -72,3 +72,16 @@ def label_2x2(delta_cap: float, e_n: float, tol: float = 1e-12) -> str:
     if beyond_temp:
         return "reweighting"
     return "pure_sharpening"
+
+
+def excess_score_families(q1: Policy, correct: Iterable[Hashable], n: int, families, betas) -> float:
+    """E_N with the sup taken over several tempering families.
+
+    `families` is a list of callables beta -> policy dict (e.g. the sequence-level
+    family `lambda b: sequence_temper(q0, b)` and the per-step family from worlds).
+    """
+    correct = set(correct)
+    best = max(
+        pass_at_n(success_prob(fam(b), correct), n) for fam in families for b in betas
+    )
+    return pass_at_n(success_prob(q1, correct), n) - best
