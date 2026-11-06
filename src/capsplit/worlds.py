@@ -10,6 +10,10 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 
+import numpy as np
+
+from .engine import TrajectoryTable
+
 MOVES = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # up, down, left, right
 N_ACTIONS = len(MOVES)
 
@@ -90,3 +94,59 @@ def correct_paths(world: GridWorld, q: dict) -> set:
 def per_step_family(world, logits):
     """Callable beta -> path distribution under per-step tempering of pi0."""
     return lambda beta: enumerate_paths(world, logits, beta)
+
+
+def raw_path(path: tuple) -> tuple:
+    """Identity solution map: every visited-state path is its own solution."""
+    return path
+
+
+def loop_erased(path: tuple) -> tuple:
+    """Route solution map: remove stays and loops from a visited-state path."""
+    route: list = []
+    for cell in path:
+        if cell in route:
+            del route[route.index(cell) + 1 :]
+        else:
+            route.append(cell)
+    return tuple(route)
+
+
+def compile_grid(world: GridWorld, phi=loop_erased) -> tuple[TrajectoryTable, dict]:
+    """Enumerate action sequences once. Returns the table and the cell -> state index map."""
+    state_index = {cell: i for i, cell in enumerate(world.cells())}
+    padding = len(state_index) * N_ACTIONS
+    rows: list = []
+    solution_ids: list = []
+    solutions: dict = {}
+
+    def rec(pos, path, row):
+        if pos == world.goal or len(row) == world.H:
+            rows.append(row + [padding] * (world.H - len(row)))
+            if pos == world.goal:
+                solution_ids.append(solutions.setdefault(phi(tuple(path)), len(solutions)))
+            else:
+                solution_ids.append(-1)
+            return
+        for a in range(N_ACTIONS):
+            nxt = world.step(pos, a)
+            rec(nxt, path + [nxt], row + [state_index[pos] * N_ACTIONS + a])
+
+    rec(world.start, [world.start], [])
+    table = TrajectoryTable(
+        index=np.array(rows, dtype=np.int32).reshape(len(rows), world.H),
+        solution_ids=np.array(solution_ids, dtype=np.int32),
+        solutions=tuple(solutions),
+        n_states=len(state_index),
+        n_actions=N_ACTIONS,
+        horizon=world.H,
+    )
+    return table, state_index
+
+
+def logits_to_array(state_index: dict, logits: dict) -> np.ndarray:
+    """Convert a cell -> logits dict, as `policy_from_routes` returns, to an array."""
+    out = np.zeros((len(state_index), N_ACTIONS))
+    for cell, i in state_index.items():
+        out[i] = logits[cell]
+    return out
