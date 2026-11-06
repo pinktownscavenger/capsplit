@@ -1,6 +1,6 @@
 # capsplit technical blueprint
 
-**Status:** draft for team review, 6 November 2026.
+**Status:** draft for team review, 6 November 2026. The first build is specified in [pilot-blueprint.md](pilot-blueprint.md), which corrects D12 and the pass@k rule.
 **Sources:** `docs/project-plan.pdf` (Oct 12, revised Nov 4), the code at commit `7313bc6`, and throwaway probes run against that code on Nov 6.
 **Planning date:** the final deadline is "early December". This document assumes **Friday, Dec 4, 2026** until the exact date is confirmed.
 
@@ -329,7 +329,7 @@ This shifts $E_{20}$ for planted cases (b) and (c) from +0.0875 to +0.0587.
 
 The log-log slope is −0.85 across the range and steepens toward −1 for small $q$ (about −0.92 between $10^{-6}$ and $10^{-5}$), which supports the near-inverse prediction.
 
-**Evidence, competing route** (3×3 ring with exactly 2 correct routes, $H = 4$, exact PG, learning rate 2, 6,000 updates). From a symmetric start, both routes finish at 0.5. In all six asymmetric starts tried, the rarer route's mass peaked at its starting value and ended at or below $4 \times 10^{-5}$, even at $q_{\pi_0} = 0.09$.
+**Evidence, competing route** (3×3 ring with exactly 2 correct routes, $H = 4$, exact PG, learning rate 2, 6,000 updates). From a symmetric start, both routes finish at 0.5. In all six asymmetric starts tried, the rarer route never reached 10 times its starting mass: its peak rose at most 1.5% above the start, and it ended at or below $4 \times 10^{-5}$, even at $q_{\pi_0} = 0.09$.
 
 **Fix.**
 
@@ -376,9 +376,9 @@ See [section 9](#9-rq4-passk-misdiagnosis). The plan leaves two things unspecifi
 
 ### D12. Build a vectorized exact engine
 
-**Problem.** Current Python enumeration takes 0.79 s per $\beta$ at $H = 10$ on a 4×4 grid, measured with uniform logits. A frontier of 25 $\beta$ values costs about 20 s for the per-step family alone, which rules out computing $E_N$ at every update across many runs.
+**Problem.** Current Python enumeration takes 0.79 s per $\beta$ at $H = 10$ on a 4×4 grid, measured with uniform logits. A frontier of 25 $\beta$ values costs about 20 s for the per-step family alone, which is slow for repeated runs. The frontier depends only on $\pi_0$, so it needs computing only once per base policy.
 
-**Fix.** Compile a task's trajectory structure once as arrays, then compute probabilities from per-state log-probabilities ([section 5.3](#53-exact-engine)). Compute the split at every update, and compute the $\beta$ frontier at log-spaced checkpoints plus the final policy. This narrows the plan's "log $E_N$ at every update". Measure throughput once the engine exists, and set checkpoint density from that.
+**Fix.** Compile a task's trajectory structure once as arrays, then compute probabilities from per-state log-probabilities ([section 5.3](#53-exact-engine)). Compute the frontier once per base, then the split and $E_N$ at every update. The Nov 6 prototype took about 3 s per frontier at $H = 10$ and 32 ms per policy evaluation.
 
 ### D13. Match base probability across shared-structure levels
 
@@ -641,10 +641,10 @@ Proposition 3 settles that pass@k can't determine the split. RQ4 asks how often 
 | Observed | Rule's output |
 |---|---|
 | $\pi_1$ below $\pi_0$ at any $k \ge k_{\text{large}}$ | **Sharpening** |
-| $\pi_1$ above $\pi_0$ at every $k \in K$ | **Capability** |
-| Anything else, including ties | **Undetermined** |
+| Otherwise, $\pi_1$ never below $\pi_0$, and above it at some $k$ | **Capability** |
+| Anything else | **Undetermined** |
 
-$k_{\text{large}}$ is fixed at a stated budget before looking at results. Differences within $\epsilon_E$ count as ties.
+$k_{\text{large}}$ is fixed at a stated budget before looking at results. Differences within $\epsilon_E$ count as ties, which matters because curves saturate at large $k$.
 
 **Scoring against the 2×2 label:**
 
