@@ -1,14 +1,8 @@
 """Regression: planted cases land in their predicted 2x2 cells (RQ1, trap base, N=20)."""
 import contextlib
-import importlib.util
 import io
-import pathlib
 
-spec = importlib.util.spec_from_file_location(
-    "phase1_rq1", pathlib.Path(__file__).parents[1] / "experiments" / "phase1_rq1.py"
-)
-rq1 = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(rq1)
+import phase1_rq1 as rq1
 
 N = 20
 

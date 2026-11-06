@@ -53,8 +53,8 @@ def excess_score(
 ) -> float:
     """E_N = pass@N(pi1) - sup over beta of pass@N(tempered pi0).
 
-    `tempering` is a function (q, beta) -> q'. Pass additional families (e.g.
-    per-step) by taking the max over several calls; see TODO in docs/plan.md.
+    `tempering` is a function (q, beta) -> q'. For several families (e.g. per-step
+    as well), use `excess_score_families`.
     """
     correct = set(correct)
     best = max(pass_at_n(success_prob(tempering(q0, b), correct), n) for b in betas)

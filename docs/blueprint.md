@@ -206,11 +206,7 @@ About 25% of Phase 1 is built. All 20 tests pass in a clean Python 3.12 environm
 | pass@k rule, Invisible Leash scores | Missing | |
 | Proposition write-ups, notebooks, report, CI | Missing | |
 
-Small repo cleanups, to fold into the relevant tasks:
-
-- `excess_score`'s docstring points to `docs/plan.md`, which doesn't exist.
-- The README's `notebooks/` directory doesn't exist yet, and its setup steps are Windows-only.
-- The plan's "verifier" input is currently a precomputed `correct` set.
+One API gap to fold into the relevant task: the plan's "verifier" input is currently a precomputed `correct` set.
 
 ---
 
