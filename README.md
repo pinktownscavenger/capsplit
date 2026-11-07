@@ -35,7 +35,8 @@ is known.
 The pilot is built: exact engine and metrics, planted cases, tabular and sequence
 training, the sample estimator and the pass@k rule. Results and open issues are in
 [docs/pilot-report.md](docs/pilot-report.md), which is a draft for team review. The
-proofs in [docs/proofs.md](docs/proofs.md) haven't been checked by a person yet. The
+proofs in [docs/proofs.md](docs/proofs.md) have been checked once but still need a
+teammate to re-derive them. The
 metric definitions may change as the team ratifies the proposals in the blueprint.
 
 ## Setup
@@ -74,7 +75,7 @@ Results go under `results/`, which is git-ignored.
 | `docs/blueprint.md` | Technical blueprint: design, schedule and decisions to ratify |
 | `docs/pilot-blueprint.md` | Pilot plan and task specifications |
 | `docs/pilot-report.md` | Pilot results and recommendation |
-| `docs/proofs.md` | Proofs, as an unreviewed draft |
+| `docs/proofs.md` | Proofs, checked once and awaiting re-derivation |
 
 ## Workflow
 

@@ -215,7 +215,7 @@ One API gap to fold into the relevant task: the plan's "verifier" input is curre
 - **RQ4 data:** training that raises $J$ on every prompt can never make the rule say sharpening. The rule said capability in 39 of 39 runs, so the run mix in section 9 must include runs where some prompts get worse.
 - **Saturation:** `BenchmarkReport` still needs the `saturated` flag D2 asks for.
 - **Proposition 3:** the "same curve means same multiset" argument needs every $k$ from 1 to $P$, which section 9's grid doesn't include at $P = 4$.
-- **Proofs:** drafted in [proofs.md](proofs.md) but not yet checked by a person, so the proof statuses in section 2.4 still stand.
+- **Proofs:** drafted in [proofs.md](proofs.md) and checked once by Bilal, but not yet re-derived by a second teammate, so the proof statuses in section 2.4 still stand.
 
 ---
 
