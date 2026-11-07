@@ -1,6 +1,6 @@
 # capsplit technical blueprint
 
-**Status:** draft for team review, 6 November 2026. The first build is specified in [pilot-blueprint.md](pilot-blueprint.md), which corrects D12 and the pass@k rule.
+**Status:** draft for team review, 6 November 2026. The first build is specified in [pilot-blueprint.md](pilot-blueprint.md), which corrects D12 and the pass@k rule. Its results are in [pilot-report.md](pilot-report.md).
 **Sources:** `docs/project-plan.pdf` (Oct 12, revised Nov 4), the code at commit `7313bc6`, and throwaway probes run against that code on Nov 6.
 **Planning date:** the final deadline is "early December". This document assumes **Friday, Dec 4, 2026** until the exact date is confirmed.
 
@@ -149,7 +149,7 @@ The plan writes these axes as $E_N > 0$ and $\Delta_{\text{cap}} > 0$. D2 propos
 **Scope limit of Proposition 2.**
 
 - It says nothing for $\beta < 1$, where the inequality reverses. $E_N$ covers that side.
-- It is a *trajectory* statement, while $\Delta_{\text{cap}}$ is a *solution* statement. The report should add this corollary: if every $\tau \in \phi^{-1}(s)$ has $P_{\pi_0}(\tau) < U$, then every $\beta > 1$ strictly lowers $q(s)$, by summing the bound term by term. A solution with $q_{\pi_0}(s) > U$ can still meet this condition, so the bar must be checked on trajectories.
+- It is a *trajectory* statement, while $\Delta_{\text{cap}}$ is a *solution* statement. The report should add this corollary: if every $\tau \in \phi^{-1}(s)$ has $P_{\pi_0}(\tau) < U$, then every $\beta > 1$ strictly lowers $q(s)$ when $q_{\pi_0}(s) > 0$, by summing the bound term by term. A solution with $q_{\pi_0}(s) > U$ can still meet this condition, so the bar must be checked on trajectories.
 - Compounded sharpening is possible only when the base probability lies in $[U, c/N)$. That interval is non-empty under the $|A|^H \ge 100N$ rule.
 
 ### 2.5 Sample estimator
@@ -207,6 +207,15 @@ About 25% of Phase 1 is built. All 20 tests pass in a clean Python 3.12 environm
 | Proposition write-ups, notebooks, report, CI | Missing | |
 
 One API gap to fold into the relevant task: the plan's "verifier" input is currently a precomputed `correct` set.
+
+**After the pilot.** The table above describes the code before the pilot. The pilot added every row marked missing, except Q-learning, interventions, the Invisible Leash scores and notebooks. It also changed or raised the following, which are detailed in [pilot-report.md](pilot-report.md):
+
+- **Cost:** training at $V=8, L=6$ measured about 1.1 ms per update, or about 24 ms with `evaluate` at every update, on one laptop. That puts the 400-run sweep well below the earlier estimate.
+- **Phase 2 base:** the pilot's sequence base makes its most likely sequence correct, so sharpening alone reaches $J \approx 1$ and every run labels `pure_sharpening`. Section 7 needs a different base before the sweep.
+- **RQ4 data:** training that raises $J$ on every prompt can never make the rule say sharpening. The rule said capability in 39 of 39 runs, so the run mix in section 9 must include runs where some prompts get worse.
+- **Saturation:** `BenchmarkReport` still needs the `saturated` flag D2 asks for.
+- **Proposition 3:** the "same curve means same multiset" argument needs every $k$ from 1 to $P$, which section 9's grid doesn't include at $P = 4$.
+- **Proofs:** drafted in [proofs.md](proofs.md) but not yet checked by a person, so the proof statuses in section 2.4 still stand.
 
 ---
 
