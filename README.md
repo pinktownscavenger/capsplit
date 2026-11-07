@@ -32,33 +32,49 @@ is known.
 
 ## Status
 
-Early Phase 1. The core split, `E_N`, the 2×2 label and exact 4×4 grid enumeration
-are implemented. Training, the sequence task and the sample estimator are not built
-yet. The metric definitions may change as the team ratifies the proposals in the
-blueprint.
+The pilot is built: exact engine and metrics, planted cases, tabular and sequence
+training, the sample estimator and the pass@k rule. Results and open issues are in
+[docs/pilot-report.md](docs/pilot-report.md), which is a draft for team review. The
+proofs in [docs/proofs.md](docs/proofs.md) haven't been checked by a person yet. The
+metric definitions may change as the team ratifies the proposals in the blueprint.
 
 ## Setup
 
-Requires Python 3.10 or later.
+Requires Python 3.10 or later. The `deep` extra adds `torch`, which the sequence task
+training and the pilot runner need.
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate      # Windows: .venv\Scripts\activate
-pip install -e ".[dev]"
+pip install -e ".[dev,deep]"
 pytest
-python experiments/phase1_rq1.py
+python experiments/run_pilot.py --quick    # about 2 minutes; drop --quick for every trial
 ```
+
+Results go under `results/`, which is git-ignored.
 
 ## Layout
 
 | Path | Contents |
 |---|---|
-| `src/capsplit/core.py` | Split, `E_N`, pass@N and the 2×2 label |
+| `src/capsplit/core.py` | Original split, `E_N`, pass@N and the 2×2 label |
+| `src/capsplit/engine.py` | Compiled trajectory tables and exact probabilities |
+| `src/capsplit/tempering.py` | Sequence tempering and the refined frontier |
+| `src/capsplit/evaluate.py` | `evaluate`, `evaluate_benchmark` and the D2 label |
 | `src/capsplit/worlds.py` | Grid worlds with exact trajectory enumeration |
+| `src/capsplit/planted.py` | Frozen RQ1 planted-case generators |
+| `src/capsplit/train/` | Tabular policy gradient and sequence RLOO |
+| `src/capsplit/seqtask/` | Sequence task, policy network and pre-training |
+| `src/capsplit/estimator.py` | Sampled split and sample-size bounds |
+| `src/capsplit/diagnostics.py` | The pass@k rule and its scoring |
+| `src/capsplit/runlog.py` | Run directories and manifests |
 | `experiments/` | Scripts that reproduce results with fixed configurations |
 | `tests/` | Unit and regression tests |
 | `docs/project-plan.pdf` | Research plan: definitions, propositions and hypotheses |
 | `docs/blueprint.md` | Technical blueprint: design, schedule and decisions to ratify |
+| `docs/pilot-blueprint.md` | Pilot plan and task specifications |
+| `docs/pilot-report.md` | Pilot results and recommendation |
+| `docs/proofs.md` | Proofs, as an unreviewed draft |
 
 ## Workflow
 
