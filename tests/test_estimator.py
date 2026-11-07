@@ -140,3 +140,15 @@ def test_within_bound_uses_max_of_mean_and_mu():
 def test_within_bound_checks_every_mean():
     exact = np.array([0.5, 0.5, 0.5, 0.5])
     assert not within_bound(_estimate([0.5, 0.5, 0.5, 0.6]), exact, eta=0.1, mu=0.01)
+
+
+def test_coverage_on_a_trained_pair():
+    from pilot_estimator import ETA, MU, REPEATS, coverage, trained_pair
+
+    table, state_index = compile_grid(WORLD)
+    logits0, probs1 = trained_pair(table, state_index)
+    means = exact_means(table, logits0, probs1, N)
+    assert means[2] + means[3] > means[0] + means[1]  # training raised J
+    assert REPEATS == 200
+    m = chernoff_size(MU, ETA, 0.05)
+    assert coverage(table, logits0, probs1, m, np.random.default_rng(0)) >= 0.95
