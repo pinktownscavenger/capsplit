@@ -1,6 +1,6 @@
 # capsplit proofs
 
-> **Status: checked by Bilal Malik on Nov 7, 2026; awaiting re-derivation.** Written by a coding agent and checked numerically, then checked step by step by Bilal. Pilot exit criterion 6 still requires a second teammate to re-derive Propositions 1 to 3 by hand, so Gate 1 is still open.
+> **Status: re-derived and closed on Nov 16, 2026.** Written by a coding agent, checked numerically and step by step by Bilal Malik on Nov 7, then independently re-derived by Munashe on Nov 16. Pilot exit criterion 6 is complete and Gate 1 is closed.
 
 **Setup.** A verifier gives each trajectory $\tau$ a reward in $\{0, 1\}$. A solution map $\phi$ groups trajectories into solutions, $S^*$ is the set of correct solutions, and $q_\pi(s) = \sum_{\tau \in \phi^{-1}(s)} P_\pi(\tau)$. Success is $J(\pi) = \sum_{s \in S^*} q_\pi(s)$. Dynamics are deterministic, so a trajectory is a sequence of actions. It ends at an absorbing goal or after $H$ steps, so its length is $t(\tau) \le H$.
 

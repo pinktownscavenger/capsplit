@@ -2,7 +2,7 @@
 
 > **Status: draft for the Nov 15 review.** The recommendation below is a proposal, and the go, change or cut decision belongs to the team.
 
-**Result:** six of the eight exit criteria are met, one is partly met and one is not. The pipeline works from task to label, and the sweep is cheaper than estimated, but the current run designs can't yet answer RQ4 or say much about capability gain in Phase 2. **The proposed recommendation is to change the sweep before running it.**
+**Result:** all eight exit criteria are met, with the final proof re-derivation completed on 2026-11-16. The pipeline works from task to label, and the sweep is cheaper than estimated, but the current run designs can't yet answer RQ4 or say much about capability gain in Phase 2. **The recommendation remains to change the sweep before running it.**
 
 | # | Exit criterion | Result |
 |---|---|---|
@@ -11,7 +11,7 @@
 | 3 | RQ1: gated families land in all 3 sizes, misses listed and explained | **Met**, with 5 expected misses listed |
 | 4 | RQ2: isolated slope in range, and the competing table exists | **Met**, slope −0.817 |
 | 5 | The estimator meets its bound in at least 95% of repeats | **Met**, 100% on both pairs |
-| 6 | Propositions 1 to 3 written up and re-derived by a second teammate | **Not met.** Written and checked by Bilal, but not yet re-derived by a second teammate |
+| 6 | Propositions 1 to 3 written up and re-derived by a second teammate | **Met.** Munashe re-derived the proofs, corollary, lemma and estimator bound by hand on 2026-11-16 |
 | 7 | Sequence task and RLOO use the same `evaluate`, with measured cost | **Met** |
 | 8 | The report gives a go, change or cut recommendation | **Met, as a proposal** |
 
@@ -29,7 +29,7 @@ The blueprint split this work across four people. **One person, Bilal, working w
 - **File ownership and review pairs:** neither applied, and only F1 went through a PR.
 - **PR reviews:** no teammate approved any task. F1 merged without Muhammad's review, and the other tasks went straight to `main`.
 - **No fresh code review:** no independent reviewer has read this code, so the team should treat it as unreviewed.
-- **Agent-written material:** the proofs in `docs/proofs.md` were checked by Bilal on Nov 7 but haven't been re-derived. The SRR/NDR note in `docs/notes/invisible-leash-scores.md` is still an unverified draft that needs a person to check it.
+- **Agent-written material:** the proofs in `docs/proofs.md` were checked by Bilal on Nov 7 and independently re-derived by Munashe on Nov 16. The SRR/NDR note in `docs/notes/invisible-leash-scores.md` is still an unverified draft that needs a person to check it.
 
 ## Exit criteria
 
@@ -140,7 +140,7 @@ Settings are $\mu = 0.01$, $\eta = 0.2$, $\delta = 0.05$. Hoeffding at $\varepsi
 
 ### 6. Proofs
 
-`docs/proofs.md` covers all seven results, with numeric checks that match the blueprint's reference values. **Bilal checked it step by step on Nov 7, but no second teammate has re-derived it, so Gate 1 is still open.**
+`docs/proofs.md` covers all seven results, with numeric checks that match the blueprint's reference values. **Bilal checked it step by step on Nov 7, and Munashe independently re-derived it on Nov 16, closing Gate 1.**
 
 Writing the proofs turned up three points:
 
@@ -240,7 +240,7 @@ Each recommendation below is a proposal for the team to ratify.
 
 **Required regardless of the sweep:**
 
-1. A second teammate re-derives Propositions 1 to 3 in `docs/proofs.md` (Bilal's step-by-step check is done). Gate 1 stays open until then.
+1. Gate 1 is closed: Munashe re-derived Propositions 1 to 3, the corollary, lemma and estimator bound on 2026-11-16.
 2. A person checks the SRR/NDR note against the paper, and the team settles its four open points before RQ4 reports those scores.
 3. The team reviews this code, or at least the metric and label code, since no teammate has.
 4. The team decides on D2's 6×6 behavior before the labels are frozen.
