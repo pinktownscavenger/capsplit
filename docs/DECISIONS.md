@@ -28,3 +28,4 @@ Each entry is one choice, with a one-line reason. Newest at the bottom. "T*" nam
 | H22 | T1 | torch runs single-threaded during a run, and torch.manual_seed(seed) is set before each base build and each arm | Serial and parallel runs, and cached vs fresh bases, agree to the bit |
 | H23 | T1 | A run's metrics file is written last and atomically; its existence marks the run complete (re-runs skip it unless --force) | Interrupted sweeps resume safely |
 | H24 | T1 | Training prompts = the `split=train` prompts; unknown config keys and trainer checkpoint mismatches raise | Held-out prompts are never trained on; typos and contract violations fail loudly |
+| H25 | T4D | SFT-then-RL splits the budget round(f·budget)/rest (f = 0.5), seeds the phases from SeedSequence([seed,0]) and ([seed,1]), and resets Adam between phases | The two phases never share a random stream; total updates equal the budget exactly (tested) |

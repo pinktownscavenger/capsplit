@@ -11,8 +11,8 @@ Status values: todo, in progress, verifying, done, failed. A task is **done** on
 | T4A RL arms (RLOO, GRPO, entropy bonus) | T0 | `harness/trainers/rl.py`, `tests/test_harness_rl.py` | Unit tests incl. zero gradient when every sample fails | done (verified: updates re-derived by hand, params match to 1e-7) |
 | T4B SFT arm | T0 | `harness/trainers/sft.py`, `tests/test_harness_sft.py` | Unit tests; trains on hard train prompts only | done (verified: updates re-derived by hand, params match to 1e-7) |
 | T4C Hint arm | T0 | `harness/trainers/hints.py`, `tests/test_harness_hints.py` | Unit tests; ≥2 hint lengths; no hints at evaluation | done (verified: updates re-derived by hand, params match to 1e-7) |
-| T4D SFT then RL | T4A, T4B | `harness/trainers/sft_rl.py`, `tests/test_harness_sft_rl.py` | Unit tests | todo |
-| T4E Controls | T0, T4A | `trainers/none.py` (T0), entropy variant in `rl.py` | Test: no-post-training control gives exactly zero gain | todo |
+| T4D SFT then RL | T4A, T4B | `harness/trainers/sft_rl.py`, `tests/test_harness_sft_rl.py` | Unit tests | verifying |
+| T4E Controls | T0, T4A | `trainers/none.py` (T0), entropy variant in `rl.py` | Test: no-post-training control gives exactly zero gain | verifying |
 | Gate 1 | T1–T4 | `docs/preregistration.md`, `tests/test_harness_planted.py` | Full suite passes; base frozen; planted sharpening + capability cases labelled correctly; preregistration committed | todo |
 | T5 Experiment | Gate 1 | `configs/main.json`, results | Every run has a manifest; grid regenerates from one command | todo |
 | T6 Report generator | T1, T2 | `harness/report.py`, `tests/test_harness_report.py` | Report builds from T5 results with no manual steps | todo |
