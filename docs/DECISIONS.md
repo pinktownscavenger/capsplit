@@ -21,3 +21,5 @@ Each entry is one choice, with a one-line reason. Newest at the bottom. "T*" nam
 | H15 | T4B | SFT minibatches are drawn without replacement from one generator seeded by the run seed; default is full batch | Reproducible runs; full batch is the simplest same-budget comparison |
 | H16 | T4C | A hinted group uses one demonstration prefix (seeded choice), and the leave-one-out baseline is computed within that hinted group | Episodes compared by the baseline share the same hint |
 | H17 | T4C | Forced hint tokens never receive gradient, so a hint of length h ≥ 1 cannot train the first h tokens on that prompt | Training on tokens the policy didn't choose would be supervised learning, not RL. The report must state this limit |
+| H18 | T4A | RL arms have no KL penalty to the base; GRPO-style arm takes one on-policy step per batch, so the PPO clip ratio is 1 | Keeps the arm comparison to the training signal alone; KL can be added as a param |
+| H19 | T4A | RL losses average over all P·G episodes; one generator seeded by the run seed drives sampling and minibatching | Matches the existing train/sequence.py; one seed controls all randomness |
