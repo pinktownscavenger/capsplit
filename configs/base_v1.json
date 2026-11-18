@@ -1,0 +1,15 @@
+{
+  "name": "base_v1",
+  "task": {"type": "rule_task", "params": {"vocab": 6, "length": 5, "shared_prefix": 2, "seed": 0, "heldout_fraction": 0.3333333333333333}},
+  "base": {
+    "type": "pretrain_gru",
+    "params": {
+      "rho": 0.7, "mu": 0.5, "n_noise": 0, "noise_mass": 0.2,
+      "easy_correct": 0.3, "easy_trap": 0.4, "easy_distractors": 4, "easy_distractor_mass": 0.1, "data_seed": 0,
+      "embedding": 16, "hidden": 64,
+      "adam_steps": 100, "lr": 0.01, "lbfgs_iter": 500, "smoothing": 0.08,
+      "n": 64, "target_ratio": 0.2, "calibration_tol": 1.1, "calibration_max_iter": 6, "log10_w_range": [-6.0, -0.5]
+    }
+  },
+  "factors": {"task.shared_prefix": [0, 2, 4]}
+}
