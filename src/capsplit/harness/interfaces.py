@@ -132,6 +132,24 @@ class Policy(ABC):
         at beta multiplies these logits by beta.
         """
 
+    def trajectory_probs(self, task: Task, prompt_id: int) -> np.ndarray:
+        """(T,) exact probability of each row of `task.table(prompt_id)`.
+
+        The default chains `state_logits`. Override it for a policy that is a distribution over
+        whole trajectories rather than per-state choices (for example a planted case).
+        """
+        from capsplit.engine import trajectory_probs
+
+        table = task.table(prompt_id)
+        if table is None:
+            raise ValueError(f"{type(task).__name__} has no exact table")
+        return trajectory_probs(table, self.state_logits(task, prompt_id))
+
+    def tempering_logits(self, task: Task, prompt_id: int) -> np.ndarray | None:
+        """Per-state logits for per-step tempering, or None if the policy has none (then only
+        sequence-level tempering applies). Defaults to `state_logits`."""
+        return self.state_logits(task, prompt_id)
+
     @abstractmethod
     def parameters(self) -> Iterable[torch.nn.Parameter]:
         """Trainable parameters, for an optimizer."""
