@@ -15,7 +15,7 @@ Status values: todo, in progress, verifying, done, failed. A task is **done** on
 | T4E Controls | T0, T4A | `trainers/none.py` (T0), entropy variant in `rl.py` | Test: no-post-training control gives exactly zero gain | verifying |
 | Gate 1 | T1–T4 | `docs/preregistration.md`, `tests/test_harness_planted.py` | Full suite passes; base frozen; planted sharpening + capability cases labelled correctly; preregistration committed | todo |
 | T5 Experiment | Gate 1 | `configs/main.json`, results | Every run has a manifest; grid regenerates from one command | todo |
-| T6 Report generator | T1, T2 | `harness/report.py`, `tests/test_harness_report.py` | Report builds from T5 results with no manual steps | verifying |
+| T6 Report generator | T1, T2 | `harness/report.py`, `tests/test_harness_report.py` | Report builds from T5 results with no manual steps | done (verified: numbers re-derived from raw metrics, exact match; figures improved) |
 | Gate 2 | T5, T6 | `docs/gate2.md` | Independent re-derivation of 3 headline numbers matches; H1–H4 verdicts | todo |
 | T7 Generality | T1 | `harness/tasks/grid.py`, `harness/trainers/tabular.py`, `harness/backends/sampled.py`, `configs/grid_example.json`, tests | Second config and sampled backend run from the CLI; sampled matches exact within CIs | in progress |
 | T8 Docs | Gate 2, T7 | `docs/report.md`, `docs/harness.md`, `docs/explainer.md`, `docs/slides.md` | A fresh subagent adds a trivial trainer by following harness.md | todo |

@@ -563,7 +563,8 @@ def figure_heatmaps(exp: Experiment, fig_dir: Path) -> list[Path]:
         vmax = float(finite.max()) if finite.size and finite.max() > 0 else 1e-12
         fig, ax = plt.subplots(figsize=(1.6 + 1.1 * len(columns), 1.0 + 0.5 * len(arms)))
         ax.grid(False)
-        ax.imshow(np.ma.masked_invalid(grid), cmap=cmap, vmin=-vmax, vmax=vmax, aspect="auto")
+        image = ax.imshow(np.ma.masked_invalid(grid), cmap=cmap, vmin=-vmax, vmax=vmax, aspect="auto")
+        fig.colorbar(image, ax=ax, fraction=0.046, pad=0.04).set_label("delta_cap", fontsize=8)
         for r in range(len(arms)):
             for j in range(len(columns)):
                 text = "n/a" if math.isnan(grid[r, j]) else f"{grid[r, j]:+.3g}"
@@ -580,25 +581,32 @@ def figure_heatmaps(exp: Experiment, fig_dir: Path) -> list[Path]:
 
 
 def figure_training(exp: Experiment, fig_dir: Path) -> list[Path]:
+    """delta_rel and delta_cap over training, one file per arm: rows = groups, columns = factor levels."""
     plt = _plt()
-    group = focus_group(exp)
+    groups = [g for g in ("all", "hard_train", "hard_heldout") if g in exp.groups] or [focus_group(exp)]
     steps = exp.checkpoints
     paths = []
     for a, (arm, _) in enumerate(exp.arms):
-        fig, axes = plt.subplots(1, len(exp.fkeys), figsize=(3.6 * len(exp.fkeys), 2.8), squeeze=False, sharey=True)
-        for ax, fkey in zip(axes[0], exp.fkeys):
-            for s, name in enumerate(("delta_rel", "delta_cap")):
-                rows = [[v for v in exp.values(arm, fkey, st, group, *exp.primary, name) if not math.isnan(v)] for st in steps]
-                ok = [i for i, r in enumerate(rows) if r]
-                if not ok:
-                    continue
-                xs = [steps[i] for i in ok]
-                ax.fill_between(xs, [min(rows[i]) for i in ok], [max(rows[i]) for i in ok], color=_SERIES[s], alpha=0.18, linewidth=0)
-                ax.plot(xs, [float(np.mean(rows[i])) for i in ok], color=_SERIES[s], marker="o", markersize=4, label=name)
-            ax.axhline(0, color=_MUTED, linewidth=0.8)
-            ax.set_title(fkey, fontsize=9)
-            ax.set_xlabel("update step")
-        axes[0][0].set_ylabel(f"{group} (seed mean, min-max band)")
+        fig, axes = plt.subplots(
+            len(groups), len(exp.fkeys), figsize=(3.6 * len(exp.fkeys), 2.6 * len(groups)), squeeze=False, sharex=True
+        )
+        for g, group in enumerate(groups):
+            for ax, fkey in zip(axes[g], exp.fkeys):
+                for s, name in enumerate(("delta_rel", "delta_cap")):
+                    rows = [
+                        [v for v in exp.values(arm, fkey, st, group, *exp.primary, name) if not math.isnan(v)] for st in steps
+                    ]
+                    ok = [i for i, r in enumerate(rows) if r]
+                    if not ok:
+                        continue
+                    xs = [steps[i] for i in ok]
+                    ax.fill_between(xs, [min(rows[i]) for i in ok], [max(rows[i]) for i in ok], color=_SERIES[s], alpha=0.18, linewidth=0)
+                    ax.plot(xs, [float(np.mean(rows[i])) for i in ok], color=_SERIES[s], marker="o", markersize=4, label=name)
+                ax.axhline(0, color=_MUTED, linewidth=0.8)
+                ax.set_title(f"{group} | {fkey}", fontsize=8)
+                if g == len(groups) - 1:
+                    ax.set_xlabel("update step")
+            axes[g][0].set_ylabel(f"{group}\n(seed mean, min-max)", fontsize=8)
         axes[0][0].legend(frameon=False, fontsize=8)
         fig.suptitle(f"{arm}: N={exp.primary[0]} c={_c_str(exp.primary[1])}", fontsize=10)
         path = fig_dir / f"training_{a:02d}_{arm}.png"
