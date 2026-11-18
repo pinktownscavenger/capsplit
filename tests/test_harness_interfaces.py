@@ -107,3 +107,29 @@ def test_trivial_end_to_end_with_dummy_plugins():
     assert m.group == "all" and m.j0 == m.j1
     assert np.isclose(m.j0, 2 / 27)  # two correct sequences out of 27 under the uniform policy
     assert m.to_dict()["delta_total"] == 0.0
+
+
+def test_registry_skips_only_modules_that_do_not_exist():
+    from capsplit.harness.registry import _is_missing
+
+    assert _is_missing("capsplit.harness.trainers.sft", "capsplit.harness.trainers.sft")
+    assert _is_missing("capsplit.harness.trainers.sft", "capsplit.harness.trainers")
+    # sft_rl exists but imports a missing sibling: that is a real error, not a missing plug-in.
+    assert not _is_missing("capsplit.harness.trainers.sft_rl", "capsplit.harness.trainers.sft")
+    assert not _is_missing("capsplit.harness.trainers.rl", "torch")
+    assert not _is_missing("capsplit.harness.trainers.rl", None)
+
+
+def test_a_broken_plugin_raises_on_every_lookup(monkeypatch, tmp_path):
+    import sys
+
+    import capsplit.harness.registry as registry
+
+    (tmp_path / "broken_plugin_xyz.py").write_text("raise RuntimeError('boom')\n")
+    monkeypatch.syspath_prepend(str(tmp_path))
+    monkeypatch.setattr(registry, "PLUGIN_MODULES", registry.PLUGIN_MODULES + ("broken_plugin_xyz",))
+    monkeypatch.setattr(registry, "_loaded", False)
+    for _ in range(2):
+        sys.modules.pop("broken_plugin_xyz", None)
+        with pytest.raises(RuntimeError, match="boom"):
+            registry.TRAINERS.names()

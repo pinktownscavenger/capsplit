@@ -48,8 +48,9 @@ TRAINERS: Registry = Registry("trainer")
 BACKENDS: Registry = Registry("backend")
 BASES: Registry = Registry("base recipe")
 
-# Modules that register plug-ins. A module that doesn't exist yet (or needs torch when it
-# isn't installed) is skipped, so the registry works while plug-ins are being added.
+# Modules that register plug-ins. A module that doesn't exist yet is skipped, so the registry
+# works while plug-ins are being added. Any other import error (a bug, a missing dependency,
+# a missing sibling module) is raised, every time.
 PLUGIN_MODULES = (
     "capsplit.harness.dummy",
     "capsplit.harness.policies.tabular",
@@ -74,14 +75,17 @@ def _load_plugins() -> None:
     global _loaded
     if _loaded:
         return
-    _loaded = True
     import importlib
 
     for module in PLUGIN_MODULES:
         try:
             importlib.import_module(module)
         except ModuleNotFoundError as error:
-            # Only swallow "this plug-in module doesn't exist"; a missing dependency inside
-            # an existing module is a real error.
-            if error.name != module and not module.startswith(str(error.name)):
+            if not _is_missing(module, error.name):
                 raise
+    _loaded = True  # only after every plug-in imported, so a failure raises again next time
+
+
+def _is_missing(module: str, missing: str | None) -> bool:
+    """True if the error means `module` itself (or a package containing it) doesn't exist."""
+    return missing is not None and (module == missing or module.startswith(missing + "."))
