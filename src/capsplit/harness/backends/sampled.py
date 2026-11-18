@@ -233,6 +233,12 @@ class SampledBackend(Backend):
             ids = [int(p) for p in group_ids]
             resample = np.random.default_rng([self.seed, 2028, g_index]).integers(0, len(ids), size=(self.n_boot, len(ids)))
             j1_list = [j1s[p] for p in ids]
+            # E_1 (decision H39): success-rate gap against the best shared-beta tempered base.
+            if cache.temper_js:
+                j_by_beta = {b: float(np.mean([cache.temper_js[p][b] for p in ids])) for b in self.betas}
+                e1_step = float(np.mean(j1_list)) - max(j_by_beta.values())
+            else:
+                e1_step = float("nan")
             for n in spec.ns:
                 trained_pass = float(np.mean(pass_at_n(j1_list, n)))
                 frontier: dict = {}
@@ -263,7 +269,9 @@ class SampledBackend(Backend):
                         "crossed_count": n_crossed,
                         "frontier": {"per_step": frontier} if frontier else {},
                         "e_n_note": cache.e_n_note,
-                        "label_basis": "per_step E_N only",
+                        "label_basis": "per_step E_1 only (H39); label_en uses per_step E_N",
+                        "e1": {"per_step": e1_step, "sequence": float("nan"), "both": float("nan")},
+                        "label_en": _label(n_crossed > 0, e_step),
                         "j0": [float(x) for x in per_prompt[:, 0]],
                         "j1": [float(x) for x in per_prompt[:, 1]],
                         "delta_rel": [float(x) for x in per_prompt[:, 2]],
@@ -280,7 +288,7 @@ class SampledBackend(Backend):
                             delta_rel=float(means[2]),
                             delta_cap=float(means[3]),
                             excess=excess,
-                            label=_label(n_crossed > 0, e_step),
+                            label=_label(n_crossed > 0, e1_step),
                             extra=extra,
                         )
                     )

@@ -9,7 +9,12 @@ true answer is known by construction:
 * capability: on hard train prompts, half of the base's mass is moved onto the prompt's
   correct solutions. They cross c/N, and no tempered base can match it (criterion b).
 * reweighting: on easy prompts, half of the incorrect mass is moved onto the correct
-  solutions, which were already reachable. E_N > 0, nothing crosses.
+  solutions, which were already reachable. E_1 > 0, nothing crosses.
+
+There is no planted "compounded sharpening" case: by the frozen design (criterion b) no
+tempering lifts a hard solution over c/N, and every easy solution is already reachable, so
+that cell is empty by construction on this base. The repo's grid planted cases cover it
+(tests/test_harness_exact.py).
 """
 import numpy as np
 import pytest
