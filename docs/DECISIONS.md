@@ -19,3 +19,5 @@ Each entry is one choice, with a one-line reason. Newest at the bottom. "T*" nam
 | H13 | T2 | Group E_N uses one β per group and family, shared by the group's prompts, as in `evaluate_benchmark` (D5) | A single re-tempered base policy is the fair baseline; per-prompt β would be an oracle |
 | H14 | T4B | Trainer params are validated: an unknown param raises | A typo in a config must fail loudly, not run a different experiment |
 | H15 | T4B | SFT minibatches are drawn without replacement from one generator seeded by the run seed; default is full batch | Reproducible runs; full batch is the simplest same-budget comparison |
+| H16 | T4C | A hinted group uses one demonstration prefix (seeded choice), and the leave-one-out baseline is computed within that hinted group | Episodes compared by the baseline share the same hint |
+| H17 | T4C | Forced hint tokens never receive gradient, so a hint of length h ≥ 1 cannot train the first h tokens on that prompt | Training on tokens the policy didn't choose would be supervised learning, not RL. The report must state this limit |
