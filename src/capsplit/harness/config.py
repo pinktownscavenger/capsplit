@@ -74,9 +74,13 @@ class Measure:
     ns: tuple
     cs: tuple
     group_by: tuple
+    primary: tuple | None = None  # (N, c) for headline numbers; None = largest N, c = 1
 
     def to_dict(self) -> dict:
-        return {"ns": list(self.ns), "cs": list(self.cs), "group_by": list(self.group_by)}
+        out: dict = {"ns": list(self.ns), "cs": list(self.cs), "group_by": list(self.group_by)}
+        if self.primary is not None:  # omitted when unset, so older cell hashes don't change
+            out["primary"] = {"n": self.primary[0], "c": self.primary[1]}
+        return out
 
 
 @dataclass(frozen=True)
@@ -239,7 +243,7 @@ def parse_config(data: Any) -> ExperimentConfig:
     m = data["measure"]
     if not isinstance(m, dict) or "ns" not in m or "cs" not in m:
         raise ConfigError("measure must be an object with 'ns' and 'cs'")
-    extra = set(m) - {"ns", "cs", "group_by"}
+    extra = set(m) - {"ns", "cs", "group_by", "primary"}
     if extra:
         raise ConfigError(f"measure: unknown keys {sorted(extra)}")
     ns = _int_list(m["ns"], "measure.ns", minimum=1)
@@ -255,6 +259,14 @@ def parse_config(data: Any) -> ExperimentConfig:
     group_by = m.get("group_by", [])
     if not isinstance(group_by, list) or not all(isinstance(g, str) for g in group_by) or len(set(group_by)) != len(group_by):
         raise ConfigError("measure.group_by must be a list of distinct tag names")
+    primary = None
+    if "primary" in m:
+        p = m["primary"]
+        if not isinstance(p, dict) or set(p) != {"n", "c"}:
+            raise ConfigError('measure.primary must be {"n": N, "c": c}')
+        if p["n"] not in ns or float(p["c"]) not in cs:
+            raise ConfigError("measure.primary must use an N in measure.ns and a c in measure.cs")
+        primary = (int(p["n"]), float(p["c"]))
 
     save = data.get("save_policies", "checkpoints")
     if save not in SAVE_POLICIES:
@@ -270,7 +282,7 @@ def parse_config(data: Any) -> ExperimentConfig:
         seeds=seeds,
         budget=budget,
         checkpoints=checkpoints,
-        measure=Measure(ns, cs, tuple(group_by)),
+        measure=Measure(ns, cs, tuple(group_by), primary),
         save_policies=save,
         raw=copy.deepcopy(data),
     )

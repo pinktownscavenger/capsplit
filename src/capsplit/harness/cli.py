@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib
 import sys
 from typing import Sequence
 
@@ -21,7 +22,7 @@ def _run(args: argparse.Namespace) -> int:
 
 def _report(args: argparse.Namespace) -> int:
     try:
-        from .report import build_report  # type: ignore[attr-defined]
+        build_report = importlib.import_module("capsplit.harness.report").build_report
     except ModuleNotFoundError as error:
         if error.name in ("capsplit.harness.report",):
             print("error: the report generator (capsplit.harness.report, task T6) is not available yet", file=sys.stderr)

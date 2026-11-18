@@ -164,6 +164,15 @@ def load_or_build_base(
 # ---------------------------------------------------------------------- one unit
 
 
+def run_dir_path(experiment: str, config: dict, root: str) -> Path:
+    """Where `runlog.run_dir` puts this cell, without creating it (same hashing rule)."""
+    import hashlib
+    import json
+
+    canonical = json.dumps(config, sort_keys=True, separators=(",", ":"))
+    return Path(root) / experiment / hashlib.sha256(canonical.encode()).hexdigest()[:12]
+
+
 def _run_files(config: ExperimentConfig, cell: str, seed: int) -> dict:
     return {
         "manifest": f"{cell}/manifest.json",
@@ -182,6 +191,10 @@ def run_unit(config: ExperimentConfig, out_root: str, combo_index: int, seed: in
     entries: list[dict] = []
     pending: list[tuple[Arm, Path, dict]] = []
     for arm in config.arms:
+        if force:
+            # Rewrite the manifest so it records the code that produced the new results.
+            stale = run_dir_path(config.name, config.cell_config(combo, arm), out_root) / "manifest.json"
+            stale.unlink(missing_ok=True)
         directory = run_dir(config.name, config.cell_config(combo, arm), root=out_root)
         files = _run_files(config, directory.name, seed)
         entries.append(
@@ -195,7 +208,10 @@ def run_unit(config: ExperimentConfig, out_root: str, combo_index: int, seed: in
                 "files": files,
             }
         )
-        if (exp_dir / files["metrics"]).exists() and not force:
+        complete = (exp_dir / files["metrics"]).exists() and (
+            files["policies"] is None or (exp_dir / files["policies"]).exists()
+        )
+        if complete and not force:
             _log(f"skip {combo} arm={arm.name} seed={seed}: metrics exist")
             continue
         pending.append((arm, directory, files))
@@ -268,6 +284,10 @@ def run_experiment(
         config = load_config(config)
     out = str(out_root)
     exp_dir = Path(out) / config.name
+    from capsplit.runlog import _git
+
+    if _git("rev-parse", "HEAD") is None:
+        _log("warning: not inside a git checkout, so manifests will record commit = null; run from the repo")
     exp_dir.mkdir(parents=True, exist_ok=True)
     _write_text(exp_dir / "config.json", dumps(config.raw))
 

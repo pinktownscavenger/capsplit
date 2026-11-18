@@ -212,3 +212,38 @@ def test_cli_list():
     listed = subprocess.run([sys.executable, "-m", "capsplit.harness", "list"], cwd=ROOT, env=env,
                             capture_output=True, text=True, timeout=60)
     assert listed.returncode == 0 and "tiny_prompt" in listed.stdout and "none" in listed.stdout
+
+
+def test_a_run_is_redone_when_its_policy_file_is_missing(tmp_path):
+    """Regression (T1 verification): switching save_policies from "none" to "checkpoints"
+    must not leave index.json pointing at policy files that were never written."""
+    import json as _json
+
+    from capsplit.harness.config import load_config
+    from capsplit.harness.runner import run_experiment
+
+    raw = _json.loads(open("configs/dummy.json").read())
+    raw["save_policies"] = "none"
+    (tmp_path / "a.json").write_text(_json.dumps(raw))
+    run_experiment(load_config(tmp_path / "a.json"), out_root=tmp_path / "out")
+    raw["save_policies"] = "checkpoints"
+    (tmp_path / "b.json").write_text(_json.dumps(raw))
+    exp = run_experiment(load_config(tmp_path / "b.json"), out_root=tmp_path / "out")
+    index = _json.loads((exp / "index.json").read_text())
+    for run in index["runs"]:
+        assert (exp / run["files"]["policies"]).exists()
+
+
+def test_measure_primary_is_validated(tmp_path):
+    import json as _json
+
+    from capsplit.harness.config import ConfigError, load_config
+
+    raw = _json.loads(open("configs/dummy.json").read())
+    raw["measure"]["primary"] = {"n": 64, "c": 1}
+    (tmp_path / "ok.json").write_text(_json.dumps(raw))
+    assert load_config(tmp_path / "ok.json").measure.primary == (64, 1.0)
+    raw["measure"]["primary"] = {"n": 7, "c": 1}
+    (tmp_path / "bad.json").write_text(_json.dumps(raw))
+    with pytest.raises(ConfigError):
+        load_config(tmp_path / "bad.json")
