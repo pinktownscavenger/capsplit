@@ -42,19 +42,21 @@ def sample_prefix_tree(
     """
     forced_tokens, forced_lengths = _pad_prefixes(prefixes, batch, length)
     codes = torch.zeros(batch, dtype=torch.long)
-    actions = torch.zeros((batch, length), dtype=torch.long)
+    columns: list[torch.Tensor] = []  # never written in place: logits_at may keep them for autograd
     log_prob = torch.zeros(batch)
     entropy = torch.zeros(batch)
     for t in range(length):
-        log_pi = torch.log_softmax(logits_at(t, codes, actions[:, :t]), dim=-1)
+        so_far = torch.stack(columns, dim=1) if columns else torch.zeros((batch, 0), dtype=torch.long)
+        log_pi = torch.log_softmax(logits_at(t, codes, so_far), dim=-1)
         sampled = torch.multinomial(log_pi.detach().exp(), 1, generator=generator).squeeze(1)
         forced = t < forced_lengths
         action = torch.where(forced, forced_tokens[:, t], sampled)
         generated = (~forced).to(log_pi.dtype)
         log_prob = log_prob + generated * log_pi.gather(1, action.unsqueeze(1)).squeeze(1)
         entropy = entropy + generated * -(log_pi.exp() * log_pi).sum(dim=-1)
-        actions[:, t] = action
+        columns.append(action)
         codes = codes * vocab + action
+    actions = torch.stack(columns, dim=1) if columns else torch.zeros((batch, 0), dtype=torch.long)
     return actions, log_prob, entropy, forced_lengths.tolist()
 
 

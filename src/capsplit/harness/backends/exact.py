@@ -12,8 +12,14 @@ Definitions (docs/proofs.md section 1, docs/DECISIONS.md H12 and H13):
   base's tempering logits by beta), "sequence" (P0(tau)^beta renormalised over all trajectories)
   and "both" (sup over the two). The sup is a grid search over `tempering.DEFAULT_BETAS`, then
   golden-section refinement in log beta around the best grid points, as `tempering.frontier`.
-* Label (H12): beyond reach iff some correct s has q0(s) < c/N <= q1(s) on some prompt of the
-  group; beyond temperature iff E_N["both"] > 1e-9. The D2 label (`evaluate.label_cell`) is kept
+* E_1 (`extra["e1"]`) is the same comparison at budget 1, i.e. on success rate J:
+  mean J1 - sup_beta mean J(tempered base), one shared beta. It is computed for every group
+  whether or not 1 is among the measured budgets.
+* Label (H12, H39): beyond reach iff some correct s has q0(s) < c/N <= q1(s) on some prompt of
+  the group; beyond temperature iff E_1["both"] > 1e-9. Using E_1 rather than E_N matches
+  `evaluate.evaluate` (whose single-task label uses the J gap) and avoids a blind spot: once the
+  base's pass@N saturates on reachable prompts, E_N cannot see any change there. The E_N-based
+  label is kept in `extra["label_en"]` and the D2 label (`evaluate.label_cell` with the J gap)
   in `extra["d2_label"]`.
 
 `prepare` enumerates the base once (tables, q0, frontier per (group, N, family)); `measure`
@@ -271,7 +277,7 @@ class ExactBackend(Backend):
             ids = [int(p) for p in group_ids]
             families = [f for f in FAMILIES if f != "per_step" or tempering.has_per_step(ids)]
             grid_js = {f: {float(b): tempering.js(f, float(b), ids) for b in betas} for f in families}
-            for n in spec.ns:
+            for n in sorted(set(spec.ns) | {1}):
                 result = {}
                 for family in families:
 
@@ -309,6 +315,11 @@ class ExactBackend(Backend):
             j1_list = [j1[p] for p in ids]
             j0_mean, j1_mean = float(np.mean(j0_list)), float(np.mean(j1_list))
             m = len(ids)
+            if (group, 1) not in cache.frontiers:
+                raise KeyError(f"cache has no budget-1 frontier for group {group!r}; re-run prepare")
+            front1 = cache.frontiers[(group, 1)]
+            e1 = {f: j1_mean - fr.best_pass for f, fr in front1.items()}
+            e1["both"] = j1_mean - max(fr.best_pass for fr in front1.values())
             for n in spec.ns:
                 if (group, n) not in cache.frontiers:
                     raise KeyError(f"cache has no frontier for group {group!r} at N={n}; re-run prepare")
@@ -343,7 +354,9 @@ class ExactBackend(Backend):
                             for f, fr in frontier.items()
                         },
                         "beyond_reach": beyond_reach,
-                        "d2_label": label_cell(delta_cap, excess["both"], line),
+                        "e1": e1,
+                        "label_en": h12_label(beyond_reach, excess["both"]),
+                        "d2_label": label_cell(delta_cap, e1["both"], line),
                         "crossed_count": int(crossed.sum()),
                         "crossed_mass": float(crossed_mass.mean()),  # mean over prompts of q1 on crossed solutions
                         "e_n_valid": bool(e_n_valid_base >= 100 * n),
@@ -364,7 +377,7 @@ class ExactBackend(Backend):
                             delta_rel=delta_rel,
                             delta_cap=delta_cap,
                             excess=excess,
-                            label=h12_label(beyond_reach, excess["both"]),
+                            label=h12_label(beyond_reach, e1["both"]),
                             extra=extra,
                         )
                     )

@@ -204,3 +204,17 @@ def test_criteria_fail_on_bad_hand_made_bases():
     # uniform: easy solutions unreachable, hard median far below the target
     uniform = verify_base(task, _SharedTabular(72, 6, 5))
     assert not uniform["c"]["pass"] and not uniform["e"]["pass"] and uniform["d"]["pass"]
+
+
+def test_gru_policy_can_backpropagate_through_a_sampled_rollout():
+    """Regression: the shared sampler used to write actions in place, which broke autograd
+    for policies (like the GRU) that read the previous tokens."""
+    import torch as _torch
+
+    from capsplit.harness import POLICIES, TASKS
+
+    task = TASKS.create("rule_task", vocab=6, length=5, shared_prefix=2, seed=0)
+    policy = POLICIES.get("prompt_gru").for_task(task, seed=0)
+    rollout = policy.sample(task, list(range(8)) * 2, _torch.Generator().manual_seed(0), prefixes=[(1,)] * 16)
+    (rollout.log_prob.sum() + rollout.entropy.sum()).backward()
+    assert any(p.grad is not None and p.grad.abs().sum() > 0 for p in policy.parameters())
