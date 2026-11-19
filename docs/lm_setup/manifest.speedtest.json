@@ -1,0 +1,117 @@
+{
+  "commit": "39bced0ee2198fdcc031863c91f5559ae8203f78",
+  "config": {
+    "arms": [
+      {
+        "name": "none",
+        "params": {},
+        "trainer": "lm_none"
+      },
+      {
+        "name": "rl",
+        "params": {
+          "group": 4,
+          "lr": 0.0001,
+          "problems_per_update": 4
+        },
+        "trainer": "lm_rl"
+      },
+      {
+        "name": "sft",
+        "params": {
+          "batch": 4,
+          "lr": 0.0001
+        },
+        "trainer": "lm_sft"
+      }
+    ],
+    "budget": 4,
+    "checkpoints": [
+      0,
+      4
+    ],
+    "lora": {
+      "alpha": 16,
+      "dropout": 0.0,
+      "r": 8,
+      "target_modules": [
+        "q_proj",
+        "v_proj"
+      ]
+    },
+    "measure": {
+      "alpha": 0.05,
+      "boot_seed": 0,
+      "n": 4,
+      "n_boot": 200
+    },
+    "memory": {
+      "max_process_gb": 8.0,
+      "min_free_gb": 3.0
+    },
+    "model": {
+      "cache_dir": null,
+      "device": "auto",
+      "dtype": "float16",
+      "fallback_id": "HuggingFaceTB/SmolLM2-360M-Instruct",
+      "fallback_revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+      "id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "max_new_tokens": 12,
+      "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+      "system_prompt": "You are a precise calculator."
+    },
+    "name": "lm_demo",
+    "runtime": {
+      "nice": 10,
+      "threads": 4
+    },
+    "sampling": {
+      "batch_size": 32,
+      "n_classify": 16,
+      "n_measure": 16,
+      "n_temperature": 8,
+      "n_trained": 16,
+      "reference_temperature": 1.0,
+      "temperatures": [
+        0.7,
+        1.0
+      ],
+      "top_p": 1.0
+    },
+    "seeds": [
+      0
+    ],
+    "task": {
+      "generators": [
+        {
+          "n_heldout": 4,
+          "n_train": 6,
+          "params": {
+            "digits": [
+              2,
+              3
+            ],
+            "ops": [
+              "+",
+              "*"
+            ]
+          },
+          "type": "arithmetic"
+        }
+      ],
+      "prompt_template": "Compute {question}. Reply with only the final number.",
+      "seed": 0
+    }
+  },
+  "device": "mps",
+  "dirty": true,
+  "model": {
+    "id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775"
+  },
+  "python": "3.12.12",
+  "seed": 0,
+  "stage": "speedtest",
+  "torch": "2.8.0",
+  "transformers": "5.23.0"
+}

@@ -1,0 +1,13 @@
+{
+  "device": "mps",
+  "disk_free_gb": 105.3,
+  "memory_available_gb": 4.42,
+  "memory_total_gb": 18.0,
+  "min_free_gb_required": 3.0,
+  "mps_available": true,
+  "peft": "0.22.0",
+  "platform": "macOS-14.6-arm64-arm-64bit",
+  "python": "3.12.12",
+  "torch": "2.15.0",
+  "transformers": "5.23.0"
+}

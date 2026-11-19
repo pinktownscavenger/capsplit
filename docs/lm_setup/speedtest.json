@@ -1,0 +1,41 @@
+{
+  "device": "mps",
+  "dtype": "torch.float16",
+  "load_seconds": 1.42,
+  "lora": {
+    "loss": 0.0001,
+    "step_seconds": 2.993,
+    "trainable_parameters": 540672
+  },
+  "low_temperature_answers": {
+    "Compute 12 * 34. Reply with only the final number.": "408",
+    "Compute 23 + 58. Reply with only the final number.": "81",
+    "Compute 417 + 386. Reply with only the final number.": "703",
+    "Compute 908 - 457. Reply with only the final number.": "450"
+  },
+  "memory_gb": {
+    "after_load": 1.2,
+    "available_at_end": 3.56,
+    "peak_process": 2.37
+  },
+  "model": {
+    "id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775"
+  },
+  "sampling": {
+    "1": {
+      "new_tokens": 3,
+      "seconds": 1.005,
+      "sequences": 1,
+      "sequences_per_second": 1.0,
+      "tokens_per_second": 3.0
+    },
+    "32": {
+      "new_tokens": 122,
+      "seconds": 1.385,
+      "sequences": 32,
+      "sequences_per_second": 23.1,
+      "tokens_per_second": 88.1
+    }
+  }
+}
