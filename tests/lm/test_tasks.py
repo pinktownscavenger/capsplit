@@ -76,14 +76,15 @@ def test_split_totals_exact_when_cells_do_not_divide():
 
 
 def test_no_duplicate_questions_across_splits_or_generators():
-    # 1-digit addition has only 81 distinct questions, so collisions are certain without the de-duplication.
+    # 1-digit addition has only 45 distinct problems once "a + b" and "b + a" count as one,
+    # so collisions are certain without the de-duplication.
     gens = (
-        GeneratorConfig("arithmetic", {"digits": [1], "ops": ["+"]}, 40, 20),
-        GeneratorConfig("arithmetic", {"digits": [1], "ops": ["+"]}, 10, 10),
+        GeneratorConfig("arithmetic", {"digits": [1], "ops": ["+"]}, 20, 10),
+        GeneratorConfig("arithmetic", {"digits": [1], "ops": ["+"]}, 5, 5),
     )
     rows = build_problems(TaskConfig(generators=gens, seed=3))
     questions = [r["question"] for r in rows]
-    assert len(questions) == len(set(questions)) == 80
+    assert len(questions) == len(set(questions)) == 40
     assert not {r["question"] for r in rows if r["split"] == "train"} & {
         r["question"] for r in rows if r["split"] == "heldout"
     }
