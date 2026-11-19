@@ -46,6 +46,7 @@
     "arm_b_rule_achievable": true
   },
   "overall": "valid",
+  "quick_runs_used": false,
   "runs": {
     "arm_a": "results/rq2_arm_a/cb04380273fb",
     "robust": "results/rq2_robust/b4384f459967",

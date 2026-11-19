@@ -187,3 +187,31 @@ def test_p4_rules():
     assert p4_verdict({("W1", 0.5, 1.0): 0.3, ("W1", 0.1, 1.0): 0.6})["verdict"] == "contradicted"
     assert p4_verdict({("W1", 0.5, 1.0): 0.3, ("W1", 0.1, 1.0): 0.2})["verdict"] == "inconclusive"
     assert p4_verdict({("W1", 1.0, 1.0): 1.0})["verdict"] == "not computed"
+
+
+def _fake_run(root, name, quick, mtime):
+    import json
+    import os
+
+    d = root / "rq2_arm_a" / name
+    d.mkdir(parents=True)
+    (d / "manifest.json").write_text(json.dumps({"config": {"quick": quick}}))
+    os.utime(d / "manifest.json", (mtime, mtime))
+    return d
+
+
+def test_latest_run_prefers_full_runs_over_newer_quick_ones(tmp_path):
+    from rq2_time_to_cross import _latest_run
+
+    full = _fake_run(tmp_path, "full", False, 1_000)
+    _fake_run(tmp_path, "quick", True, 2_000)
+    assert _latest_run(str(tmp_path), "rq2_arm_a", "arm-a") == full
+
+
+def test_report_flags_quick_only_runs(tmp_path):
+    root = str(tmp_path)
+    for sub in ("arm-a", "robust", "arm-b"):
+        main([sub, "--quick", "--root", root])
+    v = report(root)
+    assert v["quick_runs_used"] is True
+    assert "quick" in (tmp_path / "rq2_report" / "verdicts.md").read_text().lower()

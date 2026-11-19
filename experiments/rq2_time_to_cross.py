@@ -398,9 +398,17 @@ def _latest_run(root: str, experiment: str, command: str, required: bool = True)
                   f"run: python experiments/rq2_time_to_cross.py {command} --root {root}", file=sys.stderr)
             raise SystemExit(2)
         return None
+    full = [m for m in runs if not json.loads(m.read_text()).get("config", {}).get("quick", False)]
+    pool = full or runs  # a --quick run is used only when no full run exists, and the report flags it
     if len(runs) > 1:
-        _log(f"note: {len(runs)} runs under {experiment}; using the newest, {runs[-1].parent.name}")
-    return runs[-1].parent
+        _log(f"note: {len(runs)} runs under {experiment} ({len(full)} full); using {pool[-1].parent.name}")
+    return pool[-1].parent
+
+
+def _is_quick(directory: pathlib.Path | None) -> bool:
+    if directory is None:
+        return False
+    return bool(json.loads((directory / "manifest.json").read_text()).get("config", {}).get("quick", False))
 
 
 def _none(value) -> int | None:
@@ -507,6 +515,7 @@ def report(root: str = "results", out: str | None = None) -> dict:
     }
     verdicts = {"P1": p1, "P2": p2, "P3": p3, "P4": p4, "validity": validity,
                 "overall": "valid" if all(validity.values()) else "invalid",
+                "quick_runs_used": any(_is_quick(d) for d in dirs.values()),
                 "runs": {k: str(v) if v else None for k, v in dirs.items()}}
 
     _figures(out_dir, by_lr, groups, arm_b)
@@ -520,6 +529,8 @@ def report(root: str = "results", out: str | None = None) -> dict:
 
 def _verdicts_md(v: dict) -> str:
     lines = ["# RQ2 time-to-cross verdicts", "", f"**Validity:** {v['overall']}", ""]
+    if v["quick_runs_used"]:
+        lines += ["**Warning: built from --quick runs. These are smoke-test numbers, not the pre-registered result.**", ""]
     lines += [f"- {k}: {'pass' if ok else 'FAIL'}" for k, ok in v["validity"].items()]
     lines += ["", "| Prediction | Verdict | Numbers |", "|---|---|---|"]
     for key in ("P1", "P2", "P3", "P4"):
