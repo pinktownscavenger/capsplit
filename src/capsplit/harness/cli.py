@@ -53,6 +53,24 @@ def _verdicts(args: argparse.Namespace) -> int:
     return 0
 
 
+def _budget(args: argparse.Namespace) -> int:
+    from .budget import build_budget_curve
+
+    n_train = {}
+    for item in args.n_train:
+        arm, _, value = item.partition("=")
+        if not arm or not value.isdigit():
+            print(f"error: --n-train expects ARM=N, got {item!r}", file=sys.stderr)
+            return 2
+        n_train[arm] = int(value)
+    try:
+        print(build_budget_curve(args.results_dir, out_dir=args.out, step=args.step, c=args.c, n_train=n_train or None))
+    except (ValueError, FileExistsError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 2
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="python -m capsplit.harness", description="Capability vs reliability experiment harness")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -71,6 +89,20 @@ def build_parser() -> argparse.ArgumentParser:
     verdicts = sub.add_parser("verdicts", help="apply the pre-registered analysis (docs/preregistration.md)")
     verdicts.add_argument("results_dir", help="<out>/<experiment name>")
     verdicts.set_defaults(func=_verdicts)
+
+    budget = sub.add_parser("budget-curve", help="reliability/capability split as a function of the budget N")
+    budget.add_argument("results_dir", help="<out>/<experiment name>")
+    budget.add_argument("--out", default=None, help="output folder (default: <results_dir>/budget_curve; must not exist)")
+    budget.add_argument("--step", type=int, default=None, help="checkpoint to analyse (default: final)")
+    budget.add_argument("--c", type=float, default=1.0, help="reachability multiplier c (default 1)")
+    budget.add_argument(
+        "--n-train",
+        action="append",
+        default=[],
+        metavar="ARM=N",
+        help="training episodes per prompt for runs without a training log (marked 'from_config (not logged)')",
+    )
+    budget.set_defaults(func=_budget)
 
     lst = sub.add_parser("list", help="list registered plug-ins")
     lst.set_defaults(func=_list)
