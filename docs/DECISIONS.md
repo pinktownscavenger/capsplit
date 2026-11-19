@@ -60,3 +60,5 @@ Decisions for `experiments/rq2_time_to_cross.py` (design: `docs/rq2-time-to-cros
 |---|---|---|---|
 | RQ2-1 | T4 | Noise σ = 1.0 for the robustness and arm B draws; arm B's fixed common-route bonuses are W1 0.75, W2 1.0, W3 1.75, giving q₀(common) = 0.0240, 0.0199 and 0.0226 at ratio 1 with σ = 0 | σ is the middle of the design's [0.5, 1.5]; the bonuses put q₀(common) near the middle of [0.01, 0.04], so 10 × q₀(rare) ≤ 0.4 stays reachable |
 | RQ2-2 | T5 | R2 uses H = 10 | One exact-PG step at H = 10 takes 0.76 ms, so the full R2 sweep is about 3 minutes, far under the 2 CPU-hour limit |
+| RQ2-3 | T9 | Full runs at the `rq2-frozen` commit, clean tree, four runs in parallel: arm-a 114 s, robust 905 s, arm-b 886 s, sampled 2,176 s of wall time | Recorded for anyone re-running |
+| RQ2-4 | T9 | P4 is reported as inconclusive under the frozen primary rule, with the secondary-line result beside it; the rule was not changed after seeing the W2 transients | Changing the rule after the run would be tuning it to the result (D8) |
