@@ -124,3 +124,66 @@ def test_sampled_quick_reports_updates_and_episodes(tmp_path):
         ok = r["updates"] >= 0
         assert np.array_equal(r["episodes"][ok], 32 * r["updates"][ok])
         assert np.all(r["episodes"][~ok] == -1)
+
+
+# ------------------------------------------------------------------- report and verdicts
+
+from rq2_time_to_cross import main, p1_verdict, p2_verdict, p3_verdict, p4_verdict, report  # noqa: E402
+
+
+def test_report_errors_when_runs_missing(tmp_path, capsys):
+    with pytest.raises(SystemExit):
+        main(["report", "--root", str(tmp_path)])
+    assert "arm-a" in capsys.readouterr().err
+
+
+def test_report_on_quick_runs(tmp_path):
+    root = str(tmp_path)
+    for sub in ("arm-a", "robust", "arm-b", "sampled"):
+        main([sub, "--quick", "--root", root])
+    v = report(root)
+    assert v["validity"]["arm_a_matches_scalar"] is True
+    assert v["validity"]["arm_b_rule_achievable"] is True
+    assert v["P1"]["verdict"] in {"supported", "inconclusive", "inconclusive (censored)"}
+    assert v["P3"]["verdict"] == "not computed"  # quick mode runs one learning rate
+    out = tmp_path / "rq2_report"
+    for name in ("figures/arm_a_loglog.png", "figures/arm_b_fraction.png", "figures/arm_b_traces.png",
+                 "tables/arm_a.csv", "tables/robust.csv", "tables/arm_b.csv", "tables/sampled.csv",
+                 "verdicts.json", "verdicts.md"):
+        assert (out / name).exists(), name
+
+
+def test_p1_censored_point_gives_inconclusive():
+    assert p1_verdict(q0s=[1e-4, 1e-3, 1e-2], updates=[None, 362, 63])["verdict"] == "inconclusive (censored)"
+
+
+def test_p1_supported_on_the_derived_curve():
+    from capsplit.crossing import scalar_isolated_updates
+
+    qs = list(np.logspace(-6, -2, 9))
+    v = p1_verdict(qs, [scalar_isolated_updates(q, 8, 1.0, 0.1, 400_000) for q in qs])
+    assert v["verdict"] == "supported" and v["fitted"] == pytest.approx(-0.844, abs=0.001)
+
+
+def test_p1_flat_is_contradicted():
+    assert p1_verdict([1e-4, 1e-3, 1e-2], [100, 100, 100])["verdict"] == "contradicted"
+
+
+def test_p2_rules():
+    assert p2_verdict([-0.85] * 18 + [-0.6, None], -0.8)["verdict"] == "supported"
+    assert p2_verdict([-0.85] * 17 + [-0.6] * 3, -0.8)["verdict"] == "inconclusive"
+    assert p2_verdict([-0.1] * 20, -0.8)["verdict"] == "contradicted"
+    assert p2_verdict([-0.85] * 20, -0.2)["verdict"] == "contradicted"
+
+
+def test_p3_rules():
+    assert p3_verdict({1e-4: {0.5: 4716, 1.0: 2358, 2.0: 1179}})["verdict"] == "holds"
+    assert p3_verdict({1e-4: {0.5: 6000, 1.0: 2358, 2.0: 1179}})["verdict"] == "does not hold"
+    assert p3_verdict({1e-4: {1.0: 2358}})["verdict"] == "not computed"
+
+
+def test_p4_rules():
+    assert p4_verdict({("W1", 0.5, 1.0): 0.0, ("W1", 0.1, 1.0): 0.05})["verdict"] == "supported"
+    assert p4_verdict({("W1", 0.5, 1.0): 0.3, ("W1", 0.1, 1.0): 0.6})["verdict"] == "contradicted"
+    assert p4_verdict({("W1", 0.5, 1.0): 0.3, ("W1", 0.1, 1.0): 0.2})["verdict"] == "inconclusive"
+    assert p4_verdict({("W1", 1.0, 1.0): 1.0})["verdict"] == "not computed"

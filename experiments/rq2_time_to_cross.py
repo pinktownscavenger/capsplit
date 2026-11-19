@@ -9,6 +9,9 @@ Run: python experiments/rq2_time_to_cross.py {arm-a,robust,arm-b,sampled,report}
 from __future__ import annotations
 
 import argparse
+import csv
+import json
+import math
 import pathlib
 import sys
 import time
@@ -18,8 +21,8 @@ from phase1_rq1 import R_COMMON, R_RARE
 from phase1_rq1 import WORLD as PHASE1_WORLD
 from pilot_rq2 import COMPETING_WORLD, ISOLATED_WALLS, ROUTE_A, ROUTE_B
 
-from capsplit.crossing import crossing_step, integral_time, scalar_isolated_trace
-from capsplit.runlog import run_dir, save_seed
+from capsplit.crossing import crossing_step, integral_time, loglog_slopes, scalar_isolated_trace
+from capsplit.runlog import load_seeds, run_dir, save_seed
 from capsplit.train.tabular import exact_pg_step, reinforce, trace_exact_pg
 from capsplit.worlds import MOVES, N_ACTIONS, GridWorld, compile_grid
 
@@ -313,6 +316,289 @@ def run_sampled(quick: bool, root: str = "results") -> pathlib.Path:
     return directory
 
 
+
+# ----------------------------------------------------------------------------- verdicts (design §7)
+
+P1_NOTE = "Settled by the derivation in docs/proofs.md section 7: the full-table run equals the scalar recursion."
+
+
+def p1_verdict(q0s, updates, local_cutoff: float = -0.9) -> dict:
+    """P1: supported if the fitted slope is in [-1.0, -0.7] and the smallest-pair local slope <= cutoff."""
+    pairs = sorted(zip(q0s, updates))
+    if any(u is None for _, u in pairs):
+        return {"verdict": "inconclusive (censored)", "note": P1_NOTE}
+    fitted, local = loglog_slopes([q for q, _ in pairs], [u for _, u in pairs])
+    if fitted > -0.3:
+        verdict = "contradicted"
+    elif -1.0 <= fitted <= -0.7 and local[0] <= local_cutoff:
+        verdict = "supported"
+    else:
+        verdict = "inconclusive"
+    return {"verdict": verdict, "fitted": fitted, "local": [float(x) for x in local], "note": P1_NOTE}
+
+
+def p2_verdict(r1_slopes, r2_slope) -> dict:
+    """P2: supported if >= 90% of R1 draws (18/20) and R2 have slope <= -0.7; contradicted if R1's median or R2 > -0.3.
+
+    A censored draw (None) counts as not <= -0.7, and is left out of the median.
+    """
+    n = len(r1_slopes)
+    good = sum(1 for x in r1_slopes if x is not None and x <= -0.7)
+    finite = [x for x in r1_slopes if x is not None]
+    median = float(np.median(finite)) if finite else None
+    result = {"r1_at_most_-0.7": good, "r1_draws": n, "r1_median": median, "r2_slope": r2_slope}
+    if (median is not None and median > -0.3) or (r2_slope is not None and r2_slope > -0.3):
+        result["verdict"] = "contradicted"
+    elif good >= math.ceil(0.9 * n) and r2_slope is not None and r2_slope <= -0.7:
+        result["verdict"] = "supported"
+    else:
+        result["verdict"] = "inconclusive"
+    return result
+
+
+def p3_verdict(table: dict) -> dict:
+    """P3: lr x updates varies by < 5% across learning rates at every q0. Reported, not a contradiction test."""
+    spreads = {}
+    for q0, by_lr in table.items():
+        if len(by_lr) < 2 or any(u is None for u in by_lr.values()):
+            return {"verdict": "not computed", "reason": "needs two or more learning rates and no censored points"}
+        products = [lr * u for lr, u in by_lr.items()]
+        spreads[q0] = (max(products) - min(products)) / float(np.mean(products))
+    if not spreads:
+        return {"verdict": "not computed", "reason": "no data"}
+    worst = max(spreads.values())
+    return {"verdict": "holds" if worst < 0.05 else "does not hold", "worst_spread": worst,
+            "spreads": {str(k): v for k, v in spreads.items()}}
+
+
+def p4_verdict(fractions: dict) -> dict:
+    """P4 (primary rule): supported if every cell with ratio <= 0.5 has fraction <= 0.1;
+    contradicted if any cell with ratio <= 0.1 has fraction >= 0.5."""
+    low = {k: v for k, v in fractions.items() if k[1] <= 0.5}
+    if not low:
+        return {"verdict": "not computed", "reason": "no cells with ratio <= 0.5"}
+    worst = max(low.values())
+    if any(v >= 0.5 for k, v in low.items() if k[1] <= 0.1):
+        verdict = "contradicted"
+    elif worst <= 0.1:
+        verdict = "supported"
+    else:
+        verdict = "inconclusive"
+    return {"verdict": verdict, "worst_fraction_at_ratio_le_0.5": worst}
+
+
+# ----------------------------------------------------------------------------- report
+
+
+def _latest_run(root: str, experiment: str, command: str, required: bool = True) -> pathlib.Path | None:
+    runs = sorted(pathlib.Path(root, experiment).glob("*/manifest.json"), key=lambda m: m.stat().st_mtime)
+    if not runs:
+        if required:
+            print(f"error: no results under {pathlib.Path(root, experiment)}; "
+                  f"run: python experiments/rq2_time_to_cross.py {command} --root {root}", file=sys.stderr)
+            raise SystemExit(2)
+        return None
+    if len(runs) > 1:
+        _log(f"note: {len(runs)} runs under {experiment}; using the newest, {runs[-1].parent.name}")
+    return runs[-1].parent
+
+
+def _none(value) -> int | None:
+    value = int(value)
+    return None if value < 0 else value
+
+
+def _write_csv(path: pathlib.Path, header: list[str], rows: list[list]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(header)
+        writer.writerows(rows)
+
+
+def _slope_or_none(q0s, updates):
+    try:
+        return loglog_slopes(q0s, updates)[0]
+    except ValueError:
+        return None
+
+
+def report(root: str = "results", out: str | None = None) -> dict:
+    """Tables, figures, verdicts and validity checks from the newest run of each arm."""
+    dirs = {name: _latest_run(root, f"rq2_{name}", command, required=name != "sampled")
+            for name, command in (("arm_a", "arm-a"), ("robust", "robust"), ("arm_b", "arm-b"), ("sampled", "sampled"))}
+    out_dir = pathlib.Path(out) if out else pathlib.Path(root, "rq2_report")
+    arm_a, robust, arm_b = (load_seeds(dirs[k]) for k in ("arm_a", "robust", "arm_b"))
+    sampled = load_seeds(dirs["sampled"]) if dirs["sampled"] else []
+
+    # Arm A
+    rows, by_lr = [], {}
+    for r in arm_a:
+        by_lr.setdefault(float(r["lr"]), []).append(r)
+    for lr, runs in sorted(by_lr.items()):
+        runs.sort(key=lambda r: float(r["q0_target"]))
+        ups = [_none(r["updates"]) for r in runs]
+        local = [None] + list(loglog_slopes([float(r["q0_target"]) for r in runs], ups)[1]) if None not in ups and len(runs) > 1 else [None] * len(runs)
+        for r, loc in zip(runs, local):
+            rows.append([lr, float(r["q0_target"]), float(r["q0"]), int(r["updates"]), int(r["updates_scalar"]),
+                         float(r["integral"]), "" if loc is None else loc])
+    _write_csv(out_dir / "tables/arm_a.csv", ["lr", "q0_target", "q0", "updates", "updates_scalar", "integral",
+                                               "local_slope_from_previous"], rows)
+    primary = sorted(by_lr.get(1.0, []), key=lambda r: float(r["q0_target"]))
+    p1 = p1_verdict([float(r["q0_target"]) for r in primary], [_none(r["updates"]) for r in primary])
+    p3 = p3_verdict({float(r["q0_target"]): {lr: _none(x["updates"]) for lr, runs in by_lr.items() for x in runs
+                                              if float(x["q0_target"]) == float(r["q0_target"])} for r in primary})
+
+    # Robustness
+    groups: dict = {}
+    for r in robust:
+        groups.setdefault((str(r["condition"]), int(r["draw"]), int(r["horizon"])), []).append(r)
+    rob_rows, r1_slopes, r2_slope = [], [], None
+    for (condition, draw, horizon), runs in sorted(groups.items()):
+        runs.sort(key=lambda r: float(r["q0_target"]))
+        slope = _slope_or_none([float(r["q0_target"]) for r in runs], [_none(r["updates"]) for r in runs])
+        if condition == "R1":
+            r1_slopes.append(slope)
+        else:
+            r2_slope = slope
+        for r in runs:
+            rob_rows.append([condition, draw, horizon, float(r["q0_target"]), float(r["q0"]), int(r["updates"]),
+                             "" if slope is None else slope])
+    _write_csv(out_dir / "tables/robust.csv", ["condition", "draw", "horizon", "q0_target", "q0", "updates",
+                                                "fitted_slope_of_draw"], rob_rows)
+    p2 = p2_verdict(r1_slopes, r2_slope)
+
+    # Arm B
+    b_rows, fractions = [], {}
+    for r in sorted(arm_b, key=lambda r: (str(r["world"]), -float(r["ratio"]), float(r["lr"]))):
+        key = (str(r["world"]), float(r["ratio"]), float(r["lr"]))
+        crossed = r["crossed_primary"] >= 0
+        fractions[key] = float(crossed.mean())
+        applicable = r["line_applicable"].astype(bool)
+        line_frac = float((r["crossed_line"][applicable] >= 0).mean()) if applicable.any() else float("nan")
+        median_up = float(np.median(r["crossed_primary"][crossed])) if crossed.any() else float("nan")
+        b_rows.append([*key, fractions[key], line_frac, median_up, float(np.median(r["peak"])),
+                       float(np.median(r["final"])), int((~crossed).sum()), len(crossed)])
+    _write_csv(out_dir / "tables/arm_b.csv", ["world", "ratio", "lr", "fraction_crossing_primary", "fraction_crossing_line",
+                                               "median_updates_among_crossing", "median_peak", "median_final",
+                                               "censored", "draws"], b_rows)
+    p4 = p4_verdict(fractions)
+
+    # Sampled (stretch)
+    s_rows = []
+    for r in sampled:
+        ups = r["updates"]
+        ok = ups >= 0
+        s_rows.append([str(r["arm"]), float(r["q0_target"]) if "q0_target" in r else "", float(r["ratio"]) if "ratio" in r else "",
+                       int(ok.sum()), len(ups), float(np.median(ups[ok])) if ok.any() else float("nan"),
+                       float(np.median(r["episodes"][ok])) if ok.any() else float("nan"),
+                       int(r["rare_wins"].sum()) if "rare_wins" in r else ""])
+    _write_csv(out_dir / "tables/sampled.csv", ["arm", "q0_target", "ratio", "crossed", "seeds", "median_updates",
+                                                 "median_episodes", "rare_ends_ahead"], s_rows)
+
+    # Validity
+    validity = {
+        "arm_a_matches_scalar": all(int(r["updates"]) == int(r["updates_scalar"])
+                                    and len(r["q"]) == len(r["q_scalar"])
+                                    and float(np.max(np.abs(r["q"][:, 0] - r["q_scalar"]))) <= 1e-9 for r in arm_a),
+        "bases_within_1pct": all(abs(float(r["q0"]) / float(r["q0_target"]) - 1) <= 0.01 for r in [*arm_a, *robust])
+        and all(np.all(np.abs(r["q0_rare"] / r["q0_common"] / float(r["ratio"]) - 1) <= 0.01) for r in arm_b),
+        "arm_b_rule_achievable": all(bool(np.all(CROSS_FACTOR * r["q0_rare"] <= 0.5)) for r in arm_b),
+    }
+    verdicts = {"P1": p1, "P2": p2, "P3": p3, "P4": p4, "validity": validity,
+                "overall": "valid" if all(validity.values()) else "invalid",
+                "runs": {k: str(v) if v else None for k, v in dirs.items()}}
+
+    _figures(out_dir, by_lr, groups, arm_b)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "verdicts.json").write_text(json.dumps(verdicts, indent=2, default=float) + "\n")
+    (out_dir / "verdicts.md").write_text(_verdicts_md(verdicts))
+    _log(f"report -> {out_dir}: P1 {p1['verdict']}, P2 {p2['verdict']}, P3 {p3['verdict']}, P4 {p4['verdict']}, "
+         f"{verdicts['overall']}")
+    return verdicts
+
+
+def _verdicts_md(v: dict) -> str:
+    lines = ["# RQ2 time-to-cross verdicts", "", f"**Validity:** {v['overall']}", ""]
+    lines += [f"- {k}: {'pass' if ok else 'FAIL'}" for k, ok in v["validity"].items()]
+    lines += ["", "| Prediction | Verdict | Numbers |", "|---|---|---|"]
+    for key in ("P1", "P2", "P3", "P4"):
+        numbers = {k: x for k, x in v[key].items() if k not in ("verdict", "note")}
+        lines.append(f"| {key} | {v[key]['verdict']} | `{json.dumps(numbers, default=float)}` |")
+    lines += ["", f"P1 note: {P1_NOTE}", ""]
+    return "\n".join(lines)
+
+
+def _figures(out_dir: pathlib.Path, by_lr: dict, groups: dict, arm_b: list) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig_dir = out_dir / "figures"
+    fig_dir.mkdir(parents=True, exist_ok=True)
+
+    # Arm A: measured points, the integral, and the R1 min-max band.
+    fig, ax = plt.subplots(figsize=(6, 4.5))
+    for lr, runs in sorted(by_lr.items()):
+        runs = sorted(runs, key=lambda r: float(r["q0_target"]))
+        pts = [(float(r["q0"]), int(r["updates"])) for r in runs if int(r["updates"]) >= 0]
+        if pts:
+            ax.plot(*zip(*pts), "o", label=f"measured, lr={lr:g}")
+        dense = np.logspace(np.log10(min(float(r["q0"]) for r in runs)), np.log10(max(float(r["q0"]) for r in runs)), 100)
+        ax.plot(dense, [integral_time(q, 8, lr, LINE) for q in dense], "-", lw=1, alpha=0.6, label=f"integral, lr={lr:g}")
+    r1: dict = {}
+    for (condition, _draw, _h), runs in groups.items():
+        if condition == "R1":
+            for r in runs:
+                if int(r["updates"]) >= 0:
+                    r1.setdefault(float(r["q0_target"]), []).append(int(r["updates"]))
+    if r1:
+        qs = sorted(r1)
+        ax.fill_between(qs, [min(r1[q]) for q in qs], [max(r1[q]) for q in qs], alpha=0.2, label="R1 noise draws, min-max")
+    ax.set(xscale="log", yscale="log", xlabel="base probability of the route, q0", ylabel=f"updates to reach J = {LINE}",
+           title="Arm A: time to cross")
+    ax.legend(fontsize=7)
+    fig.tight_layout()
+    fig.savefig(fig_dir / "arm_a_loglog.png", dpi=150)
+    plt.close(fig)
+
+    # Arm B: fraction crossing (primary rule), one panel per lr; rows are worlds, columns ratios.
+    worlds = sorted({str(r["world"]) for r in arm_b})
+    ratios = sorted({float(r["ratio"]) for r in arm_b}, reverse=True)
+    lrs = sorted({float(r["lr"]) for r in arm_b})
+    fig, axes = plt.subplots(1, len(lrs), figsize=(3.2 * len(lrs) + 1, 2.8), squeeze=False)
+    for ax, lr in zip(axes[0], lrs):
+        grid = np.full((len(worlds), len(ratios)), np.nan)
+        for r in arm_b:
+            if float(r["lr"]) == lr:
+                grid[worlds.index(str(r["world"])), ratios.index(float(r["ratio"]))] = float((r["crossed_primary"] >= 0).mean())
+        image = ax.imshow(grid, vmin=0, vmax=1, cmap="viridis", aspect="auto")
+        ax.set(xticks=range(len(ratios)), xticklabels=[f"{x:g}" for x in ratios], yticks=range(len(worlds)),
+               yticklabels=worlds, xlabel="q0(rare) / q0(common)", title=f"lr = {lr:g}")
+        for (i, j), value in np.ndenumerate(grid):
+            if not np.isnan(value):
+                ax.text(j, i, f"{value:.2f}", ha="center", va="center", color="w" if value < 0.5 else "k", fontsize=8)
+    fig.colorbar(image, ax=axes[0].tolist(), label="fraction crossing 10 x q0(rare)")
+    fig.savefig(fig_dir / "arm_b_fraction.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+    # Arm B: median q(rare)/q0(rare) over updates, at the lr closest to 1.
+    lr_show = min(lrs, key=lambda x: abs(x - 1.0))
+    fig, axes = plt.subplots(1, len(worlds), figsize=(4 * len(worlds), 3.2), squeeze=False)
+    for ax, world in zip(axes[0], worlds):
+        for r in sorted(arm_b, key=lambda r: -float(r["ratio"])):
+            if str(r["world"]) == world and float(r["lr"]) == lr_show:
+                rel = r["q_rare"].astype(float) / r["q0_rare"][:, None]
+                ax.plot(np.median(rel, axis=0), label=f"ratio {float(r['ratio']):g}")
+        ax.axhline(CROSS_FACTOR, ls="--", color="grey", lw=0.8)
+        ax.set(yscale="log", xlabel="update", ylabel="median q(rare) / q0(rare)", title=f"{world}, lr = {lr_show:g}")
+        ax.legend(fontsize=7)
+    fig.tight_layout()
+    fig.savefig(fig_dir / "arm_b_traces.png", dpi=150)
+    plt.close(fig)
+
+
 # ----------------------------------------------------------------------------- command line
 
 RUNNERS = {"arm-a": run_arm_a, "robust": run_robust, "arm-b": run_arm_b, "sampled": run_sampled}
@@ -320,12 +606,15 @@ RUNNERS = {"arm-a": run_arm_a, "robust": run_robust, "arm-b": run_arm_b, "sample
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=sorted(RUNNERS))
+    parser.add_argument("command", choices=sorted([*RUNNERS, "report"]))
     parser.add_argument("--quick", action="store_true", help="small settings for a smoke run; never use with --root results")
     parser.add_argument("--root", default="results", help="results root (default: results)")
     args = parser.parse_args(argv)
     start = time.perf_counter()
-    RUNNERS[args.command](quick=args.quick, root=args.root)
+    if args.command == "report":
+        report(args.root)
+    else:
+        RUNNERS[args.command](quick=args.quick, root=args.root)
     _log(f"{args.command}: {time.perf_counter() - start:.0f} s")
 
 
