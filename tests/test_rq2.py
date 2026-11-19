@@ -87,3 +87,40 @@ def test_robust_quick_writes_both_conditions(tmp_path):
     assert {str(r["condition"]) for r in rows} == {"R1", "R2"}
     assert all(int(r["updates"]) > 0 for r in rows)
     assert {int(r["horizon"]) for r in rows if str(r["condition"]) == "R2"} == {9}
+
+
+# ---------------------------------------------------------- arm B and the sampled stretch
+
+from rq2_time_to_cross import run_arm_b, run_sampled  # noqa: E402
+
+from capsplit.crossing import crossing_step  # noqa: E402
+from capsplit.train.tabular import trace_exact_pg  # noqa: E402
+
+
+def test_w1_noise_free_symmetric_crosses_and_rare_does_not():
+    world, common, rare = competing_world("W1")
+    table, si = compile_grid(world)
+    watch = [table.solutions.index(tuple(rare)), table.solutions.index(tuple(common))]
+    for ratio, crosses in ((1.0, True), (0.1, False)):
+        logits, _, q0_rare = competing_base(table, si, "W1", ratio, 0.0, 0)
+        q, _ = trace_exact_pg(table, logits, 2.0, 2000, watch)
+        assert (crossing_step(q[:, 0], CROSS_FACTOR * q0_rare) is not None) is crosses
+
+
+def test_arm_b_quick_writes_expected_fields(tmp_path):
+    rows = load_seeds(run_arm_b(quick=True, root=str(tmp_path)))
+    assert {float(r["ratio"]) for r in rows} == {1.0, 0.1}
+    for r in rows:
+        assert r["q_rare"].dtype == np.float32 and r["q_rare"].shape == (2, 2001)
+        assert np.all(r["line_applicable"])  # q0(rare) < 0.1 everywhere, given COMMON_BONUS
+        assert np.all(CROSS_FACTOR * r["q0_rare"] <= 0.5)
+        assert r["crossed_primary"].shape == (2,) and r["peak"].shape == (2,)
+
+
+def test_sampled_quick_reports_updates_and_episodes(tmp_path):
+    rows = load_seeds(run_sampled(quick=True, root=str(tmp_path)))
+    assert rows
+    for r in rows:
+        ok = r["updates"] >= 0
+        assert np.array_equal(r["episodes"][ok], 32 * r["updates"][ok])
+        assert np.all(r["episodes"][~ok] == -1)

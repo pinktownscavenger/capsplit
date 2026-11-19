@@ -20,7 +20,7 @@ from pilot_rq2 import COMPETING_WORLD, ISOLATED_WALLS, ROUTE_A, ROUTE_B
 
 from capsplit.crossing import crossing_step, integral_time, scalar_isolated_trace
 from capsplit.runlog import run_dir, save_seed
-from capsplit.train.tabular import exact_pg_step, trace_exact_pg
+from capsplit.train.tabular import exact_pg_step, reinforce, trace_exact_pg
 from capsplit.worlds import MOVES, N_ACTIONS, GridWorld, compile_grid
 
 # ----------------------------------------------------------------------------- frozen settings
@@ -210,9 +210,112 @@ def run_robust(quick: bool, root: str = "results") -> pathlib.Path:
     return directory
 
 
+def run_arm_b(quick: bool, root: str = "results") -> pathlib.Path:
+    """Arm B: competing routes under exact PG, over worlds x ratios x lrs x noise draws.
+
+    One file per (world, ratio, lr), with arrays over draws. Crossing is computed in float64
+    before the traces are stored as float32.
+    """
+    worlds = ("W1",) if quick else ARM_B_WORLDS
+    ratios = (1.0, 0.1) if quick else ARM_B_RATIOS
+    lrs = (2.0,) if quick else ARM_B_LRS
+    draws = ARM_B_SEEDS[:2] if quick else ARM_B_SEEDS
+    cap = 2_000 if quick else ARM_B_CAP
+    config = {"arm": "B", "worlds": list(worlds), "ratios": list(ratios), "lrs": list(lrs), "draws": list(draws),
+              "sigma": ROBUST_SIGMA, "cap": cap, "cross_factor": CROSS_FACTOR, "line": LINE,
+              "common_bonus": COMMON_BONUS, "quick": quick}
+    directory = run_dir("rq2_arm_b", config, root=root)
+    _log(f"arm B -> {directory}")
+    i = 0
+    for name in worlds:
+        world, common, rare = competing_world(name)
+        table, state_index = compile_grid(world)
+        watch = [table.solutions.index(rare), table.solutions.index(common)]
+        for ratio in ratios:
+            for lr in lrs:
+                fields: dict[str, list] = {k: [] for k in ("q0_common", "q0_rare", "crossed_primary", "crossed_line",
+                                                           "line_applicable", "peak", "final", "q_rare", "q_common")}
+                for draw in draws:
+                    logits0, q0_common, q0_rare = competing_base(table, state_index, name, ratio, ROBUST_SIGMA, draw)
+                    q, _ = trace_exact_pg(table, logits0, lr, cap, watch)
+                    applicable = q0_rare < LINE
+                    fields["q0_common"].append(q0_common)
+                    fields["q0_rare"].append(q0_rare)
+                    fields["crossed_primary"].append(_updates(q[:, 0], CROSS_FACTOR * q0_rare))
+                    fields["crossed_line"].append(_updates(q[:, 0], LINE) if applicable else -1)
+                    fields["line_applicable"].append(applicable)
+                    fields["peak"].append(float(q[:, 0].max()))
+                    fields["final"].append(float(q[-1, 0]))
+                    fields["q_rare"].append(q[:, 0].astype(np.float32))
+                    fields["q_common"].append(q[:, 1].astype(np.float32))
+                arrays = {k: np.array(v) for k, v in fields.items()}
+                save_seed(directory, i, world=name, ratio=ratio, lr=lr, draws=np.array(draws), **arrays)
+                crossed = int((arrays["crossed_primary"] >= 0).sum())
+                _log(f"  {name} ratio={ratio:<5} lr={lr:<4}: {crossed}/{len(draws)} crossed 10 x q0(rare)")
+                i += 1
+    return directory
+
+
+SAMPLED_SEEDS = tuple(range(20))
+SAMPLED_Q0 = (1e-4, 1e-3, 1e-2)
+SAMPLED_RATIOS = (1.0, 0.5, 0.1)
+SAMPLED_CAP = 20_000
+SAMPLED_BATCH, SAMPLED_LR, SAMPLED_DECAY = 32, 0.5, 0.9  # the pilot's REINFORCE defaults
+
+
+def _reinforce_trace(table, logits0, seed: int, steps: int, watch: list[int]) -> np.ndarray:
+    """q of the watched solutions at updates 0..steps under REINFORCE."""
+    rows = [exact_pg_step(table, logits0)[1][watch]]
+
+    def record(_step, logits):
+        rows.append(exact_pg_step(table, logits)[1][watch])
+
+    reinforce(table, logits0, seed, steps=steps, batch=SAMPLED_BATCH, lr=SAMPLED_LR,
+              baseline_decay=SAMPLED_DECAY, on_step=record)
+    return np.array(rows)
+
+
+def run_sampled(quick: bool, root: str = "results") -> pathlib.Path:
+    """Stretch: REINFORCE on arm A's world and on W1, with time to cross in updates and in episodes."""
+    q0s = (1e-2,) if quick else SAMPLED_Q0
+    ratios = () if quick else SAMPLED_RATIOS
+    seeds = SAMPLED_SEEDS[:2] if quick else SAMPLED_SEEDS
+    cap = 2_000 if quick else SAMPLED_CAP
+    config = {"arm": "sampled", "q0": list(q0s), "ratios": list(ratios), "seeds": list(seeds), "cap": cap,
+              "batch": SAMPLED_BATCH, "lr": SAMPLED_LR, "baseline_decay": SAMPLED_DECAY, "line": LINE,
+              "cross_factor": CROSS_FACTOR, "common_bonus": COMMON_BONUS, "quick": quick}
+    directory = run_dir("rq2_sampled", config, root=root)
+    _log(f"sampled -> {directory}")
+    i = 0
+    world = isolated_world(8)
+    table, state_index = compile_grid(world)
+    for target in q0s:
+        logits0 = noisy_isolated_base(table, state_index, world, target, 0.0, 0)
+        updates = np.array([_updates(_reinforce_trace(table, logits0, s, cap, [0])[:, 0], LINE) for s in seeds])
+        episodes = np.where(updates >= 0, SAMPLED_BATCH * updates, -1)
+        save_seed(directory, i, arm="A", q0_target=target, seeds=np.array(seeds), updates=updates, episodes=episodes)
+        _log(f"  A q0={target:.0e}: {int((updates >= 0).sum())}/{len(seeds)} crossed {LINE}")
+        i += 1
+    if ratios:
+        w1, common, rare = competing_world("W1")
+        table, state_index = compile_grid(w1)
+        watch = [table.solutions.index(rare), table.solutions.index(common)]
+        for ratio in ratios:
+            logits0, _, q0_rare = competing_base(table, state_index, "W1", ratio, 0.0, 0)
+            traces = [_reinforce_trace(table, logits0, s, cap, watch) for s in seeds]
+            updates = np.array([_updates(t[:, 0], CROSS_FACTOR * q0_rare) for t in traces])
+            episodes = np.where(updates >= 0, SAMPLED_BATCH * updates, -1)
+            rare_wins = np.array([t[-1, 0] > t[-1, 1] for t in traces])
+            save_seed(directory, i, arm="B", ratio=ratio, q0_rare=q0_rare, seeds=np.array(seeds),
+                      updates=updates, episodes=episodes, rare_wins=rare_wins)
+            _log(f"  B W1 ratio={ratio}: {int((updates >= 0).sum())}/{len(seeds)} crossed, rare ends ahead in {int(rare_wins.sum())}")
+            i += 1
+    return directory
+
+
 # ----------------------------------------------------------------------------- command line
 
-RUNNERS = {"arm-a": run_arm_a, "robust": run_robust}
+RUNNERS = {"arm-a": run_arm_a, "robust": run_robust, "arm-b": run_arm_b, "sampled": run_sampled}
 
 
 def main(argv: list[str] | None = None) -> None:
