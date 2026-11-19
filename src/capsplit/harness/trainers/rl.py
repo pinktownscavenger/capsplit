@@ -29,6 +29,11 @@ exactly zero policy gradient. Only the entropy bonus, when on, moves the policy 
 
 The helpers `episode_rewards`, `group_advantages`, `rl_loss` and `select_prompts` are public
 so the hint arm and the SFT-then-RL arm can reuse them.
+
+Training log. After `train`, `training_log()` returns a JSON-ready dict describing what the
+arm sampled (see `SampleLog`); the runner writes it to `<cell>/seed-<s>.training.json`.
+Logging only reads the sampled episodes and their rewards; it draws no random numbers, so a
+run's training and measurements are unchanged by it.
 """
 from __future__ import annotations
 
@@ -41,9 +46,10 @@ from ..registry import TRAINERS
 
 __all__ = [
     "ADVANTAGE_KINDS",
-    "EntropyRLOO",
     "GRPO",
     "RLOO",
+    "EntropyRLOO",
+    "SampleLog",
     "episode_rewards",
     "group_advantages",
     "rl_loss",
@@ -51,6 +57,122 @@ __all__ = [
 ]
 
 ADVANTAGE_KINDS = ("rloo", "grpo")
+
+
+class SampleLog:
+    """Per-prompt record of the episodes a trainer sampled; `to_dict()` gives the training log.
+
+    Updates are numbered 1..budget (update k is the k-th optimizer step). Log schema::
+
+        {"updates": int,                       # optimizer updates the log covers
+         "checkpoints": [int],                 # the checkpoints passed to train()
+         "prompts": {"<prompt id>": {
+             "first_success_update": int | null,   # first update whose sampled group held a
+                                                   # correct (un-hinted) episode
+             "correct_by_checkpoint": {"<c>": int},# correct sampled episodes in updates 1..c
+             "episodes_sampled": int,
+             "tokens_sampled": int}},              # generated actions; forced hint tokens excluded
+         "totals": {"episodes_sampled", "tokens_sampled", "correct_by_checkpoint"}}
+
+    With `hints=True` (the hint arm) each prompt and the totals also carry
+    "first_hinted_success_update" (per prompt), "hinted_episodes_sampled" and
+    "hinted_correct_by_checkpoint"; `correct_by_checkpoint` and the episode/token counts then
+    include the hinted re-rolls, while "first_success_update" counts un-hinted episodes only.
+    """
+
+    def __init__(self, prompt_ids: Sequence[int], checkpoints: Sequence[int], hints: bool = False):
+        self.prompt_ids: list[int] = []
+        self.checkpoints = sorted({int(c) for c in checkpoints})
+        self.hints = hints
+        self.updates = 0
+        self._first: dict[int, int | None] = {}
+        self._first_hinted: dict[int, int | None] = {}
+        self._episodes: dict[int, int] = {}
+        self._tokens: dict[int, int] = {}
+        self._hinted_episodes: dict[int, int] = {}
+        # prompt -> {update: correct count}; kept per update so phases can be merged.
+        self._correct: dict[int, dict[int, int]] = {}
+        self._hinted_correct: dict[int, dict[int, int]] = {}
+        for pid in prompt_ids:
+            self._ensure(int(pid))
+
+    def _ensure(self, pid: int) -> None:
+        if pid in self._first:
+            return
+        self.prompt_ids = sorted(set(self.prompt_ids) | {pid})
+        self._first[pid] = self._first_hinted[pid] = None
+        self._episodes[pid] = self._tokens[pid] = self._hinted_episodes[pid] = 0
+        self._correct[pid] = {}
+        self._hinted_correct[pid] = {}
+
+    def record(self, update: int, rollout: Rollout, rewards: Sequence[float] | torch.Tensor, hinted: bool = False) -> None:
+        """Add the episodes of `rollout` (with their 0/1 `rewards`) sampled in update `update`."""
+        values = rewards.reshape(-1).tolist() if isinstance(rewards, torch.Tensor) else list(rewards)
+        if len(values) != len(rollout.actions):
+            raise ValueError(f"{len(values)} rewards for {len(rollout.actions)} episodes")
+        self.updates = max(self.updates, int(update))
+        for pid, actions, forced, reward in zip(rollout.prompt_ids, rollout.actions, rollout.n_forced, values):
+            pid = int(pid)
+            self._ensure(pid)
+            self._episodes[pid] += 1
+            self._tokens[pid] += len(actions) - int(forced)
+            if hinted:
+                self._hinted_episodes[pid] += 1
+            if reward > 0:
+                counts = self._hinted_correct[pid] if hinted else self._correct[pid]
+                counts[int(update)] = counts.get(int(update), 0) + 1
+                first = self._first_hinted if hinted else self._first
+                if first[pid] is None:
+                    first[pid] = int(update)
+
+    def merge(self, other: SampleLog, offset: int) -> None:
+        """Add `other`'s records with its update numbers shifted by `offset` (a later phase)."""
+        self.hints = self.hints or other.hints
+        self.updates = max(self.updates, other.updates + offset)
+        for pid in other.prompt_ids:
+            self._ensure(pid)
+            for mine, theirs in ((self._first, other._first), (self._first_hinted, other._first_hinted)):
+                value = theirs[pid]
+                if value is not None:
+                    current = mine[pid]
+                    mine[pid] = value + offset if current is None else min(current, value + offset)
+            self._episodes[pid] += other._episodes[pid]
+            self._tokens[pid] += other._tokens[pid]
+            self._hinted_episodes[pid] += other._hinted_episodes[pid]
+            for mine_c, theirs_c in ((self._correct, other._correct), (self._hinted_correct, other._hinted_correct)):
+                for update, count in theirs_c[pid].items():
+                    mine_c[pid][update + offset] = mine_c[pid].get(update + offset, 0) + count
+
+    def _cumulative(self, *counts: Mapping[int, int]) -> dict[str, int]:
+        return {str(c): sum(n for part in counts for u, n in part.items() if u <= c) for c in self.checkpoints}
+
+    def to_dict(self) -> dict:
+        prompts: dict[str, dict] = {}
+        for pid in self.prompt_ids:
+            entry: dict[str, Any] = {
+                "first_success_update": self._first[pid],
+                "correct_by_checkpoint": self._cumulative(self._correct[pid], self._hinted_correct[pid]),
+                "episodes_sampled": self._episodes[pid],
+                "tokens_sampled": self._tokens[pid],
+            }
+            if self.hints:
+                entry["first_hinted_success_update"] = self._first_hinted[pid]
+                entry["hinted_episodes_sampled"] = self._hinted_episodes[pid]
+                entry["hinted_correct_by_checkpoint"] = self._cumulative(self._hinted_correct[pid])
+            prompts[str(pid)] = entry
+
+        def total(field: str) -> dict[str, int]:
+            return {str(c): sum(e[field][str(c)] for e in prompts.values()) for c in self.checkpoints}
+
+        totals: dict[str, Any] = {
+            "episodes_sampled": sum(self._episodes.values()),
+            "tokens_sampled": sum(self._tokens.values()),
+            "correct_by_checkpoint": total("correct_by_checkpoint"),
+        }
+        if self.hints:
+            totals["hinted_episodes_sampled"] = sum(self._hinted_episodes.values())
+            totals["hinted_correct_by_checkpoint"] = total("hinted_correct_by_checkpoint")
+        return {"updates": self.updates, "checkpoints": list(self.checkpoints), "prompts": prompts, "totals": totals}
 
 
 def episode_rewards(task: Task, rollout: Rollout) -> torch.Tensor:
@@ -168,6 +290,11 @@ class RLOO(Trainer):
             raise ValueError(f"{type(self).__name__} needs a group of at least 2, got {self.group}")
         if self.prompts_per_update is not None and self.prompts_per_update < 1:
             raise ValueError("prompts_per_update must be at least 1")
+        self.sample_log: SampleLog | None = None
+
+    def training_log(self) -> dict | None:
+        """What the last `train` call sampled (see `SampleLog`); None before any `train` call."""
+        return None if self.sample_log is None else self.sample_log.to_dict()
 
     def loss(self, rollout: Rollout, rewards: torch.Tensor) -> torch.Tensor:
         """This arm's loss for one sampled batch (see `rl_loss`)."""
@@ -184,6 +311,7 @@ class RLOO(Trainer):
         on_checkpoint: CheckpointHook,
     ) -> None:
         ids = select_prompts(task, prompt_ids, self.only_tags)
+        self.sample_log = log = SampleLog(ids, checkpoints)
         call_checkpoints(0, checkpoints, policy, on_checkpoint)
         if budget <= 0:
             return
@@ -199,7 +327,9 @@ class RLOO(Trainer):
                 batch = [ids[i] for i in sorted(order.tolist())]
             episode_ids = [p for p in batch for _ in range(self.group)]
             rollout = policy.sample(task, episode_ids, generator)
-            loss = self.loss(rollout, episode_rewards(task, rollout))
+            rewards = episode_rewards(task, rollout)
+            log.record(step, rollout, rewards)
+            loss = self.loss(rollout, rewards)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()

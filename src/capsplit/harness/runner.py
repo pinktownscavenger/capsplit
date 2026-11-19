@@ -10,10 +10,13 @@ Result folder layout (`<out>` is `out_root`, `<name>` the experiment name)::
       <cell>/manifest.json             runlog manifest: commit, dirty flag, the cell config
       <cell>/seed-<s>.metrics.json     measurements of one run
       <cell>/seed-<s>.policies.pt      {step: policy.state_dict()} (absent if save_policies is "none")
+      <cell>/seed-<s>.training.json    the trainer's training log (only if the trainer provides one)
 
 A *cell* is one (factor combination, arm); its folder name is the first 12 hex digits of the
 SHA-256 of the cell config (`capsplit.runlog.run_dir`). A base `<key>` is the first 12 hex
-digits of the SHA-256 of {"task", "base", "seed"} (types and params after factor overrides).
+digits of the SHA-256 of {"task", "base", "seed"} (types and params after factor overrides), where
+"seed" is the effective base seed (the config's `base_seed` if set, else the run seed), so runs
+that share a base share its cache entry.
 
 index.json schema::
 
@@ -30,9 +33,15 @@ index.json schema::
         "run_dir": "<cell>", "base": "bases/<key>",
         "files": {"manifest": "<cell>/manifest.json",
                   "metrics": "<cell>/seed-<s>.metrics.json",
-                  "policies": "<cell>/seed-<s>.policies.pt" | null}}
+                  "policies": "<cell>/seed-<s>.policies.pt" | null,
+                  "training": "<cell>/seed-<s>.training.json"}}   # key only when the file exists
      ]
     }
+
+When the config sets `base_seed` or `train_seed`, each run entry (and each metrics file) also
+records "base_seed", "train_seed" (the effective seeds) and "measure_seed" (the backend params'
+"seed", or null: the exact backend has no measurement randomness). Configs without those keys
+get no such fields, so their outputs stay byte-identical to the format before the keys existed.
 
 All paths in index.json are relative to `<out>/<name>/`.
 
@@ -41,10 +50,18 @@ seed-<s>.metrics.json schema::
     {"arm": str, "trainer": str, "seed": int, "factors": {key: value}, "base": "bases/<key>",
      "groups": {group: [prompt ids]}, "train_prompt_ids": [int],
      "records": [GroupMetrics.to_dict() + {"step": int}, ...]}   # in checkpoint order
+     (+ "base_seed", "train_seed", "measure_seed" when the config sets base_seed or train_seed)
+
+seed-<s>.training.json schema: {"arm", "trainer", "seed"} plus the trainer's `training_log()`
+dict (for the built-in sampling trainers, `trainers.rl.SampleLog`: "updates", "checkpoints",
+per-prompt "prompts" and "totals"; plus the effective seeds when the config separates them).
+Trainers are not required to provide `training_log`; the runner calls it only if present and
+writes the file only when it returns a dict.
 
 Reproducibility: no timestamps are written; JSON is written with sorted keys and Python's
 shortest round-trip float repr, so a re-run gives byte-identical JSON. torch is seeded with the
-run seed before the base is built and before each arm trains, and torch runs single-threaded
+effective base seed before the base is built and with the effective training seed before each
+arm trains (both equal the run seed unless the config fixes them), and torch runs single-threaded
 during the experiment so `workers=1` and `workers>1` produce identical numbers.
 """
 from __future__ import annotations
@@ -181,12 +198,22 @@ def _run_files(config: ExperimentConfig, cell: str, seed: int) -> dict:
     }
 
 
+def _training_path(cell: str, seed: int) -> str:
+    return f"{cell}/seed-{seed}.training.json"
+
+
 def run_unit(config: ExperimentConfig, out_root: str, combo_index: int, seed: int, force: bool = False) -> list[dict]:
     """Run every arm for one (factor combination, seed); return their index.json entries."""
     combo = config.factor_combos()[combo_index]
     parts = config.resolved(combo)
     exp_dir = Path(out_root) / config.name
-    key = base_key(parts["task"], parts["base"], seed)
+    base_seed = config.effective_base_seed(seed)
+    train_seed = config.effective_train_seed(seed)
+    key = base_key(parts["task"], parts["base"], base_seed)
+    # Recorded only when the config separates the streams, so older outputs stay byte-identical.
+    seed_fields: dict[str, Any] = {}
+    if config.separate_seeds:
+        seed_fields = {"base_seed": base_seed, "train_seed": train_seed, "measure_seed": parts["backend"].params.get("seed")}
 
     entries: list[dict] = []
     pending: list[tuple[Arm, Path, dict]] = []
@@ -206,6 +233,7 @@ def run_unit(config: ExperimentConfig, out_root: str, combo_index: int, seed: in
                 "run_dir": directory.name,
                 "base": f"bases/{key}",
                 "files": files,
+                **seed_fields,
             }
         )
         complete = (exp_dir / files["metrics"]).exists() and (
@@ -216,10 +244,10 @@ def run_unit(config: ExperimentConfig, out_root: str, combo_index: int, seed: in
             continue
         pending.append((arm, directory, files))
     if not pending:
-        return entries
+        return _list_training(exp_dir, entries, seed)
 
     task = TASKS.create(parts["task"].type, **parts["task"].params)
-    base, built_key = load_or_build_base(exp_dir, task, parts["task"], parts["base"], seed, rebuild=force)
+    base, built_key = load_or_build_base(exp_dir, task, parts["task"], parts["base"], base_seed, rebuild=force)
     assert built_key == key
     spec = measure_spec(task, config.measure)
     backend = BACKENDS.create(parts["backend"].type, **parts["backend"].params)
@@ -240,11 +268,20 @@ def run_unit(config: ExperimentConfig, out_root: str, combo_index: int, seed: in
             if config.save_policies == "checkpoints" or (config.save_policies == "final" and step == config.budget):
                 saved[step] = trained.state_dict()
 
-        torch.manual_seed(seed)
+        torch.manual_seed(train_seed)
         trainer = TRAINERS.create(arm.trainer, **arm.params)
-        trainer.train(policy, task, config.budget, seed, train_ids, list(config.checkpoints), hook)
+        trainer.train(policy, task, config.budget, train_seed, train_ids, list(config.checkpoints), hook)
         if steps != list(config.checkpoints):
             raise RuntimeError(f"trainer {arm.trainer!r} called checkpoints {steps}, expected {list(config.checkpoints)}")
+
+        training_file = exp_dir / _training_path(directory.name, seed)
+        training_log = getattr(trainer, "training_log", None)
+        log = training_log() if callable(training_log) else None
+        if isinstance(log, dict):
+            header = {"arm": arm.name, "trainer": arm.trainer, "seed": seed, **seed_fields}
+            _write_text(training_file, dumps({**log, **header}))
+        else:
+            training_file.unlink(missing_ok=True)  # never leave a stale log from an earlier run
 
         if files["policies"] is not None:
             _atomic_write(exp_dir / files["policies"], lambda tmp: torch.save(saved, tmp))
@@ -257,9 +294,20 @@ def run_unit(config: ExperimentConfig, out_root: str, combo_index: int, seed: in
             "groups": {name: list(ids) for name, ids in spec.groups.items()},
             "train_prompt_ids": list(train_ids),
             "records": records,
+            **seed_fields,
         }
         # The metrics file is written last: its existence marks the run complete.
         _write_text(exp_dir / files["metrics"], dumps(metrics))
+    return _list_training(exp_dir, entries, seed)
+
+
+def _list_training(exp_dir: Path, entries: list[dict], seed: int) -> list[dict]:
+    """Add files["training"] to entries whose training log exists (absent otherwise, so trainers
+    without a log, such as "none", leave index.json exactly as before)."""
+    for entry in entries:
+        training = _training_path(entry["run_dir"], seed)
+        if (exp_dir / training).exists():
+            entry["files"]["training"] = training
     return entries
 
 

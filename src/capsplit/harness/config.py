@@ -1,6 +1,6 @@
 """Experiment configs: load and validate a JSON file into an `ExperimentConfig`.
 
-Schema (every key except `factors` and `save_policies` is required)::
+Schema (every key except `factors`, `save_policies`, `base_seed` and `train_seed` is required)::
 
     {
      "name": "dummy",                                   # experiment name (a folder name)
@@ -13,8 +13,17 @@ Schema (every key except `factors` and `save_policies` is required)::
      "budget": 10,                                      # optimizer updates per arm
      "checkpoints": [0, 5, 10],                         # steps to measure; must include 0 and budget
      "measure": {"ns": [16, 64], "cs": [0.5, 1, 2], "group_by": ["difficulty", "split"]},
-     "save_policies": "checkpoints"                     # "checkpoints" | "final" | "none"
+     "save_policies": "checkpoints",                    # "checkpoints" | "final" | "none"
+     "base_seed": 0,                                    # optional: every run builds its base with this seed
+     "train_seed": 0                                    # optional: every trainer uses this seed
     }
+
+Seed streams. Without `base_seed`/`train_seed`, each run seed s seeds both the base build and
+the trainer (the original behaviour). `base_seed` fixes the base for every run (runs then share
+one cached base), and `train_seed` fixes training sampling; the run seeds in `seeds` still
+index runs and supply whichever stream is not fixed. When either key is present it is part of
+every cell config (so such results never share folders with seed-coupled ones); when both are
+absent the cell config, and so every hash and file, is exactly as before.
 
 A factor key is `<section>.<param>` with section one of task, base or backend; each value list
 overrides that section's `params[<param>]` (a longer dotted path sets a nested dict entry).
@@ -37,7 +46,10 @@ from .registry import BACKENDS, BASES, TASKS, TRAINERS, Registry
 
 SECTIONS = ("task", "base", "backend")
 SAVE_POLICIES = ("checkpoints", "final", "none")
-_TOP_KEYS = {"name", "task", "base", "backend", "factors", "arms", "seeds", "budget", "checkpoints", "measure", "save_policies"}
+_TOP_KEYS = {
+    "name", "task", "base", "backend", "factors", "arms", "seeds", "budget", "checkpoints", "measure", "save_policies",
+    "base_seed", "train_seed",
+}
 _REQUIRED = {"name", "task", "base", "backend", "arms", "seeds", "budget", "checkpoints", "measure"}
 _NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 
@@ -97,6 +109,21 @@ class ExperimentConfig:
     measure: Measure
     save_policies: str
     raw: dict  # the input config, unchanged, for config.json
+    base_seed: int | None = None  # fixed base-build seed; None = the run seed
+    train_seed: int | None = None  # fixed training seed; None = the run seed
+
+    # ------------------------------------------------------------------ seed streams
+
+    @property
+    def separate_seeds(self) -> bool:
+        """True when the config sets base_seed or train_seed (then seeds are recorded per run)."""
+        return self.base_seed is not None or self.train_seed is not None
+
+    def effective_base_seed(self, run_seed: int) -> int:
+        return run_seed if self.base_seed is None else self.base_seed
+
+    def effective_train_seed(self, run_seed: int) -> int:
+        return run_seed if self.train_seed is None else self.train_seed
 
     # ------------------------------------------------------------------ grid
 
@@ -119,9 +146,12 @@ class ExperimentConfig:
         return {s: Component(getattr(self, s).type, params[s]) for s in SECTIONS}
 
     def cell_config(self, combo: Mapping[str, Any], arm: Arm) -> dict:
-        """The config of one (factor combination, arm) cell: what its run directory hashes."""
+        """The config of one (factor combination, arm) cell: what its run directory hashes.
+
+        base_seed / train_seed are included only when set, so older cell hashes don't change.
+        """
         parts = self.resolved(combo)
-        return {
+        out = {
             "name": self.name,
             "factors": dict(combo),
             "task": parts["task"].to_dict(),
@@ -132,6 +162,11 @@ class ExperimentConfig:
             "checkpoints": list(self.checkpoints),
             "measure": self.measure.to_dict(),
         }
+        if self.base_seed is not None:
+            out["base_seed"] = self.base_seed
+        if self.train_seed is not None:
+            out["train_seed"] = self.train_seed
+        return out
 
 
 # ---------------------------------------------------------------------- loading
@@ -272,6 +307,13 @@ def parse_config(data: Any) -> ExperimentConfig:
     if save not in SAVE_POLICIES:
         raise ConfigError(f"save_policies must be one of {SAVE_POLICIES}")
 
+    fixed: dict[str, int | None] = {}
+    for key in ("base_seed", "train_seed"):
+        value = data.get(key)
+        if key in data and (not isinstance(value, int) or isinstance(value, bool) or value < 0):
+            raise ConfigError(f"{key} must be a non-negative integer")
+        fixed[key] = value
+
     return ExperimentConfig(
         name=name,
         task=task,
@@ -285,6 +327,8 @@ def parse_config(data: Any) -> ExperimentConfig:
         measure=Measure(ns, cs, tuple(group_by), primary),
         save_policies=save,
         raw=copy.deepcopy(data),
+        base_seed=fixed["base_seed"],
+        train_seed=fixed["train_seed"],
     )
 
 

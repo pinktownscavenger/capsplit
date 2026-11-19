@@ -32,6 +32,11 @@ hint_when : "all_fail" (default) or "always" (hint every group; for tests).
 Each update is exactly one optimizer step. `self.history` holds one summary dict per update
 (how many groups were hinted, which prompts, mean rewards), and `self.last_episodes` the
 episodes of the most recent update.
+
+`training_log()` returns the `rl.SampleLog` of the last `train()` call with hint fields:
+"first_success_update" counts only the un-hinted on-policy groups, "first_hinted_success_update"
+only the hinted re-rolls; episode and token counts include both rolls (forced hint tokens are
+not counted as sampled tokens).
 """
 from __future__ import annotations
 
@@ -41,6 +46,7 @@ import torch
 
 from ..interfaces import CheckpointHook, Policy, Task, Trainer, call_checkpoints
 from ..registry import TRAINERS
+from .rl import SampleLog
 
 _HINT_WHEN = ("all_fail", "always")
 
@@ -74,6 +80,11 @@ class HintedRLOO(Trainer):
             raise ValueError(f"hint_when must be one of {_HINT_WHEN}, got {self.hint_when!r}")
         self.history: list[dict] = []
         self.last_episodes: list[dict] = []
+        self.sample_log: SampleLog | None = None
+
+    def training_log(self) -> dict | None:
+        """What the last `train()` call sampled (see `rl.SampleLog`); None before any call."""
+        return None if self.sample_log is None else self.sample_log.to_dict()
 
     def _train_ids(self, task: Task, prompt_ids: Sequence[int]) -> list[int]:
         ids = list(prompt_ids)
@@ -103,12 +114,14 @@ class HintedRLOO(Trainer):
         g = self.group
         self.history = []
         self.last_episodes = []
+        self.sample_log = log = SampleLog(ids, checkpoints, hints=True)
 
         call_checkpoints(0, checkpoints, policy, on_checkpoint)
         for step in range(1, budget + 1):
             batch_ids = [p for p in ids for _ in range(g)]
             rollout = policy.sample(task, batch_ids, generator)
             rewards = torch.tensor([float(task.verify(p, a)) for p, a in zip(batch_ids, rollout.actions)])
+            log.record(step, rollout, rewards)
             rewards = rewards.view(len(ids), g)
 
             # Groups to re-roll from a demonstration prefix (prompts with no usable demo are not hinted).
@@ -129,6 +142,7 @@ class HintedRLOO(Trainer):
                 hint_ids = [ids[i] for i in hint_rows for _ in range(g)]
                 hinted = policy.sample(task, hint_ids, generator, prefixes=[pre for pre in prefixes for _ in range(g)])
                 hint_rewards = torch.tensor([float(task.verify(p, a)) for p, a in zip(hint_ids, hinted.actions)])
+                log.record(step, hinted, hint_rewards, hinted=True)
                 rows = torch.tensor(hint_rows)
                 mask = torch.zeros(len(ids), 1, dtype=torch.bool)
                 mask[rows] = True

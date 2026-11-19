@@ -32,6 +32,9 @@ Reusable helpers (imported by the SFT->RL arm):
 * ``sft_loss(policy, task, pairs) -> torch.Tensor`` (scalar, with gradients)
 * ``sft_step(policy, task, optimizer, pairs) -> float`` (one optimizer step; returns the loss)
 * ``minibatch(pairs, batch, generator) -> list[tuple[int, tuple]]``
+
+`training_log()` returns an `rl.SampleLog` for the imitated prompts: SFT samples nothing, so
+every count is zero and every first_success_update is null.
 """
 from __future__ import annotations
 
@@ -41,6 +44,7 @@ import torch
 
 from ..interfaces import Policy, Task, Trainer, call_checkpoints
 from ..registry import TRAINERS
+from .rl import SampleLog
 
 DEFAULT_ONLY_TAGS: Mapping[str, str] = {"difficulty": "hard"}
 
@@ -136,9 +140,16 @@ class SFT(Trainer):
         self.demos_per_prompt: int | None = params.get("demos_per_prompt")
         if self.batch is not None and int(self.batch) < 1:
             raise ValueError(f"SFT: batch must be >= 1, got {self.batch}")
+        self.sample_log: SampleLog | None = None
+
+    def training_log(self) -> dict | None:
+        """The (all-zero) sample log of the last `train` call; None before any call."""
+        return None if self.sample_log is None else self.sample_log.to_dict()
 
     def train(self, policy, task, budget, seed, prompt_ids, checkpoints, on_checkpoint) -> None:
         pairs = demonstration_pairs(task, prompt_ids, self.only_tags, self.demos_per_prompt)
+        self.sample_log = SampleLog([pid for pid, _ in pairs], checkpoints)
+        self.sample_log.updates = max(int(budget), 0)
         generator = torch.Generator().manual_seed(int(seed))
         optimizer = torch.optim.Adam(list(policy.parameters()), lr=self.lr)
         call_checkpoints(0, checkpoints, policy, on_checkpoint)
