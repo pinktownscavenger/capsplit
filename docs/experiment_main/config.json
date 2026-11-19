@@ -1,0 +1,173 @@
+{
+  "arms": [
+    {
+      "name": "none",
+      "params": {},
+      "trainer": "none"
+    },
+    {
+      "name": "rloo",
+      "params": {
+        "group": 16,
+        "lr": 0.001
+      },
+      "trainer": "rloo"
+    },
+    {
+      "name": "grpo",
+      "params": {
+        "group": 16,
+        "lr": 0.001
+      },
+      "trainer": "grpo"
+    },
+    {
+      "name": "rl_entropy",
+      "params": {
+        "entropy_coef": 0.01,
+        "group": 16,
+        "lr": 0.001
+      },
+      "trainer": "rl_entropy"
+    },
+    {
+      "name": "sft",
+      "params": {
+        "lr": 0.001,
+        "only_tags": {
+          "difficulty": "hard"
+        }
+      },
+      "trainer": "sft"
+    },
+    {
+      "name": "hints_h1",
+      "params": {
+        "group": 16,
+        "hint_len": 1,
+        "lr": 0.001
+      },
+      "trainer": "hints"
+    },
+    {
+      "name": "hints_h3",
+      "params": {
+        "group": 16,
+        "hint_len": 3,
+        "lr": 0.001
+      },
+      "trainer": "hints"
+    },
+    {
+      "name": "sft_then_rl",
+      "params": {
+        "rl": {
+          "group": 16,
+          "lr": 0.001
+        },
+        "sft": {
+          "lr": 0.001,
+          "only_tags": {
+            "difficulty": "hard"
+          }
+        },
+        "sft_fraction": 0.5
+      },
+      "trainer": "sft_then_rl"
+    }
+  ],
+  "backend": {
+    "params": {},
+    "type": "exact"
+  },
+  "base": {
+    "params": {
+      "adam_steps": 100,
+      "calibration_max_iter": 6,
+      "calibration_tol": 1.1,
+      "data_seed": 0,
+      "easy_correct": 0.3,
+      "easy_distractor_mass": 0.1,
+      "easy_distractors": 4,
+      "easy_trap": 0.4,
+      "embedding": 16,
+      "hidden": 64,
+      "lbfgs_iter": 500,
+      "log10_w_range": [
+        -6.0,
+        -0.5
+      ],
+      "lr": 0.01,
+      "mu": 0.5,
+      "n": 64,
+      "n_noise": 0,
+      "noise_mass": 0.2,
+      "rho": 0.7,
+      "smoothing": 0.08,
+      "target_ratio": 0.2
+    },
+    "type": "pretrain_gru"
+  },
+  "budget": 1000,
+  "checkpoints": [
+    0,
+    25,
+    50,
+    100,
+    200,
+    300,
+    500,
+    750,
+    1000
+  ],
+  "factors": {
+    "task.shared_prefix": [
+      0,
+      2,
+      4
+    ]
+  },
+  "measure": {
+    "cs": [
+      0.5,
+      1,
+      2
+    ],
+    "group_by": [
+      "difficulty",
+      "split"
+    ],
+    "ns": [
+      16,
+      64
+    ],
+    "primary": {
+      "c": 1,
+      "n": 64
+    }
+  },
+  "name": "main",
+  "save_policies": "checkpoints",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "task": {
+    "params": {
+      "heldout_fraction": 0.3333333333333333,
+      "length": 5,
+      "seed": 0,
+      "shared_prefix": 2,
+      "vocab": 6
+    },
+    "type": "rule_task"
+  }
+}
