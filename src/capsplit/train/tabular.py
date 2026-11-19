@@ -56,3 +56,44 @@ def reinforce(
         if on_step is not None:
             on_step(step, logits)
     return logits
+
+
+def exact_pg_step(table: TrajectoryTable, logits: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """(the gradient of J, as `exact_pg_gradient`; q per solution, in `table.solutions` order).
+
+    Both come from the correct trajectories only. It never scores the whole table the way
+    `trajectory_probs` does, which is about 20x slower on the RQ2 worlds.
+    """
+    log_pi = log_policy(np.asarray(logits, dtype=float))
+    correct = table.solution_ids >= 0
+    rows = table.index[correct]
+    flat = np.append(log_pi.ravel(), 0.0)  # the appended zero is what the padding index reads
+    probs = np.exp(flat[rows].sum(axis=1))
+    q = np.bincount(table.solution_ids[correct], weights=probs, minlength=len(table.solutions))
+    return _score(table, rows, probs, np.exp(log_pi)), q
+
+
+def trace_exact_pg(
+    table: TrajectoryTable,
+    logits0: np.ndarray,
+    lr: float,
+    steps: int,
+    watch,
+    stop_line: float | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Exact-PG ascent recording q of the `watch` solutions at updates 0..T, in float64.
+
+    Returns (q of shape (T + 1, len(watch)), final logits). With `stop_line`, it stops after the
+    first row whose first watched solution is at or above the line; otherwise T = steps.
+    The input logits are not modified.
+    """
+    logits = np.array(logits0, dtype=float)
+    watch = list(watch)
+    out = np.empty((steps + 1, len(watch)))
+    for step in range(steps + 1):
+        gradient, q = exact_pg_step(table, logits)
+        out[step] = q[watch]
+        if (stop_line is not None and out[step, 0] >= stop_line) or step == steps:
+            return out[: step + 1], logits
+        logits += lr * gradient
+    raise AssertionError("unreachable")
