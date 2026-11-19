@@ -1,0 +1,3734 @@
+{
+  "arms": [
+    {
+      "name": "none",
+      "params": {},
+      "trainer": "none"
+    },
+    {
+      "name": "rloo",
+      "params": {
+        "group": 16,
+        "lr": 0.001
+      },
+      "trainer": "rloo"
+    },
+    {
+      "name": "grpo",
+      "params": {
+        "group": 16,
+        "lr": 0.001
+      },
+      "trainer": "grpo"
+    },
+    {
+      "name": "rl_entropy",
+      "params": {
+        "entropy_coef": 0.01,
+        "group": 16,
+        "lr": 0.001
+      },
+      "trainer": "rl_entropy"
+    },
+    {
+      "name": "sft",
+      "params": {
+        "lr": 0.001,
+        "only_tags": {
+          "difficulty": "hard"
+        }
+      },
+      "trainer": "sft"
+    },
+    {
+      "name": "hints_h1",
+      "params": {
+        "group": 16,
+        "hint_len": 1,
+        "lr": 0.001
+      },
+      "trainer": "hints"
+    },
+    {
+      "name": "hints_h3",
+      "params": {
+        "group": 16,
+        "hint_len": 3,
+        "lr": 0.001
+      },
+      "trainer": "hints"
+    },
+    {
+      "name": "sft_then_rl",
+      "params": {
+        "rl": {
+          "group": 16,
+          "lr": 0.001
+        },
+        "sft": {
+          "lr": 0.001,
+          "only_tags": {
+            "difficulty": "hard"
+          }
+        },
+        "sft_fraction": 0.5
+      },
+      "trainer": "sft_then_rl"
+    }
+  ],
+  "budget": 1000,
+  "checkpoints": [
+    0,
+    25,
+    50,
+    100,
+    200,
+    300,
+    500,
+    750,
+    1000
+  ],
+  "config": "config.json",
+  "factors": {
+    "task.shared_prefix": [
+      0,
+      2,
+      4
+    ]
+  },
+  "measure": {
+    "cs": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "group_by": [
+      "difficulty",
+      "split"
+    ],
+    "ns": [
+      16,
+      64
+    ],
+    "primary": {
+      "c": 1.0,
+      "n": 64
+    }
+  },
+  "name": "main",
+  "runs": [
+    {
+      "arm": "none",
+      "base": "bases/4a5557e16324",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "d0552c2f5c49/manifest.json",
+        "metrics": "d0552c2f5c49/seed-0.metrics.json",
+        "policies": "d0552c2f5c49/seed-0.policies.pt"
+      },
+      "run_dir": "d0552c2f5c49",
+      "seed": 0,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/8bb215266b4e",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "d0552c2f5c49/manifest.json",
+        "metrics": "d0552c2f5c49/seed-1.metrics.json",
+        "policies": "d0552c2f5c49/seed-1.policies.pt"
+      },
+      "run_dir": "d0552c2f5c49",
+      "seed": 1,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/45c7ab7f78b6",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "d0552c2f5c49/manifest.json",
+        "metrics": "d0552c2f5c49/seed-2.metrics.json",
+        "policies": "d0552c2f5c49/seed-2.policies.pt"
+      },
+      "run_dir": "d0552c2f5c49",
+      "seed": 2,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/1339a63515c5",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "d0552c2f5c49/manifest.json",
+        "metrics": "d0552c2f5c49/seed-3.metrics.json",
+        "policies": "d0552c2f5c49/seed-3.policies.pt"
+      },
+      "run_dir": "d0552c2f5c49",
+      "seed": 3,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/b8c9d4667c14",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "d0552c2f5c49/manifest.json",
+        "metrics": "d0552c2f5c49/seed-4.metrics.json",
+        "policies": "d0552c2f5c49/seed-4.policies.pt"
+      },
+      "run_dir": "d0552c2f5c49",
+      "seed": 4,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/f35a2fa4b1b4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "d0552c2f5c49/manifest.json",
+        "metrics": "d0552c2f5c49/seed-5.metrics.json",
+        "policies": "d0552c2f5c49/seed-5.policies.pt"
+      },
+      "run_dir": "d0552c2f5c49",
+      "seed": 5,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/4f0b4bda7fac",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "d0552c2f5c49/manifest.json",
+        "metrics": "d0552c2f5c49/seed-6.metrics.json",
+        "policies": "d0552c2f5c49/seed-6.policies.pt"
+      },
+      "run_dir": "d0552c2f5c49",
+      "seed": 6,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/192e21e711a4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "d0552c2f5c49/manifest.json",
+        "metrics": "d0552c2f5c49/seed-7.metrics.json",
+        "policies": "d0552c2f5c49/seed-7.policies.pt"
+      },
+      "run_dir": "d0552c2f5c49",
+      "seed": 7,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/c2f63a7fe414",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "d0552c2f5c49/manifest.json",
+        "metrics": "d0552c2f5c49/seed-8.metrics.json",
+        "policies": "d0552c2f5c49/seed-8.policies.pt"
+      },
+      "run_dir": "d0552c2f5c49",
+      "seed": 8,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/36c980d71081",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "d0552c2f5c49/manifest.json",
+        "metrics": "d0552c2f5c49/seed-9.metrics.json",
+        "policies": "d0552c2f5c49/seed-9.policies.pt"
+      },
+      "run_dir": "d0552c2f5c49",
+      "seed": 9,
+      "trainer": "none"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/4a5557e16324",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "07feaf655290/manifest.json",
+        "metrics": "07feaf655290/seed-0.metrics.json",
+        "policies": "07feaf655290/seed-0.policies.pt"
+      },
+      "run_dir": "07feaf655290",
+      "seed": 0,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/8bb215266b4e",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "07feaf655290/manifest.json",
+        "metrics": "07feaf655290/seed-1.metrics.json",
+        "policies": "07feaf655290/seed-1.policies.pt"
+      },
+      "run_dir": "07feaf655290",
+      "seed": 1,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/45c7ab7f78b6",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "07feaf655290/manifest.json",
+        "metrics": "07feaf655290/seed-2.metrics.json",
+        "policies": "07feaf655290/seed-2.policies.pt"
+      },
+      "run_dir": "07feaf655290",
+      "seed": 2,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/1339a63515c5",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "07feaf655290/manifest.json",
+        "metrics": "07feaf655290/seed-3.metrics.json",
+        "policies": "07feaf655290/seed-3.policies.pt"
+      },
+      "run_dir": "07feaf655290",
+      "seed": 3,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/b8c9d4667c14",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "07feaf655290/manifest.json",
+        "metrics": "07feaf655290/seed-4.metrics.json",
+        "policies": "07feaf655290/seed-4.policies.pt"
+      },
+      "run_dir": "07feaf655290",
+      "seed": 4,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/f35a2fa4b1b4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "07feaf655290/manifest.json",
+        "metrics": "07feaf655290/seed-5.metrics.json",
+        "policies": "07feaf655290/seed-5.policies.pt"
+      },
+      "run_dir": "07feaf655290",
+      "seed": 5,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/4f0b4bda7fac",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "07feaf655290/manifest.json",
+        "metrics": "07feaf655290/seed-6.metrics.json",
+        "policies": "07feaf655290/seed-6.policies.pt"
+      },
+      "run_dir": "07feaf655290",
+      "seed": 6,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/192e21e711a4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "07feaf655290/manifest.json",
+        "metrics": "07feaf655290/seed-7.metrics.json",
+        "policies": "07feaf655290/seed-7.policies.pt"
+      },
+      "run_dir": "07feaf655290",
+      "seed": 7,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/c2f63a7fe414",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "07feaf655290/manifest.json",
+        "metrics": "07feaf655290/seed-8.metrics.json",
+        "policies": "07feaf655290/seed-8.policies.pt"
+      },
+      "run_dir": "07feaf655290",
+      "seed": 8,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/36c980d71081",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "07feaf655290/manifest.json",
+        "metrics": "07feaf655290/seed-9.metrics.json",
+        "policies": "07feaf655290/seed-9.policies.pt"
+      },
+      "run_dir": "07feaf655290",
+      "seed": 9,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/4a5557e16324",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "5777aaf5979d/manifest.json",
+        "metrics": "5777aaf5979d/seed-0.metrics.json",
+        "policies": "5777aaf5979d/seed-0.policies.pt"
+      },
+      "run_dir": "5777aaf5979d",
+      "seed": 0,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/8bb215266b4e",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "5777aaf5979d/manifest.json",
+        "metrics": "5777aaf5979d/seed-1.metrics.json",
+        "policies": "5777aaf5979d/seed-1.policies.pt"
+      },
+      "run_dir": "5777aaf5979d",
+      "seed": 1,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/45c7ab7f78b6",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "5777aaf5979d/manifest.json",
+        "metrics": "5777aaf5979d/seed-2.metrics.json",
+        "policies": "5777aaf5979d/seed-2.policies.pt"
+      },
+      "run_dir": "5777aaf5979d",
+      "seed": 2,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/1339a63515c5",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "5777aaf5979d/manifest.json",
+        "metrics": "5777aaf5979d/seed-3.metrics.json",
+        "policies": "5777aaf5979d/seed-3.policies.pt"
+      },
+      "run_dir": "5777aaf5979d",
+      "seed": 3,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/b8c9d4667c14",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "5777aaf5979d/manifest.json",
+        "metrics": "5777aaf5979d/seed-4.metrics.json",
+        "policies": "5777aaf5979d/seed-4.policies.pt"
+      },
+      "run_dir": "5777aaf5979d",
+      "seed": 4,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/f35a2fa4b1b4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "5777aaf5979d/manifest.json",
+        "metrics": "5777aaf5979d/seed-5.metrics.json",
+        "policies": "5777aaf5979d/seed-5.policies.pt"
+      },
+      "run_dir": "5777aaf5979d",
+      "seed": 5,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/4f0b4bda7fac",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "5777aaf5979d/manifest.json",
+        "metrics": "5777aaf5979d/seed-6.metrics.json",
+        "policies": "5777aaf5979d/seed-6.policies.pt"
+      },
+      "run_dir": "5777aaf5979d",
+      "seed": 6,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/192e21e711a4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "5777aaf5979d/manifest.json",
+        "metrics": "5777aaf5979d/seed-7.metrics.json",
+        "policies": "5777aaf5979d/seed-7.policies.pt"
+      },
+      "run_dir": "5777aaf5979d",
+      "seed": 7,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/c2f63a7fe414",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "5777aaf5979d/manifest.json",
+        "metrics": "5777aaf5979d/seed-8.metrics.json",
+        "policies": "5777aaf5979d/seed-8.policies.pt"
+      },
+      "run_dir": "5777aaf5979d",
+      "seed": 8,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/36c980d71081",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "5777aaf5979d/manifest.json",
+        "metrics": "5777aaf5979d/seed-9.metrics.json",
+        "policies": "5777aaf5979d/seed-9.policies.pt"
+      },
+      "run_dir": "5777aaf5979d",
+      "seed": 9,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/4a5557e16324",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "eecb55b0f140/manifest.json",
+        "metrics": "eecb55b0f140/seed-0.metrics.json",
+        "policies": "eecb55b0f140/seed-0.policies.pt"
+      },
+      "run_dir": "eecb55b0f140",
+      "seed": 0,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/8bb215266b4e",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "eecb55b0f140/manifest.json",
+        "metrics": "eecb55b0f140/seed-1.metrics.json",
+        "policies": "eecb55b0f140/seed-1.policies.pt"
+      },
+      "run_dir": "eecb55b0f140",
+      "seed": 1,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/45c7ab7f78b6",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "eecb55b0f140/manifest.json",
+        "metrics": "eecb55b0f140/seed-2.metrics.json",
+        "policies": "eecb55b0f140/seed-2.policies.pt"
+      },
+      "run_dir": "eecb55b0f140",
+      "seed": 2,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/1339a63515c5",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "eecb55b0f140/manifest.json",
+        "metrics": "eecb55b0f140/seed-3.metrics.json",
+        "policies": "eecb55b0f140/seed-3.policies.pt"
+      },
+      "run_dir": "eecb55b0f140",
+      "seed": 3,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/b8c9d4667c14",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "eecb55b0f140/manifest.json",
+        "metrics": "eecb55b0f140/seed-4.metrics.json",
+        "policies": "eecb55b0f140/seed-4.policies.pt"
+      },
+      "run_dir": "eecb55b0f140",
+      "seed": 4,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/f35a2fa4b1b4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "eecb55b0f140/manifest.json",
+        "metrics": "eecb55b0f140/seed-5.metrics.json",
+        "policies": "eecb55b0f140/seed-5.policies.pt"
+      },
+      "run_dir": "eecb55b0f140",
+      "seed": 5,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/4f0b4bda7fac",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "eecb55b0f140/manifest.json",
+        "metrics": "eecb55b0f140/seed-6.metrics.json",
+        "policies": "eecb55b0f140/seed-6.policies.pt"
+      },
+      "run_dir": "eecb55b0f140",
+      "seed": 6,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/192e21e711a4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "eecb55b0f140/manifest.json",
+        "metrics": "eecb55b0f140/seed-7.metrics.json",
+        "policies": "eecb55b0f140/seed-7.policies.pt"
+      },
+      "run_dir": "eecb55b0f140",
+      "seed": 7,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/c2f63a7fe414",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "eecb55b0f140/manifest.json",
+        "metrics": "eecb55b0f140/seed-8.metrics.json",
+        "policies": "eecb55b0f140/seed-8.policies.pt"
+      },
+      "run_dir": "eecb55b0f140",
+      "seed": 8,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/36c980d71081",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "eecb55b0f140/manifest.json",
+        "metrics": "eecb55b0f140/seed-9.metrics.json",
+        "policies": "eecb55b0f140/seed-9.policies.pt"
+      },
+      "run_dir": "eecb55b0f140",
+      "seed": 9,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/4a5557e16324",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "f0a73001cbd3/manifest.json",
+        "metrics": "f0a73001cbd3/seed-0.metrics.json",
+        "policies": "f0a73001cbd3/seed-0.policies.pt"
+      },
+      "run_dir": "f0a73001cbd3",
+      "seed": 0,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/8bb215266b4e",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "f0a73001cbd3/manifest.json",
+        "metrics": "f0a73001cbd3/seed-1.metrics.json",
+        "policies": "f0a73001cbd3/seed-1.policies.pt"
+      },
+      "run_dir": "f0a73001cbd3",
+      "seed": 1,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/45c7ab7f78b6",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "f0a73001cbd3/manifest.json",
+        "metrics": "f0a73001cbd3/seed-2.metrics.json",
+        "policies": "f0a73001cbd3/seed-2.policies.pt"
+      },
+      "run_dir": "f0a73001cbd3",
+      "seed": 2,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/1339a63515c5",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "f0a73001cbd3/manifest.json",
+        "metrics": "f0a73001cbd3/seed-3.metrics.json",
+        "policies": "f0a73001cbd3/seed-3.policies.pt"
+      },
+      "run_dir": "f0a73001cbd3",
+      "seed": 3,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/b8c9d4667c14",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "f0a73001cbd3/manifest.json",
+        "metrics": "f0a73001cbd3/seed-4.metrics.json",
+        "policies": "f0a73001cbd3/seed-4.policies.pt"
+      },
+      "run_dir": "f0a73001cbd3",
+      "seed": 4,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/f35a2fa4b1b4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "f0a73001cbd3/manifest.json",
+        "metrics": "f0a73001cbd3/seed-5.metrics.json",
+        "policies": "f0a73001cbd3/seed-5.policies.pt"
+      },
+      "run_dir": "f0a73001cbd3",
+      "seed": 5,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/4f0b4bda7fac",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "f0a73001cbd3/manifest.json",
+        "metrics": "f0a73001cbd3/seed-6.metrics.json",
+        "policies": "f0a73001cbd3/seed-6.policies.pt"
+      },
+      "run_dir": "f0a73001cbd3",
+      "seed": 6,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/192e21e711a4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "f0a73001cbd3/manifest.json",
+        "metrics": "f0a73001cbd3/seed-7.metrics.json",
+        "policies": "f0a73001cbd3/seed-7.policies.pt"
+      },
+      "run_dir": "f0a73001cbd3",
+      "seed": 7,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/c2f63a7fe414",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "f0a73001cbd3/manifest.json",
+        "metrics": "f0a73001cbd3/seed-8.metrics.json",
+        "policies": "f0a73001cbd3/seed-8.policies.pt"
+      },
+      "run_dir": "f0a73001cbd3",
+      "seed": 8,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/36c980d71081",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "f0a73001cbd3/manifest.json",
+        "metrics": "f0a73001cbd3/seed-9.metrics.json",
+        "policies": "f0a73001cbd3/seed-9.policies.pt"
+      },
+      "run_dir": "f0a73001cbd3",
+      "seed": 9,
+      "trainer": "sft"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/4a5557e16324",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "9659c1a945e2/manifest.json",
+        "metrics": "9659c1a945e2/seed-0.metrics.json",
+        "policies": "9659c1a945e2/seed-0.policies.pt"
+      },
+      "run_dir": "9659c1a945e2",
+      "seed": 0,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/8bb215266b4e",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "9659c1a945e2/manifest.json",
+        "metrics": "9659c1a945e2/seed-1.metrics.json",
+        "policies": "9659c1a945e2/seed-1.policies.pt"
+      },
+      "run_dir": "9659c1a945e2",
+      "seed": 1,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/45c7ab7f78b6",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "9659c1a945e2/manifest.json",
+        "metrics": "9659c1a945e2/seed-2.metrics.json",
+        "policies": "9659c1a945e2/seed-2.policies.pt"
+      },
+      "run_dir": "9659c1a945e2",
+      "seed": 2,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/1339a63515c5",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "9659c1a945e2/manifest.json",
+        "metrics": "9659c1a945e2/seed-3.metrics.json",
+        "policies": "9659c1a945e2/seed-3.policies.pt"
+      },
+      "run_dir": "9659c1a945e2",
+      "seed": 3,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/b8c9d4667c14",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "9659c1a945e2/manifest.json",
+        "metrics": "9659c1a945e2/seed-4.metrics.json",
+        "policies": "9659c1a945e2/seed-4.policies.pt"
+      },
+      "run_dir": "9659c1a945e2",
+      "seed": 4,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/f35a2fa4b1b4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "9659c1a945e2/manifest.json",
+        "metrics": "9659c1a945e2/seed-5.metrics.json",
+        "policies": "9659c1a945e2/seed-5.policies.pt"
+      },
+      "run_dir": "9659c1a945e2",
+      "seed": 5,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/4f0b4bda7fac",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "9659c1a945e2/manifest.json",
+        "metrics": "9659c1a945e2/seed-6.metrics.json",
+        "policies": "9659c1a945e2/seed-6.policies.pt"
+      },
+      "run_dir": "9659c1a945e2",
+      "seed": 6,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/192e21e711a4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "9659c1a945e2/manifest.json",
+        "metrics": "9659c1a945e2/seed-7.metrics.json",
+        "policies": "9659c1a945e2/seed-7.policies.pt"
+      },
+      "run_dir": "9659c1a945e2",
+      "seed": 7,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/c2f63a7fe414",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "9659c1a945e2/manifest.json",
+        "metrics": "9659c1a945e2/seed-8.metrics.json",
+        "policies": "9659c1a945e2/seed-8.policies.pt"
+      },
+      "run_dir": "9659c1a945e2",
+      "seed": 8,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/36c980d71081",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "9659c1a945e2/manifest.json",
+        "metrics": "9659c1a945e2/seed-9.metrics.json",
+        "policies": "9659c1a945e2/seed-9.policies.pt"
+      },
+      "run_dir": "9659c1a945e2",
+      "seed": 9,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/4a5557e16324",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "0d28256e02f4/manifest.json",
+        "metrics": "0d28256e02f4/seed-0.metrics.json",
+        "policies": "0d28256e02f4/seed-0.policies.pt"
+      },
+      "run_dir": "0d28256e02f4",
+      "seed": 0,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/8bb215266b4e",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "0d28256e02f4/manifest.json",
+        "metrics": "0d28256e02f4/seed-1.metrics.json",
+        "policies": "0d28256e02f4/seed-1.policies.pt"
+      },
+      "run_dir": "0d28256e02f4",
+      "seed": 1,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/45c7ab7f78b6",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "0d28256e02f4/manifest.json",
+        "metrics": "0d28256e02f4/seed-2.metrics.json",
+        "policies": "0d28256e02f4/seed-2.policies.pt"
+      },
+      "run_dir": "0d28256e02f4",
+      "seed": 2,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/1339a63515c5",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "0d28256e02f4/manifest.json",
+        "metrics": "0d28256e02f4/seed-3.metrics.json",
+        "policies": "0d28256e02f4/seed-3.policies.pt"
+      },
+      "run_dir": "0d28256e02f4",
+      "seed": 3,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/b8c9d4667c14",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "0d28256e02f4/manifest.json",
+        "metrics": "0d28256e02f4/seed-4.metrics.json",
+        "policies": "0d28256e02f4/seed-4.policies.pt"
+      },
+      "run_dir": "0d28256e02f4",
+      "seed": 4,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/f35a2fa4b1b4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "0d28256e02f4/manifest.json",
+        "metrics": "0d28256e02f4/seed-5.metrics.json",
+        "policies": "0d28256e02f4/seed-5.policies.pt"
+      },
+      "run_dir": "0d28256e02f4",
+      "seed": 5,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/4f0b4bda7fac",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "0d28256e02f4/manifest.json",
+        "metrics": "0d28256e02f4/seed-6.metrics.json",
+        "policies": "0d28256e02f4/seed-6.policies.pt"
+      },
+      "run_dir": "0d28256e02f4",
+      "seed": 6,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/192e21e711a4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "0d28256e02f4/manifest.json",
+        "metrics": "0d28256e02f4/seed-7.metrics.json",
+        "policies": "0d28256e02f4/seed-7.policies.pt"
+      },
+      "run_dir": "0d28256e02f4",
+      "seed": 7,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/c2f63a7fe414",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "0d28256e02f4/manifest.json",
+        "metrics": "0d28256e02f4/seed-8.metrics.json",
+        "policies": "0d28256e02f4/seed-8.policies.pt"
+      },
+      "run_dir": "0d28256e02f4",
+      "seed": 8,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/36c980d71081",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "0d28256e02f4/manifest.json",
+        "metrics": "0d28256e02f4/seed-9.metrics.json",
+        "policies": "0d28256e02f4/seed-9.policies.pt"
+      },
+      "run_dir": "0d28256e02f4",
+      "seed": 9,
+      "trainer": "hints"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/4a5557e16324",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "2f902db9f057/manifest.json",
+        "metrics": "2f902db9f057/seed-0.metrics.json",
+        "policies": "2f902db9f057/seed-0.policies.pt"
+      },
+      "run_dir": "2f902db9f057",
+      "seed": 0,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/8bb215266b4e",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "2f902db9f057/manifest.json",
+        "metrics": "2f902db9f057/seed-1.metrics.json",
+        "policies": "2f902db9f057/seed-1.policies.pt"
+      },
+      "run_dir": "2f902db9f057",
+      "seed": 1,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/45c7ab7f78b6",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "2f902db9f057/manifest.json",
+        "metrics": "2f902db9f057/seed-2.metrics.json",
+        "policies": "2f902db9f057/seed-2.policies.pt"
+      },
+      "run_dir": "2f902db9f057",
+      "seed": 2,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/1339a63515c5",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "2f902db9f057/manifest.json",
+        "metrics": "2f902db9f057/seed-3.metrics.json",
+        "policies": "2f902db9f057/seed-3.policies.pt"
+      },
+      "run_dir": "2f902db9f057",
+      "seed": 3,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/b8c9d4667c14",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "2f902db9f057/manifest.json",
+        "metrics": "2f902db9f057/seed-4.metrics.json",
+        "policies": "2f902db9f057/seed-4.policies.pt"
+      },
+      "run_dir": "2f902db9f057",
+      "seed": 4,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/f35a2fa4b1b4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "2f902db9f057/manifest.json",
+        "metrics": "2f902db9f057/seed-5.metrics.json",
+        "policies": "2f902db9f057/seed-5.policies.pt"
+      },
+      "run_dir": "2f902db9f057",
+      "seed": 5,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/4f0b4bda7fac",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "2f902db9f057/manifest.json",
+        "metrics": "2f902db9f057/seed-6.metrics.json",
+        "policies": "2f902db9f057/seed-6.policies.pt"
+      },
+      "run_dir": "2f902db9f057",
+      "seed": 6,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/192e21e711a4",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "2f902db9f057/manifest.json",
+        "metrics": "2f902db9f057/seed-7.metrics.json",
+        "policies": "2f902db9f057/seed-7.policies.pt"
+      },
+      "run_dir": "2f902db9f057",
+      "seed": 7,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/c2f63a7fe414",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "2f902db9f057/manifest.json",
+        "metrics": "2f902db9f057/seed-8.metrics.json",
+        "policies": "2f902db9f057/seed-8.policies.pt"
+      },
+      "run_dir": "2f902db9f057",
+      "seed": 8,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/36c980d71081",
+      "factors": {
+        "task.shared_prefix": 0
+      },
+      "files": {
+        "manifest": "2f902db9f057/manifest.json",
+        "metrics": "2f902db9f057/seed-9.metrics.json",
+        "policies": "2f902db9f057/seed-9.policies.pt"
+      },
+      "run_dir": "2f902db9f057",
+      "seed": 9,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "none",
+      "base": "bases/fcf623efeb94",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c33e83a7a163/manifest.json",
+        "metrics": "c33e83a7a163/seed-0.metrics.json",
+        "policies": "c33e83a7a163/seed-0.policies.pt"
+      },
+      "run_dir": "c33e83a7a163",
+      "seed": 0,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/690df6fa243a",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c33e83a7a163/manifest.json",
+        "metrics": "c33e83a7a163/seed-1.metrics.json",
+        "policies": "c33e83a7a163/seed-1.policies.pt"
+      },
+      "run_dir": "c33e83a7a163",
+      "seed": 1,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/6875720f3319",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c33e83a7a163/manifest.json",
+        "metrics": "c33e83a7a163/seed-2.metrics.json",
+        "policies": "c33e83a7a163/seed-2.policies.pt"
+      },
+      "run_dir": "c33e83a7a163",
+      "seed": 2,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/eccce1952627",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c33e83a7a163/manifest.json",
+        "metrics": "c33e83a7a163/seed-3.metrics.json",
+        "policies": "c33e83a7a163/seed-3.policies.pt"
+      },
+      "run_dir": "c33e83a7a163",
+      "seed": 3,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/553cc3244d6c",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c33e83a7a163/manifest.json",
+        "metrics": "c33e83a7a163/seed-4.metrics.json",
+        "policies": "c33e83a7a163/seed-4.policies.pt"
+      },
+      "run_dir": "c33e83a7a163",
+      "seed": 4,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/daf4aaf037ee",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c33e83a7a163/manifest.json",
+        "metrics": "c33e83a7a163/seed-5.metrics.json",
+        "policies": "c33e83a7a163/seed-5.policies.pt"
+      },
+      "run_dir": "c33e83a7a163",
+      "seed": 5,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/b102a1c90959",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c33e83a7a163/manifest.json",
+        "metrics": "c33e83a7a163/seed-6.metrics.json",
+        "policies": "c33e83a7a163/seed-6.policies.pt"
+      },
+      "run_dir": "c33e83a7a163",
+      "seed": 6,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/4d0a1dd2719b",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c33e83a7a163/manifest.json",
+        "metrics": "c33e83a7a163/seed-7.metrics.json",
+        "policies": "c33e83a7a163/seed-7.policies.pt"
+      },
+      "run_dir": "c33e83a7a163",
+      "seed": 7,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/203e32dc2caf",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c33e83a7a163/manifest.json",
+        "metrics": "c33e83a7a163/seed-8.metrics.json",
+        "policies": "c33e83a7a163/seed-8.policies.pt"
+      },
+      "run_dir": "c33e83a7a163",
+      "seed": 8,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/7a4dbffaf8a5",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c33e83a7a163/manifest.json",
+        "metrics": "c33e83a7a163/seed-9.metrics.json",
+        "policies": "c33e83a7a163/seed-9.policies.pt"
+      },
+      "run_dir": "c33e83a7a163",
+      "seed": 9,
+      "trainer": "none"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/fcf623efeb94",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "05fd57d02250/manifest.json",
+        "metrics": "05fd57d02250/seed-0.metrics.json",
+        "policies": "05fd57d02250/seed-0.policies.pt"
+      },
+      "run_dir": "05fd57d02250",
+      "seed": 0,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/690df6fa243a",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "05fd57d02250/manifest.json",
+        "metrics": "05fd57d02250/seed-1.metrics.json",
+        "policies": "05fd57d02250/seed-1.policies.pt"
+      },
+      "run_dir": "05fd57d02250",
+      "seed": 1,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/6875720f3319",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "05fd57d02250/manifest.json",
+        "metrics": "05fd57d02250/seed-2.metrics.json",
+        "policies": "05fd57d02250/seed-2.policies.pt"
+      },
+      "run_dir": "05fd57d02250",
+      "seed": 2,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/eccce1952627",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "05fd57d02250/manifest.json",
+        "metrics": "05fd57d02250/seed-3.metrics.json",
+        "policies": "05fd57d02250/seed-3.policies.pt"
+      },
+      "run_dir": "05fd57d02250",
+      "seed": 3,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/553cc3244d6c",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "05fd57d02250/manifest.json",
+        "metrics": "05fd57d02250/seed-4.metrics.json",
+        "policies": "05fd57d02250/seed-4.policies.pt"
+      },
+      "run_dir": "05fd57d02250",
+      "seed": 4,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/daf4aaf037ee",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "05fd57d02250/manifest.json",
+        "metrics": "05fd57d02250/seed-5.metrics.json",
+        "policies": "05fd57d02250/seed-5.policies.pt"
+      },
+      "run_dir": "05fd57d02250",
+      "seed": 5,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/b102a1c90959",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "05fd57d02250/manifest.json",
+        "metrics": "05fd57d02250/seed-6.metrics.json",
+        "policies": "05fd57d02250/seed-6.policies.pt"
+      },
+      "run_dir": "05fd57d02250",
+      "seed": 6,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/4d0a1dd2719b",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "05fd57d02250/manifest.json",
+        "metrics": "05fd57d02250/seed-7.metrics.json",
+        "policies": "05fd57d02250/seed-7.policies.pt"
+      },
+      "run_dir": "05fd57d02250",
+      "seed": 7,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/203e32dc2caf",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "05fd57d02250/manifest.json",
+        "metrics": "05fd57d02250/seed-8.metrics.json",
+        "policies": "05fd57d02250/seed-8.policies.pt"
+      },
+      "run_dir": "05fd57d02250",
+      "seed": 8,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/7a4dbffaf8a5",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "05fd57d02250/manifest.json",
+        "metrics": "05fd57d02250/seed-9.metrics.json",
+        "policies": "05fd57d02250/seed-9.policies.pt"
+      },
+      "run_dir": "05fd57d02250",
+      "seed": 9,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/fcf623efeb94",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "9003900415ba/manifest.json",
+        "metrics": "9003900415ba/seed-0.metrics.json",
+        "policies": "9003900415ba/seed-0.policies.pt"
+      },
+      "run_dir": "9003900415ba",
+      "seed": 0,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/690df6fa243a",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "9003900415ba/manifest.json",
+        "metrics": "9003900415ba/seed-1.metrics.json",
+        "policies": "9003900415ba/seed-1.policies.pt"
+      },
+      "run_dir": "9003900415ba",
+      "seed": 1,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/6875720f3319",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "9003900415ba/manifest.json",
+        "metrics": "9003900415ba/seed-2.metrics.json",
+        "policies": "9003900415ba/seed-2.policies.pt"
+      },
+      "run_dir": "9003900415ba",
+      "seed": 2,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/eccce1952627",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "9003900415ba/manifest.json",
+        "metrics": "9003900415ba/seed-3.metrics.json",
+        "policies": "9003900415ba/seed-3.policies.pt"
+      },
+      "run_dir": "9003900415ba",
+      "seed": 3,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/553cc3244d6c",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "9003900415ba/manifest.json",
+        "metrics": "9003900415ba/seed-4.metrics.json",
+        "policies": "9003900415ba/seed-4.policies.pt"
+      },
+      "run_dir": "9003900415ba",
+      "seed": 4,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/daf4aaf037ee",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "9003900415ba/manifest.json",
+        "metrics": "9003900415ba/seed-5.metrics.json",
+        "policies": "9003900415ba/seed-5.policies.pt"
+      },
+      "run_dir": "9003900415ba",
+      "seed": 5,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/b102a1c90959",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "9003900415ba/manifest.json",
+        "metrics": "9003900415ba/seed-6.metrics.json",
+        "policies": "9003900415ba/seed-6.policies.pt"
+      },
+      "run_dir": "9003900415ba",
+      "seed": 6,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/4d0a1dd2719b",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "9003900415ba/manifest.json",
+        "metrics": "9003900415ba/seed-7.metrics.json",
+        "policies": "9003900415ba/seed-7.policies.pt"
+      },
+      "run_dir": "9003900415ba",
+      "seed": 7,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/203e32dc2caf",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "9003900415ba/manifest.json",
+        "metrics": "9003900415ba/seed-8.metrics.json",
+        "policies": "9003900415ba/seed-8.policies.pt"
+      },
+      "run_dir": "9003900415ba",
+      "seed": 8,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/7a4dbffaf8a5",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "9003900415ba/manifest.json",
+        "metrics": "9003900415ba/seed-9.metrics.json",
+        "policies": "9003900415ba/seed-9.policies.pt"
+      },
+      "run_dir": "9003900415ba",
+      "seed": 9,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/fcf623efeb94",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7ad1b0227e51/manifest.json",
+        "metrics": "7ad1b0227e51/seed-0.metrics.json",
+        "policies": "7ad1b0227e51/seed-0.policies.pt"
+      },
+      "run_dir": "7ad1b0227e51",
+      "seed": 0,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/690df6fa243a",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7ad1b0227e51/manifest.json",
+        "metrics": "7ad1b0227e51/seed-1.metrics.json",
+        "policies": "7ad1b0227e51/seed-1.policies.pt"
+      },
+      "run_dir": "7ad1b0227e51",
+      "seed": 1,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/6875720f3319",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7ad1b0227e51/manifest.json",
+        "metrics": "7ad1b0227e51/seed-2.metrics.json",
+        "policies": "7ad1b0227e51/seed-2.policies.pt"
+      },
+      "run_dir": "7ad1b0227e51",
+      "seed": 2,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/eccce1952627",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7ad1b0227e51/manifest.json",
+        "metrics": "7ad1b0227e51/seed-3.metrics.json",
+        "policies": "7ad1b0227e51/seed-3.policies.pt"
+      },
+      "run_dir": "7ad1b0227e51",
+      "seed": 3,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/553cc3244d6c",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7ad1b0227e51/manifest.json",
+        "metrics": "7ad1b0227e51/seed-4.metrics.json",
+        "policies": "7ad1b0227e51/seed-4.policies.pt"
+      },
+      "run_dir": "7ad1b0227e51",
+      "seed": 4,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/daf4aaf037ee",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7ad1b0227e51/manifest.json",
+        "metrics": "7ad1b0227e51/seed-5.metrics.json",
+        "policies": "7ad1b0227e51/seed-5.policies.pt"
+      },
+      "run_dir": "7ad1b0227e51",
+      "seed": 5,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/b102a1c90959",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7ad1b0227e51/manifest.json",
+        "metrics": "7ad1b0227e51/seed-6.metrics.json",
+        "policies": "7ad1b0227e51/seed-6.policies.pt"
+      },
+      "run_dir": "7ad1b0227e51",
+      "seed": 6,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/4d0a1dd2719b",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7ad1b0227e51/manifest.json",
+        "metrics": "7ad1b0227e51/seed-7.metrics.json",
+        "policies": "7ad1b0227e51/seed-7.policies.pt"
+      },
+      "run_dir": "7ad1b0227e51",
+      "seed": 7,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/203e32dc2caf",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7ad1b0227e51/manifest.json",
+        "metrics": "7ad1b0227e51/seed-8.metrics.json",
+        "policies": "7ad1b0227e51/seed-8.policies.pt"
+      },
+      "run_dir": "7ad1b0227e51",
+      "seed": 8,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/7a4dbffaf8a5",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7ad1b0227e51/manifest.json",
+        "metrics": "7ad1b0227e51/seed-9.metrics.json",
+        "policies": "7ad1b0227e51/seed-9.policies.pt"
+      },
+      "run_dir": "7ad1b0227e51",
+      "seed": 9,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/fcf623efeb94",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "397fa66297f4/manifest.json",
+        "metrics": "397fa66297f4/seed-0.metrics.json",
+        "policies": "397fa66297f4/seed-0.policies.pt"
+      },
+      "run_dir": "397fa66297f4",
+      "seed": 0,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/690df6fa243a",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "397fa66297f4/manifest.json",
+        "metrics": "397fa66297f4/seed-1.metrics.json",
+        "policies": "397fa66297f4/seed-1.policies.pt"
+      },
+      "run_dir": "397fa66297f4",
+      "seed": 1,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/6875720f3319",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "397fa66297f4/manifest.json",
+        "metrics": "397fa66297f4/seed-2.metrics.json",
+        "policies": "397fa66297f4/seed-2.policies.pt"
+      },
+      "run_dir": "397fa66297f4",
+      "seed": 2,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/eccce1952627",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "397fa66297f4/manifest.json",
+        "metrics": "397fa66297f4/seed-3.metrics.json",
+        "policies": "397fa66297f4/seed-3.policies.pt"
+      },
+      "run_dir": "397fa66297f4",
+      "seed": 3,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/553cc3244d6c",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "397fa66297f4/manifest.json",
+        "metrics": "397fa66297f4/seed-4.metrics.json",
+        "policies": "397fa66297f4/seed-4.policies.pt"
+      },
+      "run_dir": "397fa66297f4",
+      "seed": 4,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/daf4aaf037ee",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "397fa66297f4/manifest.json",
+        "metrics": "397fa66297f4/seed-5.metrics.json",
+        "policies": "397fa66297f4/seed-5.policies.pt"
+      },
+      "run_dir": "397fa66297f4",
+      "seed": 5,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/b102a1c90959",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "397fa66297f4/manifest.json",
+        "metrics": "397fa66297f4/seed-6.metrics.json",
+        "policies": "397fa66297f4/seed-6.policies.pt"
+      },
+      "run_dir": "397fa66297f4",
+      "seed": 6,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/4d0a1dd2719b",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "397fa66297f4/manifest.json",
+        "metrics": "397fa66297f4/seed-7.metrics.json",
+        "policies": "397fa66297f4/seed-7.policies.pt"
+      },
+      "run_dir": "397fa66297f4",
+      "seed": 7,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/203e32dc2caf",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "397fa66297f4/manifest.json",
+        "metrics": "397fa66297f4/seed-8.metrics.json",
+        "policies": "397fa66297f4/seed-8.policies.pt"
+      },
+      "run_dir": "397fa66297f4",
+      "seed": 8,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/7a4dbffaf8a5",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "397fa66297f4/manifest.json",
+        "metrics": "397fa66297f4/seed-9.metrics.json",
+        "policies": "397fa66297f4/seed-9.policies.pt"
+      },
+      "run_dir": "397fa66297f4",
+      "seed": 9,
+      "trainer": "sft"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/fcf623efeb94",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7e2a1717c5f0/manifest.json",
+        "metrics": "7e2a1717c5f0/seed-0.metrics.json",
+        "policies": "7e2a1717c5f0/seed-0.policies.pt"
+      },
+      "run_dir": "7e2a1717c5f0",
+      "seed": 0,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/690df6fa243a",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7e2a1717c5f0/manifest.json",
+        "metrics": "7e2a1717c5f0/seed-1.metrics.json",
+        "policies": "7e2a1717c5f0/seed-1.policies.pt"
+      },
+      "run_dir": "7e2a1717c5f0",
+      "seed": 1,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/6875720f3319",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7e2a1717c5f0/manifest.json",
+        "metrics": "7e2a1717c5f0/seed-2.metrics.json",
+        "policies": "7e2a1717c5f0/seed-2.policies.pt"
+      },
+      "run_dir": "7e2a1717c5f0",
+      "seed": 2,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/eccce1952627",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7e2a1717c5f0/manifest.json",
+        "metrics": "7e2a1717c5f0/seed-3.metrics.json",
+        "policies": "7e2a1717c5f0/seed-3.policies.pt"
+      },
+      "run_dir": "7e2a1717c5f0",
+      "seed": 3,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/553cc3244d6c",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7e2a1717c5f0/manifest.json",
+        "metrics": "7e2a1717c5f0/seed-4.metrics.json",
+        "policies": "7e2a1717c5f0/seed-4.policies.pt"
+      },
+      "run_dir": "7e2a1717c5f0",
+      "seed": 4,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/daf4aaf037ee",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7e2a1717c5f0/manifest.json",
+        "metrics": "7e2a1717c5f0/seed-5.metrics.json",
+        "policies": "7e2a1717c5f0/seed-5.policies.pt"
+      },
+      "run_dir": "7e2a1717c5f0",
+      "seed": 5,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/b102a1c90959",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7e2a1717c5f0/manifest.json",
+        "metrics": "7e2a1717c5f0/seed-6.metrics.json",
+        "policies": "7e2a1717c5f0/seed-6.policies.pt"
+      },
+      "run_dir": "7e2a1717c5f0",
+      "seed": 6,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/4d0a1dd2719b",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7e2a1717c5f0/manifest.json",
+        "metrics": "7e2a1717c5f0/seed-7.metrics.json",
+        "policies": "7e2a1717c5f0/seed-7.policies.pt"
+      },
+      "run_dir": "7e2a1717c5f0",
+      "seed": 7,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/203e32dc2caf",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7e2a1717c5f0/manifest.json",
+        "metrics": "7e2a1717c5f0/seed-8.metrics.json",
+        "policies": "7e2a1717c5f0/seed-8.policies.pt"
+      },
+      "run_dir": "7e2a1717c5f0",
+      "seed": 8,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/7a4dbffaf8a5",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "7e2a1717c5f0/manifest.json",
+        "metrics": "7e2a1717c5f0/seed-9.metrics.json",
+        "policies": "7e2a1717c5f0/seed-9.policies.pt"
+      },
+      "run_dir": "7e2a1717c5f0",
+      "seed": 9,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/fcf623efeb94",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "ce25fc9b5208/manifest.json",
+        "metrics": "ce25fc9b5208/seed-0.metrics.json",
+        "policies": "ce25fc9b5208/seed-0.policies.pt"
+      },
+      "run_dir": "ce25fc9b5208",
+      "seed": 0,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/690df6fa243a",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "ce25fc9b5208/manifest.json",
+        "metrics": "ce25fc9b5208/seed-1.metrics.json",
+        "policies": "ce25fc9b5208/seed-1.policies.pt"
+      },
+      "run_dir": "ce25fc9b5208",
+      "seed": 1,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/6875720f3319",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "ce25fc9b5208/manifest.json",
+        "metrics": "ce25fc9b5208/seed-2.metrics.json",
+        "policies": "ce25fc9b5208/seed-2.policies.pt"
+      },
+      "run_dir": "ce25fc9b5208",
+      "seed": 2,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/eccce1952627",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "ce25fc9b5208/manifest.json",
+        "metrics": "ce25fc9b5208/seed-3.metrics.json",
+        "policies": "ce25fc9b5208/seed-3.policies.pt"
+      },
+      "run_dir": "ce25fc9b5208",
+      "seed": 3,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/553cc3244d6c",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "ce25fc9b5208/manifest.json",
+        "metrics": "ce25fc9b5208/seed-4.metrics.json",
+        "policies": "ce25fc9b5208/seed-4.policies.pt"
+      },
+      "run_dir": "ce25fc9b5208",
+      "seed": 4,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/daf4aaf037ee",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "ce25fc9b5208/manifest.json",
+        "metrics": "ce25fc9b5208/seed-5.metrics.json",
+        "policies": "ce25fc9b5208/seed-5.policies.pt"
+      },
+      "run_dir": "ce25fc9b5208",
+      "seed": 5,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/b102a1c90959",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "ce25fc9b5208/manifest.json",
+        "metrics": "ce25fc9b5208/seed-6.metrics.json",
+        "policies": "ce25fc9b5208/seed-6.policies.pt"
+      },
+      "run_dir": "ce25fc9b5208",
+      "seed": 6,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/4d0a1dd2719b",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "ce25fc9b5208/manifest.json",
+        "metrics": "ce25fc9b5208/seed-7.metrics.json",
+        "policies": "ce25fc9b5208/seed-7.policies.pt"
+      },
+      "run_dir": "ce25fc9b5208",
+      "seed": 7,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/203e32dc2caf",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "ce25fc9b5208/manifest.json",
+        "metrics": "ce25fc9b5208/seed-8.metrics.json",
+        "policies": "ce25fc9b5208/seed-8.policies.pt"
+      },
+      "run_dir": "ce25fc9b5208",
+      "seed": 8,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/7a4dbffaf8a5",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "ce25fc9b5208/manifest.json",
+        "metrics": "ce25fc9b5208/seed-9.metrics.json",
+        "policies": "ce25fc9b5208/seed-9.policies.pt"
+      },
+      "run_dir": "ce25fc9b5208",
+      "seed": 9,
+      "trainer": "hints"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/fcf623efeb94",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c564b1c8ea7e/manifest.json",
+        "metrics": "c564b1c8ea7e/seed-0.metrics.json",
+        "policies": "c564b1c8ea7e/seed-0.policies.pt"
+      },
+      "run_dir": "c564b1c8ea7e",
+      "seed": 0,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/690df6fa243a",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c564b1c8ea7e/manifest.json",
+        "metrics": "c564b1c8ea7e/seed-1.metrics.json",
+        "policies": "c564b1c8ea7e/seed-1.policies.pt"
+      },
+      "run_dir": "c564b1c8ea7e",
+      "seed": 1,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/6875720f3319",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c564b1c8ea7e/manifest.json",
+        "metrics": "c564b1c8ea7e/seed-2.metrics.json",
+        "policies": "c564b1c8ea7e/seed-2.policies.pt"
+      },
+      "run_dir": "c564b1c8ea7e",
+      "seed": 2,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/eccce1952627",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c564b1c8ea7e/manifest.json",
+        "metrics": "c564b1c8ea7e/seed-3.metrics.json",
+        "policies": "c564b1c8ea7e/seed-3.policies.pt"
+      },
+      "run_dir": "c564b1c8ea7e",
+      "seed": 3,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/553cc3244d6c",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c564b1c8ea7e/manifest.json",
+        "metrics": "c564b1c8ea7e/seed-4.metrics.json",
+        "policies": "c564b1c8ea7e/seed-4.policies.pt"
+      },
+      "run_dir": "c564b1c8ea7e",
+      "seed": 4,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/daf4aaf037ee",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c564b1c8ea7e/manifest.json",
+        "metrics": "c564b1c8ea7e/seed-5.metrics.json",
+        "policies": "c564b1c8ea7e/seed-5.policies.pt"
+      },
+      "run_dir": "c564b1c8ea7e",
+      "seed": 5,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/b102a1c90959",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c564b1c8ea7e/manifest.json",
+        "metrics": "c564b1c8ea7e/seed-6.metrics.json",
+        "policies": "c564b1c8ea7e/seed-6.policies.pt"
+      },
+      "run_dir": "c564b1c8ea7e",
+      "seed": 6,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/4d0a1dd2719b",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c564b1c8ea7e/manifest.json",
+        "metrics": "c564b1c8ea7e/seed-7.metrics.json",
+        "policies": "c564b1c8ea7e/seed-7.policies.pt"
+      },
+      "run_dir": "c564b1c8ea7e",
+      "seed": 7,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/203e32dc2caf",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c564b1c8ea7e/manifest.json",
+        "metrics": "c564b1c8ea7e/seed-8.metrics.json",
+        "policies": "c564b1c8ea7e/seed-8.policies.pt"
+      },
+      "run_dir": "c564b1c8ea7e",
+      "seed": 8,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/7a4dbffaf8a5",
+      "factors": {
+        "task.shared_prefix": 2
+      },
+      "files": {
+        "manifest": "c564b1c8ea7e/manifest.json",
+        "metrics": "c564b1c8ea7e/seed-9.metrics.json",
+        "policies": "c564b1c8ea7e/seed-9.policies.pt"
+      },
+      "run_dir": "c564b1c8ea7e",
+      "seed": 9,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "none",
+      "base": "bases/c4434e92c4c7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "a5fef0332498/manifest.json",
+        "metrics": "a5fef0332498/seed-0.metrics.json",
+        "policies": "a5fef0332498/seed-0.policies.pt"
+      },
+      "run_dir": "a5fef0332498",
+      "seed": 0,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/f5915ab76da7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "a5fef0332498/manifest.json",
+        "metrics": "a5fef0332498/seed-1.metrics.json",
+        "policies": "a5fef0332498/seed-1.policies.pt"
+      },
+      "run_dir": "a5fef0332498",
+      "seed": 1,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/3d180cf9f659",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "a5fef0332498/manifest.json",
+        "metrics": "a5fef0332498/seed-2.metrics.json",
+        "policies": "a5fef0332498/seed-2.policies.pt"
+      },
+      "run_dir": "a5fef0332498",
+      "seed": 2,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/cc953e0171cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "a5fef0332498/manifest.json",
+        "metrics": "a5fef0332498/seed-3.metrics.json",
+        "policies": "a5fef0332498/seed-3.policies.pt"
+      },
+      "run_dir": "a5fef0332498",
+      "seed": 3,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/ee36afd9c442",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "a5fef0332498/manifest.json",
+        "metrics": "a5fef0332498/seed-4.metrics.json",
+        "policies": "a5fef0332498/seed-4.policies.pt"
+      },
+      "run_dir": "a5fef0332498",
+      "seed": 4,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/72a9ce1289cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "a5fef0332498/manifest.json",
+        "metrics": "a5fef0332498/seed-5.metrics.json",
+        "policies": "a5fef0332498/seed-5.policies.pt"
+      },
+      "run_dir": "a5fef0332498",
+      "seed": 5,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/9186902d07d3",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "a5fef0332498/manifest.json",
+        "metrics": "a5fef0332498/seed-6.metrics.json",
+        "policies": "a5fef0332498/seed-6.policies.pt"
+      },
+      "run_dir": "a5fef0332498",
+      "seed": 6,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/3e4bda4d6022",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "a5fef0332498/manifest.json",
+        "metrics": "a5fef0332498/seed-7.metrics.json",
+        "policies": "a5fef0332498/seed-7.policies.pt"
+      },
+      "run_dir": "a5fef0332498",
+      "seed": 7,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/076dc2ee0b00",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "a5fef0332498/manifest.json",
+        "metrics": "a5fef0332498/seed-8.metrics.json",
+        "policies": "a5fef0332498/seed-8.policies.pt"
+      },
+      "run_dir": "a5fef0332498",
+      "seed": 8,
+      "trainer": "none"
+    },
+    {
+      "arm": "none",
+      "base": "bases/a81fa5a15474",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "a5fef0332498/manifest.json",
+        "metrics": "a5fef0332498/seed-9.metrics.json",
+        "policies": "a5fef0332498/seed-9.policies.pt"
+      },
+      "run_dir": "a5fef0332498",
+      "seed": 9,
+      "trainer": "none"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/c4434e92c4c7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "ab957cb47824/manifest.json",
+        "metrics": "ab957cb47824/seed-0.metrics.json",
+        "policies": "ab957cb47824/seed-0.policies.pt"
+      },
+      "run_dir": "ab957cb47824",
+      "seed": 0,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/f5915ab76da7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "ab957cb47824/manifest.json",
+        "metrics": "ab957cb47824/seed-1.metrics.json",
+        "policies": "ab957cb47824/seed-1.policies.pt"
+      },
+      "run_dir": "ab957cb47824",
+      "seed": 1,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/3d180cf9f659",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "ab957cb47824/manifest.json",
+        "metrics": "ab957cb47824/seed-2.metrics.json",
+        "policies": "ab957cb47824/seed-2.policies.pt"
+      },
+      "run_dir": "ab957cb47824",
+      "seed": 2,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/cc953e0171cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "ab957cb47824/manifest.json",
+        "metrics": "ab957cb47824/seed-3.metrics.json",
+        "policies": "ab957cb47824/seed-3.policies.pt"
+      },
+      "run_dir": "ab957cb47824",
+      "seed": 3,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/ee36afd9c442",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "ab957cb47824/manifest.json",
+        "metrics": "ab957cb47824/seed-4.metrics.json",
+        "policies": "ab957cb47824/seed-4.policies.pt"
+      },
+      "run_dir": "ab957cb47824",
+      "seed": 4,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/72a9ce1289cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "ab957cb47824/manifest.json",
+        "metrics": "ab957cb47824/seed-5.metrics.json",
+        "policies": "ab957cb47824/seed-5.policies.pt"
+      },
+      "run_dir": "ab957cb47824",
+      "seed": 5,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/9186902d07d3",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "ab957cb47824/manifest.json",
+        "metrics": "ab957cb47824/seed-6.metrics.json",
+        "policies": "ab957cb47824/seed-6.policies.pt"
+      },
+      "run_dir": "ab957cb47824",
+      "seed": 6,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/3e4bda4d6022",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "ab957cb47824/manifest.json",
+        "metrics": "ab957cb47824/seed-7.metrics.json",
+        "policies": "ab957cb47824/seed-7.policies.pt"
+      },
+      "run_dir": "ab957cb47824",
+      "seed": 7,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/076dc2ee0b00",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "ab957cb47824/manifest.json",
+        "metrics": "ab957cb47824/seed-8.metrics.json",
+        "policies": "ab957cb47824/seed-8.policies.pt"
+      },
+      "run_dir": "ab957cb47824",
+      "seed": 8,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "rloo",
+      "base": "bases/a81fa5a15474",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "ab957cb47824/manifest.json",
+        "metrics": "ab957cb47824/seed-9.metrics.json",
+        "policies": "ab957cb47824/seed-9.policies.pt"
+      },
+      "run_dir": "ab957cb47824",
+      "seed": 9,
+      "trainer": "rloo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/c4434e92c4c7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "3e1f70f11442/manifest.json",
+        "metrics": "3e1f70f11442/seed-0.metrics.json",
+        "policies": "3e1f70f11442/seed-0.policies.pt"
+      },
+      "run_dir": "3e1f70f11442",
+      "seed": 0,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/f5915ab76da7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "3e1f70f11442/manifest.json",
+        "metrics": "3e1f70f11442/seed-1.metrics.json",
+        "policies": "3e1f70f11442/seed-1.policies.pt"
+      },
+      "run_dir": "3e1f70f11442",
+      "seed": 1,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/3d180cf9f659",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "3e1f70f11442/manifest.json",
+        "metrics": "3e1f70f11442/seed-2.metrics.json",
+        "policies": "3e1f70f11442/seed-2.policies.pt"
+      },
+      "run_dir": "3e1f70f11442",
+      "seed": 2,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/cc953e0171cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "3e1f70f11442/manifest.json",
+        "metrics": "3e1f70f11442/seed-3.metrics.json",
+        "policies": "3e1f70f11442/seed-3.policies.pt"
+      },
+      "run_dir": "3e1f70f11442",
+      "seed": 3,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/ee36afd9c442",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "3e1f70f11442/manifest.json",
+        "metrics": "3e1f70f11442/seed-4.metrics.json",
+        "policies": "3e1f70f11442/seed-4.policies.pt"
+      },
+      "run_dir": "3e1f70f11442",
+      "seed": 4,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/72a9ce1289cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "3e1f70f11442/manifest.json",
+        "metrics": "3e1f70f11442/seed-5.metrics.json",
+        "policies": "3e1f70f11442/seed-5.policies.pt"
+      },
+      "run_dir": "3e1f70f11442",
+      "seed": 5,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/9186902d07d3",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "3e1f70f11442/manifest.json",
+        "metrics": "3e1f70f11442/seed-6.metrics.json",
+        "policies": "3e1f70f11442/seed-6.policies.pt"
+      },
+      "run_dir": "3e1f70f11442",
+      "seed": 6,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/3e4bda4d6022",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "3e1f70f11442/manifest.json",
+        "metrics": "3e1f70f11442/seed-7.metrics.json",
+        "policies": "3e1f70f11442/seed-7.policies.pt"
+      },
+      "run_dir": "3e1f70f11442",
+      "seed": 7,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/076dc2ee0b00",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "3e1f70f11442/manifest.json",
+        "metrics": "3e1f70f11442/seed-8.metrics.json",
+        "policies": "3e1f70f11442/seed-8.policies.pt"
+      },
+      "run_dir": "3e1f70f11442",
+      "seed": 8,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "grpo",
+      "base": "bases/a81fa5a15474",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "3e1f70f11442/manifest.json",
+        "metrics": "3e1f70f11442/seed-9.metrics.json",
+        "policies": "3e1f70f11442/seed-9.policies.pt"
+      },
+      "run_dir": "3e1f70f11442",
+      "seed": 9,
+      "trainer": "grpo"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/c4434e92c4c7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "213bfb897b6d/manifest.json",
+        "metrics": "213bfb897b6d/seed-0.metrics.json",
+        "policies": "213bfb897b6d/seed-0.policies.pt"
+      },
+      "run_dir": "213bfb897b6d",
+      "seed": 0,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/f5915ab76da7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "213bfb897b6d/manifest.json",
+        "metrics": "213bfb897b6d/seed-1.metrics.json",
+        "policies": "213bfb897b6d/seed-1.policies.pt"
+      },
+      "run_dir": "213bfb897b6d",
+      "seed": 1,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/3d180cf9f659",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "213bfb897b6d/manifest.json",
+        "metrics": "213bfb897b6d/seed-2.metrics.json",
+        "policies": "213bfb897b6d/seed-2.policies.pt"
+      },
+      "run_dir": "213bfb897b6d",
+      "seed": 2,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/cc953e0171cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "213bfb897b6d/manifest.json",
+        "metrics": "213bfb897b6d/seed-3.metrics.json",
+        "policies": "213bfb897b6d/seed-3.policies.pt"
+      },
+      "run_dir": "213bfb897b6d",
+      "seed": 3,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/ee36afd9c442",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "213bfb897b6d/manifest.json",
+        "metrics": "213bfb897b6d/seed-4.metrics.json",
+        "policies": "213bfb897b6d/seed-4.policies.pt"
+      },
+      "run_dir": "213bfb897b6d",
+      "seed": 4,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/72a9ce1289cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "213bfb897b6d/manifest.json",
+        "metrics": "213bfb897b6d/seed-5.metrics.json",
+        "policies": "213bfb897b6d/seed-5.policies.pt"
+      },
+      "run_dir": "213bfb897b6d",
+      "seed": 5,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/9186902d07d3",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "213bfb897b6d/manifest.json",
+        "metrics": "213bfb897b6d/seed-6.metrics.json",
+        "policies": "213bfb897b6d/seed-6.policies.pt"
+      },
+      "run_dir": "213bfb897b6d",
+      "seed": 6,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/3e4bda4d6022",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "213bfb897b6d/manifest.json",
+        "metrics": "213bfb897b6d/seed-7.metrics.json",
+        "policies": "213bfb897b6d/seed-7.policies.pt"
+      },
+      "run_dir": "213bfb897b6d",
+      "seed": 7,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/076dc2ee0b00",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "213bfb897b6d/manifest.json",
+        "metrics": "213bfb897b6d/seed-8.metrics.json",
+        "policies": "213bfb897b6d/seed-8.policies.pt"
+      },
+      "run_dir": "213bfb897b6d",
+      "seed": 8,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "rl_entropy",
+      "base": "bases/a81fa5a15474",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "213bfb897b6d/manifest.json",
+        "metrics": "213bfb897b6d/seed-9.metrics.json",
+        "policies": "213bfb897b6d/seed-9.policies.pt"
+      },
+      "run_dir": "213bfb897b6d",
+      "seed": 9,
+      "trainer": "rl_entropy"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/c4434e92c4c7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e5b2801e5efa/manifest.json",
+        "metrics": "e5b2801e5efa/seed-0.metrics.json",
+        "policies": "e5b2801e5efa/seed-0.policies.pt"
+      },
+      "run_dir": "e5b2801e5efa",
+      "seed": 0,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/f5915ab76da7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e5b2801e5efa/manifest.json",
+        "metrics": "e5b2801e5efa/seed-1.metrics.json",
+        "policies": "e5b2801e5efa/seed-1.policies.pt"
+      },
+      "run_dir": "e5b2801e5efa",
+      "seed": 1,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/3d180cf9f659",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e5b2801e5efa/manifest.json",
+        "metrics": "e5b2801e5efa/seed-2.metrics.json",
+        "policies": "e5b2801e5efa/seed-2.policies.pt"
+      },
+      "run_dir": "e5b2801e5efa",
+      "seed": 2,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/cc953e0171cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e5b2801e5efa/manifest.json",
+        "metrics": "e5b2801e5efa/seed-3.metrics.json",
+        "policies": "e5b2801e5efa/seed-3.policies.pt"
+      },
+      "run_dir": "e5b2801e5efa",
+      "seed": 3,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/ee36afd9c442",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e5b2801e5efa/manifest.json",
+        "metrics": "e5b2801e5efa/seed-4.metrics.json",
+        "policies": "e5b2801e5efa/seed-4.policies.pt"
+      },
+      "run_dir": "e5b2801e5efa",
+      "seed": 4,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/72a9ce1289cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e5b2801e5efa/manifest.json",
+        "metrics": "e5b2801e5efa/seed-5.metrics.json",
+        "policies": "e5b2801e5efa/seed-5.policies.pt"
+      },
+      "run_dir": "e5b2801e5efa",
+      "seed": 5,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/9186902d07d3",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e5b2801e5efa/manifest.json",
+        "metrics": "e5b2801e5efa/seed-6.metrics.json",
+        "policies": "e5b2801e5efa/seed-6.policies.pt"
+      },
+      "run_dir": "e5b2801e5efa",
+      "seed": 6,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/3e4bda4d6022",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e5b2801e5efa/manifest.json",
+        "metrics": "e5b2801e5efa/seed-7.metrics.json",
+        "policies": "e5b2801e5efa/seed-7.policies.pt"
+      },
+      "run_dir": "e5b2801e5efa",
+      "seed": 7,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/076dc2ee0b00",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e5b2801e5efa/manifest.json",
+        "metrics": "e5b2801e5efa/seed-8.metrics.json",
+        "policies": "e5b2801e5efa/seed-8.policies.pt"
+      },
+      "run_dir": "e5b2801e5efa",
+      "seed": 8,
+      "trainer": "sft"
+    },
+    {
+      "arm": "sft",
+      "base": "bases/a81fa5a15474",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e5b2801e5efa/manifest.json",
+        "metrics": "e5b2801e5efa/seed-9.metrics.json",
+        "policies": "e5b2801e5efa/seed-9.policies.pt"
+      },
+      "run_dir": "e5b2801e5efa",
+      "seed": 9,
+      "trainer": "sft"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/c4434e92c4c7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "def3c8bb80b1/manifest.json",
+        "metrics": "def3c8bb80b1/seed-0.metrics.json",
+        "policies": "def3c8bb80b1/seed-0.policies.pt"
+      },
+      "run_dir": "def3c8bb80b1",
+      "seed": 0,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/f5915ab76da7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "def3c8bb80b1/manifest.json",
+        "metrics": "def3c8bb80b1/seed-1.metrics.json",
+        "policies": "def3c8bb80b1/seed-1.policies.pt"
+      },
+      "run_dir": "def3c8bb80b1",
+      "seed": 1,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/3d180cf9f659",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "def3c8bb80b1/manifest.json",
+        "metrics": "def3c8bb80b1/seed-2.metrics.json",
+        "policies": "def3c8bb80b1/seed-2.policies.pt"
+      },
+      "run_dir": "def3c8bb80b1",
+      "seed": 2,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/cc953e0171cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "def3c8bb80b1/manifest.json",
+        "metrics": "def3c8bb80b1/seed-3.metrics.json",
+        "policies": "def3c8bb80b1/seed-3.policies.pt"
+      },
+      "run_dir": "def3c8bb80b1",
+      "seed": 3,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/ee36afd9c442",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "def3c8bb80b1/manifest.json",
+        "metrics": "def3c8bb80b1/seed-4.metrics.json",
+        "policies": "def3c8bb80b1/seed-4.policies.pt"
+      },
+      "run_dir": "def3c8bb80b1",
+      "seed": 4,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/72a9ce1289cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "def3c8bb80b1/manifest.json",
+        "metrics": "def3c8bb80b1/seed-5.metrics.json",
+        "policies": "def3c8bb80b1/seed-5.policies.pt"
+      },
+      "run_dir": "def3c8bb80b1",
+      "seed": 5,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/9186902d07d3",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "def3c8bb80b1/manifest.json",
+        "metrics": "def3c8bb80b1/seed-6.metrics.json",
+        "policies": "def3c8bb80b1/seed-6.policies.pt"
+      },
+      "run_dir": "def3c8bb80b1",
+      "seed": 6,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/3e4bda4d6022",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "def3c8bb80b1/manifest.json",
+        "metrics": "def3c8bb80b1/seed-7.metrics.json",
+        "policies": "def3c8bb80b1/seed-7.policies.pt"
+      },
+      "run_dir": "def3c8bb80b1",
+      "seed": 7,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/076dc2ee0b00",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "def3c8bb80b1/manifest.json",
+        "metrics": "def3c8bb80b1/seed-8.metrics.json",
+        "policies": "def3c8bb80b1/seed-8.policies.pt"
+      },
+      "run_dir": "def3c8bb80b1",
+      "seed": 8,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h1",
+      "base": "bases/a81fa5a15474",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "def3c8bb80b1/manifest.json",
+        "metrics": "def3c8bb80b1/seed-9.metrics.json",
+        "policies": "def3c8bb80b1/seed-9.policies.pt"
+      },
+      "run_dir": "def3c8bb80b1",
+      "seed": 9,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/c4434e92c4c7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "97084717d766/manifest.json",
+        "metrics": "97084717d766/seed-0.metrics.json",
+        "policies": "97084717d766/seed-0.policies.pt"
+      },
+      "run_dir": "97084717d766",
+      "seed": 0,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/f5915ab76da7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "97084717d766/manifest.json",
+        "metrics": "97084717d766/seed-1.metrics.json",
+        "policies": "97084717d766/seed-1.policies.pt"
+      },
+      "run_dir": "97084717d766",
+      "seed": 1,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/3d180cf9f659",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "97084717d766/manifest.json",
+        "metrics": "97084717d766/seed-2.metrics.json",
+        "policies": "97084717d766/seed-2.policies.pt"
+      },
+      "run_dir": "97084717d766",
+      "seed": 2,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/cc953e0171cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "97084717d766/manifest.json",
+        "metrics": "97084717d766/seed-3.metrics.json",
+        "policies": "97084717d766/seed-3.policies.pt"
+      },
+      "run_dir": "97084717d766",
+      "seed": 3,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/ee36afd9c442",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "97084717d766/manifest.json",
+        "metrics": "97084717d766/seed-4.metrics.json",
+        "policies": "97084717d766/seed-4.policies.pt"
+      },
+      "run_dir": "97084717d766",
+      "seed": 4,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/72a9ce1289cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "97084717d766/manifest.json",
+        "metrics": "97084717d766/seed-5.metrics.json",
+        "policies": "97084717d766/seed-5.policies.pt"
+      },
+      "run_dir": "97084717d766",
+      "seed": 5,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/9186902d07d3",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "97084717d766/manifest.json",
+        "metrics": "97084717d766/seed-6.metrics.json",
+        "policies": "97084717d766/seed-6.policies.pt"
+      },
+      "run_dir": "97084717d766",
+      "seed": 6,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/3e4bda4d6022",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "97084717d766/manifest.json",
+        "metrics": "97084717d766/seed-7.metrics.json",
+        "policies": "97084717d766/seed-7.policies.pt"
+      },
+      "run_dir": "97084717d766",
+      "seed": 7,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/076dc2ee0b00",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "97084717d766/manifest.json",
+        "metrics": "97084717d766/seed-8.metrics.json",
+        "policies": "97084717d766/seed-8.policies.pt"
+      },
+      "run_dir": "97084717d766",
+      "seed": 8,
+      "trainer": "hints"
+    },
+    {
+      "arm": "hints_h3",
+      "base": "bases/a81fa5a15474",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "97084717d766/manifest.json",
+        "metrics": "97084717d766/seed-9.metrics.json",
+        "policies": "97084717d766/seed-9.policies.pt"
+      },
+      "run_dir": "97084717d766",
+      "seed": 9,
+      "trainer": "hints"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/c4434e92c4c7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e7e191479d2f/manifest.json",
+        "metrics": "e7e191479d2f/seed-0.metrics.json",
+        "policies": "e7e191479d2f/seed-0.policies.pt"
+      },
+      "run_dir": "e7e191479d2f",
+      "seed": 0,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/f5915ab76da7",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e7e191479d2f/manifest.json",
+        "metrics": "e7e191479d2f/seed-1.metrics.json",
+        "policies": "e7e191479d2f/seed-1.policies.pt"
+      },
+      "run_dir": "e7e191479d2f",
+      "seed": 1,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/3d180cf9f659",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e7e191479d2f/manifest.json",
+        "metrics": "e7e191479d2f/seed-2.metrics.json",
+        "policies": "e7e191479d2f/seed-2.policies.pt"
+      },
+      "run_dir": "e7e191479d2f",
+      "seed": 2,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/cc953e0171cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e7e191479d2f/manifest.json",
+        "metrics": "e7e191479d2f/seed-3.metrics.json",
+        "policies": "e7e191479d2f/seed-3.policies.pt"
+      },
+      "run_dir": "e7e191479d2f",
+      "seed": 3,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/ee36afd9c442",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e7e191479d2f/manifest.json",
+        "metrics": "e7e191479d2f/seed-4.metrics.json",
+        "policies": "e7e191479d2f/seed-4.policies.pt"
+      },
+      "run_dir": "e7e191479d2f",
+      "seed": 4,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/72a9ce1289cb",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e7e191479d2f/manifest.json",
+        "metrics": "e7e191479d2f/seed-5.metrics.json",
+        "policies": "e7e191479d2f/seed-5.policies.pt"
+      },
+      "run_dir": "e7e191479d2f",
+      "seed": 5,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/9186902d07d3",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e7e191479d2f/manifest.json",
+        "metrics": "e7e191479d2f/seed-6.metrics.json",
+        "policies": "e7e191479d2f/seed-6.policies.pt"
+      },
+      "run_dir": "e7e191479d2f",
+      "seed": 6,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/3e4bda4d6022",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e7e191479d2f/manifest.json",
+        "metrics": "e7e191479d2f/seed-7.metrics.json",
+        "policies": "e7e191479d2f/seed-7.policies.pt"
+      },
+      "run_dir": "e7e191479d2f",
+      "seed": 7,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/076dc2ee0b00",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e7e191479d2f/manifest.json",
+        "metrics": "e7e191479d2f/seed-8.metrics.json",
+        "policies": "e7e191479d2f/seed-8.policies.pt"
+      },
+      "run_dir": "e7e191479d2f",
+      "seed": 8,
+      "trainer": "sft_then_rl"
+    },
+    {
+      "arm": "sft_then_rl",
+      "base": "bases/a81fa5a15474",
+      "factors": {
+        "task.shared_prefix": 4
+      },
+      "files": {
+        "manifest": "e7e191479d2f/manifest.json",
+        "metrics": "e7e191479d2f/seed-9.metrics.json",
+        "policies": "e7e191479d2f/seed-9.policies.pt"
+      },
+      "run_dir": "e7e191479d2f",
+      "seed": 9,
+      "trainer": "sft_then_rl"
+    }
+  ],
+  "save_policies": "checkpoints",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "dummy",
+  "task": {"type": "tiny_prompt", "params": {"vocab": 3}},
+  "base": {"type": "uniform_tabular", "params": {"init_scale": 0.5}},
+  "backend": {"type": "j_only", "params": {}},
+  "factors": {"task.length": [3]},
+  "arms": [
+    {"name": "none", "trainer": "none", "params": {}},
+    {"name": "none_again", "trainer": "none", "params": {}}
+  ],
+  "seeds": [0, 1],
+  "budget": 10,
+  "checkpoints": [0, 5, 10],
+  "measure": {"ns": [16, 64], "cs": [0.5, 1, 2], "group_by": ["difficulty", "split"]},
+  "save_policies": "checkpoints"
+}

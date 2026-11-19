@@ -1,0 +1,16 @@
+{
+  "name": "grid_example",
+  "task": {"type": "grid", "params": {"n": 4, "H": 8}},
+  "base": {"type": "grid_routes", "params": {"easy_bonus": 2.0, "hard_bonus": 1.0, "hard_trap": 2.0, "route": "seeded"}},
+  "backend": {"type": "exact", "params": {}},
+  "arms": [
+    {"name": "none", "trainer": "none", "params": {}},
+    {"name": "reinforce", "trainer": "tabular_reinforce", "params": {"batch": 32, "lr": 0.1, "optimizer": "adam"}},
+    {"name": "rloo", "trainer": "rloo", "params": {"group": 32, "lr": 0.1}}
+  ],
+  "seeds": [0, 1, 2],
+  "budget": 40,
+  "checkpoints": [0, 20, 40],
+  "measure": {"ns": [16, 64], "cs": [1], "group_by": ["difficulty", "split"]},
+  "save_policies": "final"
+}
