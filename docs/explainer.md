@@ -1,6 +1,6 @@
 # Explainer: capability vs reliability, for a new teammate
 
-This is the plain-language companion to the project. Read it before `docs/preregistration.md`, `docs/gate2.md` and `docs/experiment_main/report.md`. It has five parts:
+This is the plain-language companion to the RQ3 Phase 2 piece of the project (the harness and its experiment), not to the whole project. Read it before `docs/preregistration.md`, `docs/gate2.md` and `docs/experiment_main/report.md`. It has five parts:
 - what each piece of the code is;
 - a small worked example of the split;
 - how to read the figures;

@@ -39,6 +39,11 @@ proofs in [docs/proofs.md](docs/proofs.md) have been checked and independently
 re-derived by a teammate. The
 metric definitions may change as the team ratifies the proposals in the blueprint.
 
+The experiment harness (`src/capsplit/harness/`) and the pre-registered RQ3 Phase 2
+experiment are done. Results are in [docs/report.md](docs/report.md). Still to do:
+RQ2's time-to-cross curve, RQ3 in the tabular grid worlds (Phase 1) and RQ4, the pass@k
+misdiagnosis rate.
+
 ## Setup
 
 Requires Python 3.10 or later. The `deep` extra adds `torch`, which the sequence task
@@ -69,6 +74,8 @@ Results go under `results/`, which is git-ignored.
 | `src/capsplit/estimator.py` | Sampled split and sample-size bounds |
 | `src/capsplit/diagnostics.py` | The pass@k rule and its scoring |
 | `src/capsplit/runlog.py` | Run directories and manifests |
+| `src/capsplit/harness/` | Plug-in experiment harness: tasks, policies, trainers, backends, runner, report |
+| `configs/` | Harness experiment configs (`main.json` is the RQ3 Phase 2 run) |
 | `experiments/` | Scripts that reproduce results with fixed configurations |
 | `tests/` | Unit and regression tests |
 | `docs/project-plan.pdf` | Research plan: definitions, propositions and hypotheses |
@@ -76,6 +83,9 @@ Results go under `results/`, which is git-ignored.
 | `docs/pilot-blueprint.md` | Pilot plan and task specifications |
 | `docs/pilot-report.md` | Pilot results and recommendation |
 | `docs/proofs.md` | Proofs, checked and independently re-derived |
+| `docs/report.md` | RQ3 Phase 2 results (not the final report) |
+| `docs/preregistration.md` | Frozen RQ3 Phase 2 hypotheses and decision rules |
+| `docs/harness.md` | Harness developer guide |
 
 ## Workflow
 

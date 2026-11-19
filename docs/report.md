@@ -1,6 +1,11 @@
-# Capability or reliability? A controlled comparison of post-training signals
+# RQ3 (Phase 2): which post-training signals produce capability gain?
 
-Final project report for the graduate RL class (Prof. Hickman), branch `harness/capability-vs-reliability`.
+> **Status: the RQ3 Phase 2 piece of the project, not the final report.** This report answers RQ3 from `docs/blueprint.md` §2.6 ("Which interventions create capability gain?") in the shared-parameter sequence setting, and touches part of RQ2 (what on-policy training changes). The project is a measurement project, and these parts are still to be done:
+> - **RQ2:** the time-to-cross curve and its dependence on base probability.
+> - **RQ3, Phase 1:** interventions in the tabular grid worlds.
+> - **RQ4:** how often a pass@k rule misdiagnoses a run, reported beside the SRR/NDR scores.
+>
+> The final report will combine these with this piece. Seeds here are 10, below the blueprint's Target of 20.
 
 Every number here is copied from a generated file:
 - `docs/experiment_main/tables/main.csv`
