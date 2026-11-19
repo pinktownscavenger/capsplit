@@ -126,56 +126,44 @@ def crossover(ns: Sequence[int], rel: Sequence[float], total: float, fraction: f
 # --------------------------------------------------------------------------- N_train
 
 
-def _episodes_per_prompt(log: Any, train_ids: Sequence[int]) -> dict[int, float]:
-    """{prompt id: episodes sampled} from a training log; accepts the shapes listed below.
+def _episodes_per_prompt(log: Any, step: int | None) -> dict[int, float] | None:
+    """{prompt id: episodes sampled up to `step`} from a training log (trainers.rl.SampleLog).
 
-    * {"per_prompt" | "prompts": {pid: {"episodes_sampled": n} | n}}
-    * {"per_prompt" | "prompts": [{"prompt_id" | "id": pid, "episodes_sampled": n}, ...]}
-    * {"episodes_sampled": {pid: n}} or {"episodes_sampled": [n, ...]} aligned with
-      "prompt_ids" (else with the run's training prompts)
+    `step` None means the whole run. Returns None when the log has no per-checkpoint episode
+    counts for `step` (logs written before those counts existed).
     """
-    if not isinstance(log, dict):
-        raise ValueError("training log is not a JSON object")
-
-    def value(v: Any) -> float:
-        return float(v["episodes_sampled"] if isinstance(v, dict) else v)
-
-    for key in ("per_prompt", "prompts"):
-        if key in log:
-            table = log[key]
-            if isinstance(table, dict):
-                return {int(k): value(v) for k, v in table.items()}
-            if isinstance(table, list):
-                out = {}
-                for row in table:
-                    pid = row.get("prompt_id", row.get("id"))
-                    if pid is None:
-                        raise ValueError(f"training log {key!r} row has no prompt_id")
-                    out[int(pid)] = value(row)
-                return out
-    if "episodes_sampled" in log:
-        table = log["episodes_sampled"]
-        if isinstance(table, dict):
-            return {int(k): float(v) for k, v in table.items()}
-        if isinstance(table, list):
-            ids = list(log.get("prompt_ids") or log.get("train_prompt_ids") or train_ids)
-            if len(ids) != len(table):
-                raise ValueError("training log episodes_sampled list does not match its prompt ids")
-            return {int(p): float(v) for p, v in zip(ids, table)}
-    raise ValueError("training log has no per-prompt episodes_sampled")
+    if not isinstance(log, dict) or not isinstance(log.get("prompts"), dict):
+        raise ValueError("training log has no 'prompts' table (expected the trainers.rl.SampleLog schema)")
+    out: dict[int, float] = {}
+    for pid, entry in log["prompts"].items():
+        if step is None:
+            out[int(pid)] = float(entry["episodes_sampled"])
+            continue
+        by_checkpoint = entry.get("episodes_by_checkpoint") or {}
+        if str(step) not in by_checkpoint:
+            return None
+        out[int(pid)] = float(by_checkpoint[str(step)])
+    return out
 
 
 def n_train_for_run(
-    exp_dir: Path, run: dict, train_ids: Sequence[int], n_train: Mapping[str, float] | None
+    exp_dir: Path, run: dict, train_ids: Sequence[int], n_train: Mapping[str, float] | None, step: int | None = None
 ) -> dict:
     """{"value", "min", "max", "source", "note"} for one run (value None when unknown)."""
     rel = run.get("files", {}).get("training") or f"{run['run_dir']}/seed-{run['seed']}.training.json"
     log_path = exp_dir / rel
     if log_path.exists():
-        per = _episodes_per_prompt(json.loads(log_path.read_text()), train_ids)
-        values = [per.get(int(p), 0.0) for p in train_ids]
-        missing = [int(p) for p in train_ids if int(p) not in per]
-        note = f"{len(missing)} training prompts absent from the log, counted as 0" if missing else ""
+        log_data = json.loads(log_path.read_text())
+        per = _episodes_per_prompt(log_data, step)
+        if per is None:
+            note = f"log has no episode counts at step {step}"
+            return {"value": None, "min": None, "max": None, "source": SOURCE_LOG, "note": note}
+        else:
+            # Average over the prompts the arm actually sampled (an arm may train on a subset).
+            sampled = [v for v in per.values() if v > 0]
+            values = sampled or list(per.values())
+            skipped = len(per) - len(sampled)
+            note = f"averaged over {len(sampled)} sampled prompts; {skipped} never sampled" if sampled and skipped else ""
         return {
             "value": float(np.mean(values)) if values else 0.0,
             "min": float(min(values)) if values else 0.0,
@@ -337,9 +325,8 @@ def build_budget_curve(
     """
     exp_dir = Path(results_dir)
     out = Path(out_dir) if out_dir is not None else exp_dir / "budget_curve"
-    for name in ("budget_curve.csv", "summary.json", "budget_curve.md"):
-        if (out / name).exists():
-            raise FileExistsError(f"{out / name} exists; choose a new out_dir")
+    if out.exists() and any(out.iterdir()):
+        raise FileExistsError(f"{out} already exists and is not empty; choose a new out_dir")
     index = json.loads((exp_dir / "index.json").read_text())
     runs = [r for r in index["runs"] if arms is None or r["arm"] in arms]
     say = log or (lambda msg: None)
@@ -350,7 +337,7 @@ def build_budget_curve(
     for run in runs:
         metrics_path = exp_dir / run["files"]["metrics"]
         train_ids = json.loads(metrics_path.read_text())["train_prompt_ids"]
-        infos.append(n_train_for_run(exp_dir, run, train_ids, n_train))
+        infos.append(n_train_for_run(exp_dir, run, train_ids, n_train, step))
     known = [i["value"] for i in infos if i["value"] is not None]
     ns = sorted({int(n) for n in n_grid}) if n_grid is not None else default_grid(max(known) if known else None)
     if not ns or ns[0] < 1:

@@ -143,7 +143,7 @@ def _entry(out: pathlib.Path, group: str) -> dict:
 
 
 def test_planted_curve_and_n_star_with_training_log(tmp_path):
-    exp = _planted_dir(tmp_path, log={"per_prompt": {"0": {"episodes_sampled": 1000}, "1": {"episodes_sampled": 2000}}})
+    exp = _planted_dir(tmp_path, log={"prompts": {"0": {"episodes_sampled": 1000}, "1": {"episodes_sampled": 2000}}})
     out = build_budget_curve(exp, out_dir=tmp_path / "bc", n_grid=[1, 2, 4, 512, 1024, 2048])
     rows = {(r["group"], int(r["N"])): r for r in _csv(out)}
     # easy_train is prompt 0: q0 = (0.5, 0.001), change = (+0.1, +0.1), total 0.2.
@@ -240,3 +240,29 @@ def test_end_to_end_on_runner_output_matches_exact_backend(tmp_path):
     for name in ("budget_curve.csv", "summary.json", "budget_curve.md", "figures/budget_rloo.png"):
         assert (out / name).read_bytes() == (again / name).read_bytes()
     assert TASKS.get("tiny_prompt")
+
+
+def test_n_train_respects_step_and_ignores_unsampled_prompts(tmp_path):
+    """Regressions (review): N_train at an earlier checkpoint, and prompts the arm never sampled."""
+    from capsplit.harness.budget import n_train_for_run
+
+    log = {"prompts": {
+        "0": {"episodes_sampled": 40, "episodes_by_checkpoint": {"0": 0, "5": 20, "10": 40}},
+        "1": {"episodes_sampled": 0, "episodes_by_checkpoint": {"0": 0, "5": 0, "10": 0}},
+    }}
+    (tmp_path / "cell").mkdir()
+    (tmp_path / "cell" / "seed-0.training.json").write_text(json.dumps(log))
+    run = {"arm": "rl", "run_dir": "cell", "seed": 0, "files": {"training": "cell/seed-0.training.json"}}
+    assert n_train_for_run(tmp_path, run, [0, 1], None)["value"] == 40.0
+    assert n_train_for_run(tmp_path, run, [0, 1], None, step=5)["value"] == 20.0
+    assert n_train_for_run(tmp_path, run, [0, 1], None, step=7)["value"] is None
+
+
+def test_refuses_a_non_empty_out_dir(tmp_path):
+    from capsplit.harness.budget import build_budget_curve
+
+    out = tmp_path / "out"
+    out.mkdir()
+    (out / "anything.png").write_text("x")
+    with pytest.raises(FileExistsError):
+        build_budget_curve(tmp_path, out_dir=out)

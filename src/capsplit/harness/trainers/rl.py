@@ -93,6 +93,7 @@ class SampleLog:
         # prompt -> {update: correct count}; kept per update so phases can be merged.
         self._correct: dict[int, dict[int, int]] = {}
         self._hinted_correct: dict[int, dict[int, int]] = {}
+        self._episodes_by_update: dict[int, dict[int, int]] = {}
         for pid in prompt_ids:
             self._ensure(int(pid))
 
@@ -104,6 +105,7 @@ class SampleLog:
         self._episodes[pid] = self._tokens[pid] = self._hinted_episodes[pid] = 0
         self._correct[pid] = {}
         self._hinted_correct[pid] = {}
+        self._episodes_by_update[pid] = {}
 
     def record(self, update: int, rollout: Rollout, rewards: Sequence[float] | torch.Tensor, hinted: bool = False) -> None:
         """Add the episodes of `rollout` (with their 0/1 `rewards`) sampled in update `update`."""
@@ -115,6 +117,7 @@ class SampleLog:
             pid = int(pid)
             self._ensure(pid)
             self._episodes[pid] += 1
+            self._episodes_by_update[pid][int(update)] = self._episodes_by_update[pid].get(int(update), 0) + 1
             self._tokens[pid] += len(actions) - int(forced)
             if hinted:
                 self._hinted_episodes[pid] += 1
@@ -139,7 +142,12 @@ class SampleLog:
             self._episodes[pid] += other._episodes[pid]
             self._tokens[pid] += other._tokens[pid]
             self._hinted_episodes[pid] += other._hinted_episodes[pid]
-            for mine_c, theirs_c in ((self._correct, other._correct), (self._hinted_correct, other._hinted_correct)):
+            pairs = (
+                (self._correct, other._correct),
+                (self._hinted_correct, other._hinted_correct),
+                (self._episodes_by_update, other._episodes_by_update),
+            )
+            for mine_c, theirs_c in pairs:
                 for update, count in theirs_c[pid].items():
                     mine_c[pid][update + offset] = mine_c[pid].get(update + offset, 0) + count
 
@@ -153,6 +161,7 @@ class SampleLog:
                 "first_success_update": self._first[pid],
                 "correct_by_checkpoint": self._cumulative(self._correct[pid], self._hinted_correct[pid]),
                 "episodes_sampled": self._episodes[pid],
+                "episodes_by_checkpoint": self._cumulative(self._episodes_by_update[pid]),
                 "tokens_sampled": self._tokens[pid],
             }
             if self.hints:
