@@ -51,3 +51,11 @@ Each entry is one choice, with a one-line reason. Newest at the bottom. "T*" nam
 | H45 | Gate 2 | Where the pre-registration states only a "supported" condition (H1a, H3), any other outcome is recorded as "not supported", and the output says so | The plan gave no inconclusive band for those parts; this is the literal reading |
 | H46 | T5 | Main run took 6 h 26 min of wall time on 6 workers (240 runs), far above the planned estimate | Recorded for anyone re-running the grid |
 | H47 | T8 | The pre-registered per-arm sample count (prereg §4) was not logged by the harness; the report gives the counts implied by the design and states that the hint arms' extra samples were not recorded | Recorded as an unmet item rather than re-running 6.4 h for a disclosure-only quantity |
+
+## RQ2 time-to-cross
+
+Decisions for `experiments/rq2_time_to_cross.py` (design: `docs/rq2-time-to-cross-design.md`). Same format; ids are `RQ2-*`.
+
+| # | Task | Decision | Reason |
+|---|---|---|---|
+| RQ2-1 | T4 | Noise σ = 1.0 for the robustness and arm B draws; arm B's fixed common-route bonuses are W1 0.75, W2 1.0, W3 1.75, giving q₀(common) = 0.0240, 0.0199 and 0.0226 at ratio 1 with σ = 0 | σ is the middle of the design's [0.5, 1.5]; the bonuses put q₀(common) near the middle of [0.01, 0.04], so 10 × q₀(rare) ≤ 0.4 stays reachable |
