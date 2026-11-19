@@ -64,3 +64,26 @@ def test_competing_ratio_and_common_range(name, ratio):
     if ratio == 1.0:
         _, q_common0, _ = competing_base(table, si, name, 1.0, 0.0, 0)
         assert 0.01 <= q_common0 <= 0.04
+
+
+# ------------------------------------------------------------------- arm A and robustness runs
+
+from rq2_time_to_cross import run_arm_a, run_robust  # noqa: E402
+
+from capsplit.runlog import load_seeds  # noqa: E402
+
+
+def test_arm_a_quick_matches_scalar(tmp_path):
+    rows = load_seeds(run_arm_a(quick=True, root=str(tmp_path)))
+    assert len(rows) == 3
+    for r in rows:
+        assert int(r["updates"]) == int(r["updates_scalar"]) > 0
+        assert np.max(np.abs(r["q"][:, 0] - r["q_scalar"])) < 1e-9
+        assert float(r["q0"]) == pytest.approx(float(r["q0_target"]), rel=0.01)
+
+
+def test_robust_quick_writes_both_conditions(tmp_path):
+    rows = load_seeds(run_robust(quick=True, root=str(tmp_path)))
+    assert {str(r["condition"]) for r in rows} == {"R1", "R2"}
+    assert all(int(r["updates"]) > 0 for r in rows)
+    assert {int(r["horizon"]) for r in rows if str(r["condition"]) == "R2"} == {9}

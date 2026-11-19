@@ -8,13 +8,20 @@ Run: python experiments/rq2_time_to_cross.py {arm-a,robust,arm-b,sampled,report}
 """
 from __future__ import annotations
 
+import argparse
+import pathlib
+import sys
+import time
+
 import numpy as np
 from phase1_rq1 import R_COMMON, R_RARE
 from phase1_rq1 import WORLD as PHASE1_WORLD
 from pilot_rq2 import COMPETING_WORLD, ISOLATED_WALLS, ROUTE_A, ROUTE_B
 
-from capsplit.train.tabular import exact_pg_step
-from capsplit.worlds import MOVES, N_ACTIONS, GridWorld
+from capsplit.crossing import crossing_step, integral_time, scalar_isolated_trace
+from capsplit.runlog import run_dir, save_seed
+from capsplit.train.tabular import exact_pg_step, trace_exact_pg
+from capsplit.worlds import MOVES, N_ACTIONS, GridWorld, compile_grid
 
 # ----------------------------------------------------------------------------- frozen settings
 
@@ -134,3 +141,90 @@ def competing_base(table, state_index: dict, name: str, ratio: float, sigma: flo
     logits = _with_bonus(base, r_slots, _bisect(ratio_at, ratio, f"competing base {name}"))
     q = exact_pg_step(table, logits)[1]
     return logits, float(q[i_common]), float(q[i_rare])
+
+
+# ----------------------------------------------------------------------------- runs
+
+QUICK_Q0 = (1e-4, 1e-3, 1e-2)
+
+
+def _updates(q: np.ndarray, line: float) -> int:
+    """Time to cross as an int for saving: -1 means censored."""
+    step = crossing_step(q, line)
+    return -1 if step is None else step
+
+
+def _log(message: str) -> None:
+    print(message, flush=True)
+
+
+def run_arm_a(quick: bool, root: str = "results") -> pathlib.Path:
+    """Arm A main curve: full-table exact PG against the scalar recursion and the integral."""
+    q0s = QUICK_Q0 if quick else ARM_A_Q0
+    lrs = (1.0,) if quick else ARM_A_LRS
+    config = {"arm": "A", "q0": list(q0s), "lrs": list(lrs), "line": LINE, "cap": ARM_A_CAP, "horizon": 8, "quick": quick}
+    directory = run_dir("rq2_arm_a", config, root=root)
+    world = isolated_world(8)
+    table, state_index = compile_grid(world)
+    _log(f"arm A -> {directory}")
+    i = 0
+    for lr in lrs:
+        for target in q0s:
+            start = time.perf_counter()
+            logits0 = noisy_isolated_base(table, state_index, world, target, 0.0, 0)
+            q, _ = trace_exact_pg(table, logits0, lr, ARM_A_CAP, [0], stop_line=LINE)
+            q0 = float(q[0, 0])
+            q_scalar = scalar_isolated_trace(q0, 8, lr, ARM_A_CAP, stop_line=LINE)
+            updates, updates_scalar = _updates(q[:, 0], LINE), _updates(q_scalar, LINE)
+            integral = integral_time(q0, 8, lr, LINE)
+            save_seed(directory, i, lr=lr, q0_target=target, q0=q0, q=q, q_scalar=q_scalar,
+                      updates=updates, updates_scalar=updates_scalar, integral=integral)
+            _log(f"  lr={lr:<4} q0={target:.1e}: {updates:>7} updates (scalar {updates_scalar}, "
+                 f"integral {integral:,.0f}) {time.perf_counter() - start:.1f} s")
+            i += 1
+    return directory
+
+
+def run_robust(quick: bool, root: str = "results") -> pathlib.Path:
+    """Arm A robustness: R1 off-route noise draws at H = 8, R2 a longer horizon without noise. lr = 1."""
+    q0s = QUICK_Q0 if quick else ARM_A_Q0
+    draws = ROBUST_SEEDS[:2] if quick else ROBUST_SEEDS
+    horizon = 9 if quick else ROBUST_H
+    config = {"arm": "robust", "q0": list(q0s), "draws": list(draws), "sigma": ROBUST_SIGMA,
+              "r2_horizon": horizon, "lr": 1.0, "line": LINE, "cap": ARM_A_CAP, "quick": quick}
+    directory = run_dir("rq2_robust", config, root=root)
+    _log(f"robustness -> {directory}")
+    jobs = [("R1", 8, ROBUST_SIGMA, d) for d in draws] + [("R2", horizon, 0.0, 0)]
+    tables = {h: (isolated_world(h), *compile_grid(isolated_world(h))) for h in {8, horizon}}
+    i = 0
+    for condition, h, sigma, draw in jobs:
+        world, table, state_index = tables[h]
+        for target in q0s:
+            logits0 = noisy_isolated_base(table, state_index, world, target, sigma, draw)
+            q, _ = trace_exact_pg(table, logits0, 1.0, ARM_A_CAP, [0], stop_line=LINE)
+            updates = _updates(q[:, 0], LINE)
+            save_seed(directory, i, condition=condition, horizon=h, sigma=sigma, draw=draw,
+                      q0_target=target, q0=float(q[0, 0]), updates=updates)
+            i += 1
+        _log(f"  {condition} H={h} draw={draw}: done")
+    return directory
+
+
+# ----------------------------------------------------------------------------- command line
+
+RUNNERS = {"arm-a": run_arm_a, "robust": run_robust}
+
+
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("command", choices=sorted(RUNNERS))
+    parser.add_argument("--quick", action="store_true", help="small settings for a smoke run; never use with --root results")
+    parser.add_argument("--root", default="results", help="results root (default: results)")
+    args = parser.parse_args(argv)
+    start = time.perf_counter()
+    RUNNERS[args.command](quick=args.quick, root=args.root)
+    _log(f"{args.command}: {time.perf_counter() - start:.0f} s")
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
