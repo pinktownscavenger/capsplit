@@ -71,6 +71,12 @@ def _budget(args: argparse.Namespace) -> int:
     return 0
 
 
+def _discovery(args: argparse.Namespace) -> int:
+    from .discovery import main as discovery_main
+
+    return int(discovery_main(args.args))
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="python -m capsplit.harness", description="Capability vs reliability experiment harness")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -103,6 +109,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="training episodes per prompt for runs without a training log (marked 'from_config (not logged)')",
     )
     budget.set_defaults(func=_budget)
+
+    discovery = sub.add_parser("discovery", help="waiting-time analysis of RL discovery (docs/prediction_discovery.md)")
+    discovery.add_argument("args", nargs=argparse.REMAINDER, help="predict CONFIG [...] | analyze RESULTS --predictions P [...]")
+    discovery.set_defaults(func=_discovery)
 
     lst = sub.add_parser("list", help="list registered plug-ins")
     lst.set_defaults(func=_list)

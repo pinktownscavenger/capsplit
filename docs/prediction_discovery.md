@@ -50,3 +50,14 @@ The seed study holds the base fixed and varies only the training-sampling seed (
 - **Under the waiting-time picture,** with a fixed base and B·π ≫ 1, almost every prompt is discovered in every seed. Then the training-sampling seed should explain little of the variance in a prompt's discovery, and differences in final gain should come mainly from drift and post-discovery dynamics.
 - **If drift at k = 0 drives p toward 0 for some prompts,** the outcome on those prompts becomes seed-dependent: the same base gives different outcomes under different sampling seeds.
 - **The verdict will be stated per k** as one of: "outcome determined by the base", "outcome depends on sampling luck", or "mixed". It comes from the variance decomposition of final per-prompt Δcap into a training-seed component and a base-seed component.
+
+## Addendum: operational thresholds and a disclosed preview (committed before the seed study)
+
+The criteria above were turned into fixed constants in `src/capsplit/harness/discovery.py` before any seed-study run:
+
+- **"Most prompts within ×2 of the predicted median":** this counts only prompts with at least 5 runs. Otherwise the pooled median ratio must lie in [0.5, 2]. A single geometric draw falls within ×2 of its median only about 46% of the time.
+- **"≈ 0 never discovered":** at most 1% of prompt-runs.
+- **"Later" or "much earlier" than predicted:** a randomised probability-integral-transform z-score beyond ±3, together with the direction of the pooled median ratio.
+- **"Determined by the base" / "depends on sampling luck":** the ratio of variance across training seeds to variance across base seeds, V_train / V_base, at ≤ 1/3 or ≥ 2/3 respectively; anything in between is "mixed".
+
+**Disclosure.** While testing the analysis code, the implementer ran a small scratch study (k = 4, 3 seeds, B = 100 updates; not committed). It saw 2 of 72 prompt-runs never discovered, against 3×10⁻⁵ predicted, and an observed median first-success update of 6 against 7 predicted. The thresholds above were written by the same implementer; they are stated here so that readers can judge them. Neither the prediction formulas nor the expected directions in this file changed.
