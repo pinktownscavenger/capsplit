@@ -7,8 +7,8 @@ from __future__ import annotations
 
 import argparse
 import sys
+from collections.abc import Callable, Sequence
 from pathlib import Path
-from typing import Callable, Sequence
 
 from .config import LMConfig, LMConfigError, load_config
 from .device import MemoryGuardError

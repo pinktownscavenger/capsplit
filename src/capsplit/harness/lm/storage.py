@@ -7,12 +7,14 @@ time, and a reader ignores a truncated last line, so an interrupted stage resume
 from __future__ import annotations
 
 import json
+import math
 import os
 import platform
 import sys
 import time
+from collections.abc import Iterable, Iterator
 from pathlib import Path
-from typing import Any, Iterable, Iterator
+from typing import Any
 
 from capsplit.runlog import _git
 
@@ -87,7 +89,7 @@ class Progress:
         elapsed = time.monotonic() - self.t0
         rate = (done - self.start_done) / elapsed if elapsed > 0 and done > self.start_done else 0.0
         remaining = (self.total - done) / rate if rate > 0 else float("nan")
-        eta = "?" if remaining != remaining else _fmt(remaining)
+        eta = "?" if math.isnan(remaining) else _fmt(remaining)
         print(f"\r[{self.label}] {done}/{self.total} ({100 * done / self.total:.0f}%) elapsed {_fmt(elapsed)} "
               f"remaining ~{eta}   ", end="", file=sys.stderr, flush=True)
 

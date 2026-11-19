@@ -195,3 +195,17 @@ def test_gsm8k_missing_file_and_params():
         gen.generate(np.random.default_rng(0), 1, {"path": "/nonexistent/gsm8k.jsonl"})
     with pytest.raises(ValueError, match="missing required"):
         gen.generate(np.random.default_rng(0), 1, {})
+
+
+def test_commutative_twins_never_appear_twice():
+    """Regression (review): "3 + 4" and "4 + 3" are one problem and must not be split across sets."""
+    from capsplit.harness.lm.config import GeneratorConfig, TaskConfig
+    from capsplit.harness.lm.tasks import build_problems
+
+    config = TaskConfig(generators=(GeneratorConfig("arithmetic", {"digits": [1], "ops": ["+", "*"]}, 30, 30),), seed=3)
+    keys = set()
+    for row in build_problems(config):
+        a, op, b = row["question"].split()
+        key = (op, min(a, b), max(a, b)) if op in "+*" else (op, a, b)
+        assert key not in keys, row["question"]
+        keys.add(key)

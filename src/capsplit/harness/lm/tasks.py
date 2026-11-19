@@ -82,6 +82,7 @@ def _check_params(generator: str, params: dict, allowed: Collection[str], requir
         raise ValueError(f"{generator}: missing required params {missing}")
 
 
+COMMUTATIVE = frozenset({"+", "*"})
 _MAX_DRAWS = 1000  # draws per problem before a cell is declared exhausted
 
 
@@ -120,11 +121,16 @@ class ArithmeticGenerator:
                 if op == "-" and not negative and a < b:
                     a, b = b, a
                 question = f"{a} {op} {b}"
-                if question not in seen:
+                # For + and *, "b op a" is the same problem: block both orders so the
+                # train and held-out splits can never share a problem.
+                twin = f"{b} {op} {a}" if op in COMMUTATIVE else question
+                if question not in seen and twin not in seen:
                     break
             else:
                 raise ValueError(f"arithmetic: cannot find a new distinct problem for d={d}, op={op!r}; ask for fewer")
             seen.add(question)
+            if op in COMMUTATIVE:
+                seen.add(f"{b} {op} {a}")
             answer = a + b if op == "+" else a - b if op == "-" else a * b
             out.append(Problem(question, str(answer), f"d{d}_{self.OPS[op]}", "arithmetic"))
         return out
