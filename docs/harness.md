@@ -94,7 +94,11 @@ ids]}), train_prompt_ids` and `records`: one `GroupMetrics.to_dict()` plus `"ste
    the steps called differ from the config's checkpoints. The hook must not modify the policy.
 2. `budget` counts **optimizer updates**, not samples (H5, H20). Every arm gets the same budget.
 3. Train only on `prompt_ids` (the train split). Using a subset is fine (e.g. hard prompts via
-   `trainers.rl.select_prompts`); using any other prompt is not.
+   `trainers.rl.select_prompts`); using any other prompt is not. Every learning signal must come
+   from episodes or demonstrations on those prompts. Prompt-independent changes to the
+   parameters (e.g. adding noise to every weight) are not allowed: with a tabular policy they
+   would change held-out prompts directly. With a shared network, held-out prompts do change, but
+   only through generalisation, which is what the held-out groups measure.
 4. All randomness comes from `seed` (a `torch.Generator().manual_seed(seed)`), so a rerun is
    bit-identical.
 5. Validate params: an unknown param raises (H14), so a config typo fails loudly.
@@ -213,6 +217,10 @@ Without registration the CLI fails at validation:
 
 `tests/test_harness_sgd_on_reward.py`. The tabular policy has one logit table per prompt and
 shares nothing between them, so "prompts outside `prompt_ids` are untouched" is an exact check.
+The dummy task `tiny_prompt` (`harness/dummy.py`) has V = 3, L = 3 and four prompts, tagged
+(easy, train), (hard, train), (easy, heldout) and (hard, heldout) for ids 0 to 3. So its train ids are
+[0, 1], and a matching tabular policy is `TabularSequencePolicy(4, 3, 3)`
+(prompts, vocabulary, length).
 
 ```python
 import pytest
@@ -411,7 +419,14 @@ python -m capsplit.harness verdicts results/<name>               # -> report/ver
 
 ## 5. Measurement backends
 
-Both return one `GroupMetrics` per (group, N, c):
+Three backends are registered:
+- `exact` enumerates every trajectory.
+- `sampled` estimates from samples, with confidence intervals.
+- `j_only` is a dummy for interface tests: it reports exact J and puts the whole change in
+  delta_rel, with no split, no E_N and the label `"unmeasured"`. `configs/dummy.json` uses it, so
+  its report shows "unmeasured" labels and n/a for E_N. Switch to `exact` for real numbers.
+
+`exact` and `sampled` return one `GroupMetrics` per (group, N, c):
 
 | Field | Meaning |
 |---|---|
