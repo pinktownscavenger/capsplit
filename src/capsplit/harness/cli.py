@@ -42,6 +42,13 @@ def _list(args: argparse.Namespace) -> int:
     return 0
 
 
+def _verdicts(args: argparse.Namespace) -> int:
+    from .verdicts import build_verdicts
+
+    print(build_verdicts(args.results_dir))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="python -m capsplit.harness", description="Capability vs reliability experiment harness")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -56,6 +63,10 @@ def build_parser() -> argparse.ArgumentParser:
     report = sub.add_parser("report", help="build the report for a results folder")
     report.add_argument("results_dir", help="<out>/<experiment name>")
     report.set_defaults(func=_report)
+
+    verdicts = sub.add_parser("verdicts", help="apply the pre-registered analysis (docs/preregistration.md)")
+    verdicts.add_argument("results_dir", help="<out>/<experiment name>")
+    verdicts.set_defaults(func=_verdicts)
 
     lst = sub.add_parser("list", help="list registered plug-ins")
     lst.set_defaults(func=_list)

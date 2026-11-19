@@ -47,3 +47,6 @@ Each entry is one choice, with a one-line reason. Newest at the bottom. "T*" nam
 | H41 | T5 | Shared-sampler fix: `sample_prefix_tree` no longer writes actions in place | The GRU reads previous tokens during sampling, so in-place writes broke backpropagation; found by the pilot, regression test added |
 | H42 | Gate 1 | The sampled backend also labels with E_1 (per-step), keeping the E_N label in `extra.label_en` | Found by the Gate 1 check: the two backends must use the same rule |
 | H43 | Gate 1 | Frozen at tag `gate1-frozen`: `configs/base_v1.json`, the base/task code, `docs/preregistration.md`, planted generators. No edits after this point without a logged re-run | Brief rule |
+| H44 | Gate 2 | The pre-registered analysis is code (`harness/verdicts.py`, `python -m capsplit.harness verdicts`), not hand computation; it reuses the report's bootstrap | Brief rule: every number comes from the harness |
+| H45 | Gate 2 | Where the pre-registration states only a "supported" condition (H1a, H3), any other outcome is recorded as "not supported", and the output says so | The plan gave no inconclusive band for those parts; this is the literal reading |
+| H46 | T5 | Main run took 6 h 26 min of wall time on 6 workers (240 runs), far above the planned estimate | Recorded for anyone re-running the grid |
