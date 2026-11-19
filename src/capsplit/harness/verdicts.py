@@ -134,7 +134,28 @@ def h4(exp: Experiment, n: int, c: float) -> dict:
 TESTS: dict[str, Callable[[Experiment, int, float], dict]] = {"H1": h1, "H2": h2, "H3": h3, "H4": h4}
 
 
+REQUIRED_ARMS = ("rloo", "grpo", "sft", "hints_h1", "hints_h3", "sft_then_rl")
+REQUIRED_GROUPS = ("all", "hard_train", "hard_heldout")
+
+
+def check_applicable(exp: Experiment) -> None:
+    """The plan is specific to configs/main.json; refuse to produce verdicts for anything else."""
+    problems = []
+    arms = {a for a, _ in exp.arms}
+    if missing := [a for a in REQUIRED_ARMS if a not in arms]:
+        problems.append(f"arms {missing}")
+    if missing := [g for g in REQUIRED_GROUPS if g not in exp.groups]:
+        problems.append(f"groups {missing}")
+    if missing_levels := [k for k in LEVELS if _fkey({FACTOR: k}) not in exp.fkeys]:
+        problems.append(f"{FACTOR} levels {missing_levels}")
+    if problems:
+        raise ValueError(
+            "the pre-registered plan prereg_v1 does not apply to this experiment; missing " + "; ".join(problems)
+        )
+
+
 def compute(exp: Experiment) -> dict:
+    check_applicable(exp)
     n0, c0 = exp.primary
     primary = {name: test(exp, n0, c0) for name, test in TESTS.items()}
     primary["H1"]["grpo_robustness"] = h1(exp, n0, c0, arm="grpo")["verdict"]

@@ -34,3 +34,14 @@ def test_combine():
     assert _combine([SUPPORTED, SUPPORTED]) == SUPPORTED
     assert _combine([SUPPORTED, NOT_SUPPORTED, INCONCLUSIVE]) == NOT_SUPPORTED
     assert _combine([SUPPORTED, INCONCLUSIVE]) == INCONCLUSIVE
+
+
+def test_verdicts_refuse_an_experiment_the_plan_does_not_cover(tmp_path):
+    import subprocess
+    import sys
+
+    from capsplit.harness.runner import run_experiment
+
+    exp = run_experiment("configs/dummy.json", out_root=tmp_path)
+    result = subprocess.run([sys.executable, "-m", "capsplit.harness", "verdicts", str(exp)], capture_output=True, text=True)
+    assert result.returncode == 2 and "does not apply" in result.stderr

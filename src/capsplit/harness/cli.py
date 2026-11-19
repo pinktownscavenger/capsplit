@@ -45,7 +45,11 @@ def _list(args: argparse.Namespace) -> int:
 def _verdicts(args: argparse.Namespace) -> int:
     from .verdicts import build_verdicts
 
-    print(build_verdicts(args.results_dir))
+    try:
+        print(build_verdicts(args.results_dir))
+    except ValueError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 2
     return 0
 
 
