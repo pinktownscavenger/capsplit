@@ -66,6 +66,7 @@ PLUGIN_MODULES = (
     "capsplit.harness.tasks.grid",
     "capsplit.harness.policies.prompt_gru",
     "capsplit.harness.bases.pretrain",
+    "capsplit.harness.policies.tabular_grid_shared",
 )
 
 _loaded = False
