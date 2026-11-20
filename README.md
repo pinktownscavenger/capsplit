@@ -40,9 +40,11 @@ re-derived by a teammate. The
 metric definitions may change as the team ratifies the proposals in the blueprint.
 
 The experiment harness (`src/capsplit/harness/`) and the pre-registered RQ3 Phase 2
-experiment are done. Results are in [docs/report.md](docs/report.md). Still to do:
-RQ2's time-to-cross curve, RQ3 in the tabular grid worlds (Phase 1) and RQ4, the pass@k
-misdiagnosis rate.
+experiment are done. Results are in [docs/report.md](docs/report.md). RQ4's
+pre-registered pass@k misdiagnosis experiment is done; results are in
+[docs/rq4-passk.md](docs/rq4-passk.md), with SRR/NDR pending a person's check of the
+paper. Still to do: RQ2's time-to-cross curve and RQ3 in the tabular grid worlds
+(Phase 1).
 
 ## Setup
 
@@ -86,6 +88,11 @@ Results go under `results/`, which is git-ignored.
 | `docs/report.md` | RQ3 Phase 2 results (not the final report) |
 | `docs/preregistration.md` | Frozen RQ3 Phase 2 hypotheses and decision rules |
 | `docs/harness.md` | Harness developer guide |
+| `experiments/rq4_passk.py` | RQ4: score the pass@k rule against the 2×2 label (`labels`, `score`, `srr-ndr`, `repro`) |
+| `configs/rq4_grid.json` | RQ4 Phase 1 grid sweep with the shared tabular policy (`tabular_grid_shared`) |
+| `docs/rq4-passk-design.md` | RQ4 design |
+| `docs/rq4-preregistration.md` | Frozen RQ4 rule settings and decision rules |
+| `docs/rq4-passk.md` | RQ4 results |
 
 ## Workflow
 

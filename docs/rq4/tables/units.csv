@@ -1,0 +1,271 @@
+phase,arm,factors,seed,step,group,prompts,label,label_en,rule
+phase2,rloo,"{""task.shared_prefix"": 0}",0,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 0}",1,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 0}",2,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 0}",3,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 0}",4,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 0}",5,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 0}",6,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 0}",7,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 0}",8,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 0}",9,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 0}",0,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 0}",1,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 0}",2,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 0}",3,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 0}",4,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 0}",5,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 0}",6,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 0}",7,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 0}",8,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 0}",9,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 0}",0,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 0}",1,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 0}",2,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 0}",3,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 0}",4,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 0}",5,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 0}",6,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 0}",7,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 0}",8,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 0}",9,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 0}",0,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 0}",1,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 0}",2,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 0}",3,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 0}",4,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 0}",5,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 0}",6,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 0}",7,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 0}",8,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 0}",9,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 0}",0,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 0}",1,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 0}",2,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 0}",3,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 0}",4,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 0}",5,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 0}",6,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 0}",7,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 0}",8,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 0}",9,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 0}",0,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 0}",1,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 0}",2,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 0}",3,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 0}",4,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 0}",5,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 0}",6,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 0}",7,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 0}",8,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 0}",9,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 0}",0,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 0}",1,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 0}",2,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 0}",3,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 0}",4,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 0}",5,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 0}",6,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 0}",7,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 0}",8,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 0}",9,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 2}",0,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 2}",1,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 2}",2,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 2}",3,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 2}",4,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 2}",5,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 2}",6,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 2}",7,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 2}",8,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 2}",9,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 2}",0,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 2}",1,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 2}",2,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 2}",3,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 2}",4,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 2}",5,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 2}",6,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 2}",7,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 2}",8,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 2}",9,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 2}",0,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 2}",1,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 2}",2,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 2}",3,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 2}",4,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 2}",5,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 2}",6,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 2}",7,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 2}",8,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 2}",9,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 2}",0,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 2}",1,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 2}",2,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 2}",3,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 2}",4,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 2}",5,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 2}",6,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 2}",7,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 2}",8,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 2}",9,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 2}",0,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 2}",1,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 2}",2,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 2}",3,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 2}",4,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 2}",5,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 2}",6,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 2}",7,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 2}",8,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 2}",9,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 2}",0,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 2}",1,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 2}",2,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 2}",3,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 2}",4,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 2}",5,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 2}",6,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 2}",7,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 2}",8,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 2}",9,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 2}",0,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 2}",1,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 2}",2,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 2}",3,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 2}",4,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 2}",5,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 2}",6,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 2}",7,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 2}",8,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 2}",9,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 4}",0,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 4}",1,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 4}",2,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 4}",3,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 4}",4,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 4}",5,1000,heldout,24,capability,compounded_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 4}",6,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 4}",7,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 4}",8,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rloo,"{""task.shared_prefix"": 4}",9,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 4}",0,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 4}",1,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 4}",2,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 4}",3,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 4}",4,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 4}",5,1000,heldout,24,capability,compounded_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 4}",6,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 4}",7,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 4}",8,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,grpo,"{""task.shared_prefix"": 4}",9,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 4}",0,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 4}",1,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 4}",2,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 4}",3,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 4}",4,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 4}",5,1000,heldout,24,reweighting,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 4}",6,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 4}",7,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 4}",8,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,rl_entropy,"{""task.shared_prefix"": 4}",9,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 4}",0,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 4}",1,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 4}",2,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 4}",3,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 4}",4,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 4}",5,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 4}",6,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 4}",7,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 4}",8,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft,"{""task.shared_prefix"": 4}",9,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 4}",0,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 4}",1,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 4}",2,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 4}",3,1000,heldout,24,capability,compounded_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 4}",4,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 4}",5,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 4}",6,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 4}",7,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 4}",8,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h1,"{""task.shared_prefix"": 4}",9,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 4}",0,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 4}",1,1000,heldout,24,reweighting,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 4}",2,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 4}",3,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 4}",4,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 4}",5,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 4}",6,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 4}",7,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 4}",8,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,hints_h3,"{""task.shared_prefix"": 4}",9,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 4}",0,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 4}",1,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 4}",2,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 4}",3,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 4}",4,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 4}",5,1000,heldout,24,pure_sharpening,pure_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 4}",6,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 4}",7,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 4}",8,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase2,sft_then_rl,"{""task.shared_prefix"": 4}",9,1000,heldout,24,compounded_sharpening,compounded_sharpening,sharpening
+phase1,reinforce_all,{},0,400,heldout,4,reweighting,pure_sharpening,capability
+phase1,reinforce_all,{},1,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,reinforce_all,{},2,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,reinforce_all,{},3,400,heldout,4,reweighting,pure_sharpening,capability
+phase1,reinforce_all,{},4,400,heldout,4,capability,compounded_sharpening,sharpening
+phase1,reinforce_all,{},5,400,heldout,4,compounded_sharpening,capability,capability
+phase1,reinforce_all,{},6,400,heldout,4,capability,capability,capability
+phase1,reinforce_all,{},7,400,heldout,4,capability,compounded_sharpening,sharpening
+phase1,reinforce_all,{},8,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,reinforce_all,{},9,400,heldout,4,capability,capability,capability
+phase1,reinforce_all,{},10,400,heldout,4,pure_sharpening,pure_sharpening,sharpening
+phase1,reinforce_all,{},11,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,reinforce_all,{},12,400,heldout,4,capability,compounded_sharpening,sharpening
+phase1,reinforce_all,{},13,400,heldout,4,capability,compounded_sharpening,sharpening
+phase1,reinforce_all,{},14,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,reinforce_all,{},15,400,heldout,4,reweighting,reweighting,capability
+phase1,reinforce_all,{},16,400,heldout,4,reweighting,pure_sharpening,sharpening
+phase1,reinforce_all,{},17,400,heldout,4,compounded_sharpening,compounded_sharpening,capability
+phase1,reinforce_all,{},18,400,heldout,4,reweighting,pure_sharpening,capability
+phase1,reinforce_all,{},19,400,heldout,4,pure_sharpening,pure_sharpening,sharpening
+phase1,reinforce_subset,{},0,400,heldout,4,reweighting,pure_sharpening,capability
+phase1,reinforce_subset,{},1,400,heldout,4,pure_sharpening,pure_sharpening,sharpening
+phase1,reinforce_subset,{},2,400,heldout,4,pure_sharpening,pure_sharpening,sharpening
+phase1,reinforce_subset,{},3,400,heldout,4,pure_sharpening,pure_sharpening,capability
+phase1,reinforce_subset,{},4,400,heldout,4,capability,compounded_sharpening,sharpening
+phase1,reinforce_subset,{},5,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,reinforce_subset,{},6,400,heldout,4,pure_sharpening,pure_sharpening,sharpening
+phase1,reinforce_subset,{},7,400,heldout,4,capability,compounded_sharpening,sharpening
+phase1,reinforce_subset,{},8,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,reinforce_subset,{},9,400,heldout,4,reweighting,reweighting,capability
+phase1,reinforce_subset,{},10,400,heldout,4,pure_sharpening,pure_sharpening,sharpening
+phase1,reinforce_subset,{},11,400,heldout,4,compounded_sharpening,capability,capability
+phase1,reinforce_subset,{},12,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,reinforce_subset,{},13,400,heldout,4,capability,compounded_sharpening,sharpening
+phase1,reinforce_subset,{},14,400,heldout,4,reweighting,pure_sharpening,sharpening
+phase1,reinforce_subset,{},15,400,heldout,4,pure_sharpening,reweighting,capability
+phase1,reinforce_subset,{},16,400,heldout,4,reweighting,pure_sharpening,sharpening
+phase1,reinforce_subset,{},17,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,reinforce_subset,{},18,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,reinforce_subset,{},19,400,heldout,4,pure_sharpening,pure_sharpening,sharpening
+phase1,rloo_all,{},0,400,heldout,4,capability,compounded_sharpening,sharpening
+phase1,rloo_all,{},1,400,heldout,4,capability,compounded_sharpening,sharpening
+phase1,rloo_all,{},2,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,rloo_all,{},3,400,heldout,4,reweighting,pure_sharpening,capability
+phase1,rloo_all,{},4,400,heldout,4,capability,compounded_sharpening,sharpening
+phase1,rloo_all,{},5,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,rloo_all,{},6,400,heldout,4,capability,capability,capability
+phase1,rloo_all,{},7,400,heldout,4,reweighting,pure_sharpening,sharpening
+phase1,rloo_all,{},8,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,rloo_all,{},9,400,heldout,4,pure_sharpening,pure_sharpening,sharpening
+phase1,rloo_all,{},10,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,rloo_all,{},11,400,heldout,4,reweighting,reweighting,capability
+phase1,rloo_all,{},12,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,rloo_all,{},13,400,heldout,4,capability,compounded_sharpening,sharpening
+phase1,rloo_all,{},14,400,heldout,4,capability,compounded_sharpening,sharpening
+phase1,rloo_all,{},15,400,heldout,4,reweighting,reweighting,capability
+phase1,rloo_all,{},16,400,heldout,4,reweighting,pure_sharpening,sharpening
+phase1,rloo_all,{},17,400,heldout,4,compounded_sharpening,compounded_sharpening,sharpening
+phase1,rloo_all,{},18,400,heldout,4,reweighting,pure_sharpening,capability
+phase1,rloo_all,{},19,400,heldout,4,capability,capability,capability
