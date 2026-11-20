@@ -34,12 +34,16 @@ RQ4 compares that call with the exact 2×2 label and reports a misdiagnosis rate
 | Harness grid task, tabular grid policy (separate logits per prompt), `tabular_reinforce` and `rloo` trainers with `only_tags`, checkpoint saving | `src/capsplit/harness/` | Done |
 | SRR/NDR definitions | `docs/notes/invisible-leash-scores.md` | **Unverified draft.** The team requires a person to check it against the paper first |
 
-**Groups in the RQ3 runs.** Each run is measured on 9 overlapping prompt groups: `all`, `easy`, `hard`, `train`, `heldout`, `easy_train`, `easy_heldout`, `hard_train` and `hard_heldout`. Each group's record has a label (the E₁ rule, H39) and `extra.label_en` (the E_N rule), but only group means of J, not per-prompt values. The rule needs per-prompt J, so it must be recomputed from the saved policies, as Gate 2 did.
+**Groups in the RQ3 runs.** Each run is measured on 9 overlapping prompt groups: `all`, `easy`, `hard`, `train`, `heldout`, `easy_train`, `easy_heldout`, `hard_train` and `hard_heldout`. Each group's record, per (checkpoint, N, c), has:
+- a label (the E₁ rule, H39) and `extra.label_en` (the E_N rule);
+- **the per-prompt success rates, `extra.j0` and `extra.j1`**, as lists in the group's prompt order (`harness/backends/exact.py`).
+
+So the rule's inputs are already in the metrics files. No policy needs reloading. (Corrected 2026-11-20 while planning; the first draft said they had to be recomputed.)
 
 ## 3. Goals, non-goals, anti-goals
 
 **Goals**
-- G1. **Phase 2 (headline):** apply the frozen rule to RQ3's runs and score it against the harness's existing labels.
+- G1. **Phase 2 (headline):** apply the frozen rule to RQ3's runs and score it against the harness's existing labels, reading per-prompt J from the metrics files.
 - G2. **Phase 1:** a new grid sweep with a shared tabular policy, so that training on some prompts can make others worse. Score the rule the same way.
 - G3. A full rerun of RQ3 here, which also checks it reproduces against the committed `docs/experiment_main/`. The RQ3 PR listed this check as never done.
 - G4. SRR and NDR computed on the same runs, **held out of the report** until a person has verified the note.
@@ -77,8 +81,8 @@ Grid-policy options:
   - The `report` output is then compared with the committed `docs/experiment_main/` (`summary.json`, `tables/main.csv`, `verdicts.json`), and that comparison is RQ4's G3 deliverable.
   - If it doesn't match, RQ4 stops and the mismatch is reported first.
 - **Unit:** one (run, checkpoint, prompt group).
-  - The rule gets the group's per-prompt J₀ and J₁, recomputed exactly from the saved base and checkpoint policies.
-  - The label is the record's existing `label` at N = 64, c = 1.
+  - The rule gets the group's per-prompt J₀ and J₁ from the record's `extra.j0` and `extra.j1` at N = 64, c = 1. J doesn't depend on N or c.
+  - The label is the same record's `label`.
 - **Primary group: `heldout`, all 24 held-out prompts (team decision).** This is what a practitioner reports: a benchmark the model wasn't trained on. Held-out prompts are also where RQ3 saw degradation, and they mix easy and hard prompts, so the curves can cross.
   - **Secondary groups:** `all`, and the four disjoint `difficulty_split` groups, each reported separately.
 - **Primary checkpoint:** update 1,000.
@@ -118,12 +122,11 @@ Grid-policy options:
 
 | File | Change |
 |---|---|
-| `src/capsplit/harness/policies/tabular_grid_shared.py` (new) | `TabularGridSharedPolicy`, registered as `tabular_grid_shared`. It has the same interface as `TabularGridPolicy`, but one logits tensor of shape (n_states, 4), used by every prompt. |
+| `src/capsplit/harness/policies/tabular_grid_shared.py` (new) | `TabularGridSharedPolicy`, registered as `tabular_grid_shared`. It has the same interface as `TabularGridPolicy`, but one logits tensor of shape (n_states, 4), used by every prompt. The same module holds the shared-policy base recipe `grid_shared_routes` (§5.2), so the registry change stays at one line. |
 | `src/capsplit/harness/registry.py` | One line: add the new module to `PLUGIN_MODULES`. No other harness change. |
-| A shared-policy base recipe (new module, or a parameter on `grid_routes`) | Builds the base described in §5.2 (builder's call where it lives). |
 | `configs/rq4_grid.json` (new) | The Phase 1 sweep, frozen. |
 | `src/capsplit/diagnostics.py` | Unchanged. If needed, add `srr_ndr(q0, q1, eps)` per prompt with explicit options for the note's open points (aggregation, zero denominators, boundary). |
-| `experiments/rq4_passk.py` (new) | Subcommands: `repro` (compare a rerun RQ3 report with `docs/experiment_main/`), `collect` (recompute per-prompt J₀ and J₁ for every unit from saved policies and cache them), `score` (rule, agreement, per-cell rates, bootstrap intervals, verdict), `report` (tables, figures, verdicts.{json,md}). |
+| `experiments/rq4_passk.py` (new) | Subcommands: `repro` (compare a rerun RQ3 report with `docs/experiment_main/`), `labels` (label distribution only, for the pre-freeze check; never calls the rule), `score` (rule, agreement, per-cell rates, bootstrap intervals, verdicts, tables and figures). Units are read straight from the harness metrics files. |
 | `tests/test_tabular_grid_shared.py`, `tests/test_rq4.py` (new) | See §6.3. |
 | `docs/rq4-preregistration.md`, `docs/rq4-passk.md` (new); `docs/DECISIONS.md`, `README.md` | Pre-registration, report, decision log, status. |
 
@@ -138,7 +141,7 @@ The harness imports a fixed list of plug-in modules (H6). Registering in the ana
   - The same step under `tabular_grid` leaves the other's J unchanged.
   - The policy refuses prompts with different walls.
 - **Shared-policy exactness.** `trajectory_probs` matches the engine on each prompt's table.
-- **Collected J₀ is right.** On one RQ3 unit (from a quick harness run in a temp directory), the collected per-prompt J₀ and J₁ averaged over the group equal the record's `j0` and `j1` to 1e-9.
+- **Units are read right.** On a quick harness run in a temp directory, every unit's per-prompt J₀ and J₁ average to the record's `j0` and `j1` to 1e-9, and units at update 0 and in the `none` arm are excluded.
 - **Rule degeneracy is visible.**
   - A synthetic unit where every prompt improves gives "capability".
   - One where a held-out prompt drops below the base at k ≥ 10 gives "sharpening".
@@ -149,7 +152,7 @@ The harness imports a fixed list of plug-in modules (H6). Registering in the ana
 
 Frozen in `docs/rq4-preregistration.md` and tagged `rq4-frozen` **before any rule output is computed on full data**. Collecting J values, and the Phase 1 label check, may happen before the freeze. Calling `passk_rule` on real units may not, except in unit tests on synthetic data.
 
-**Primary agreement:** D10's primary score, "capability or not". "Undetermined" counts as disagreement, and its rate is reported separately. Intervals are percentile bootstraps over seeds (10,000 resamples, RNG seed 0), resampling seeds jointly across arms and k, as RQ3 did.
+**Primary agreement:** D10's primary score, "capability or not". "Undetermined" counts as disagreement, and its rate is reported separately. Intervals come from RQ3's `harness.report.bootstrap_ci` applied to per-seed agreement rates. That is, each seed's rate is pooled over arms and k, so seeds are resampled jointly, as RQ3 did (10,000 resamples, RNG seed 0).
 
 | ID | Claim | Supported if | Contradicted if |
 |---|---|---|---|
@@ -180,13 +183,13 @@ Until then the report says they are pending.
 
 - **Cost:**
   - The RQ3 rerun is about 5 hours on 8 workers, so it runs overnight in the background.
-  - Collecting per-prompt J recomputes 72 prompts × 7,776 sequences for about 2,000 policies (240 runs × 9 checkpoints, minus `none`), which should take minutes. The builder measures it first.
+  - Reading units is just parsing the metrics JSON, so it takes seconds.
   - The grid sweep is small.
 - **Disk:** RQ3 with `save_policies: checkpoints` writes 240 × 9 GRU state dicts, small but not tiny. `results/` is git-ignored.
 - **Schedule:** the report freezes Dec 2. Order of work:
   1. Shared policy and tests; start the RQ3 rerun in parallel.
   2. Phase 1 label check, then the freeze.
-  3. Full runs, then `collect` and `score`.
+  3. Full runs, then `score`.
   4. Report.
 - **Branch:** `exp/rq4-passk` from `main`. RQ4 doesn't need the RQ2 branch.
 
@@ -195,5 +198,4 @@ Until then the report says they are pending.
 - The Phase 1 grid layout, base recipe, budget, lr and batch, within §5.2's requirements, settled by the label check and logged.
 - Where the shared-policy base lives.
 - File and function names inside `experiments/rq4_passk.py` beyond the subcommands.
-- The cache format for collected J values.
 - Figure layout: a per-cell agreement bar chart for each phase, and a few example curve pairs where the rule and label disagree.
