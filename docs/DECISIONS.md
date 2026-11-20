@@ -51,3 +51,12 @@ Each entry is one choice, with a one-line reason. Newest at the bottom. "T*" nam
 | H45 | Gate 2 | Where the pre-registration states only a "supported" condition (H1a, H3), any other outcome is recorded as "not supported", and the output says so | The plan gave no inconclusive band for those parts; this is the literal reading |
 | H46 | T5 | Main run took 6 h 26 min of wall time on 6 workers (240 runs), far above the planned estimate | Recorded for anyone re-running the grid |
 | H47 | T8 | The pre-registered per-arm sample count (prereg §4) was not logged by the harness; the report gives the counts implied by the design and states that the hint arms' extra samples were not recorded | Recorded as an unmet item rather than re-running 6.4 h for a disclosure-only quantity |
+
+## RQ4 pass@k
+
+Decisions for RQ4 (design: `docs/rq4-passk-design.md`). Same format; ids are `RQ4-*`.
+
+| # | Task | Decision | Reason |
+|---|---|---|---|
+| RQ4-1 | T6 | Phase 1 grid sweep (`configs/rq4_grid.json`): 5×5, H = 8, one wall at (2, 2) shared by 8 prompts. Train prompts go corner to opposite corner; each held-out prompt shares its goal with one train prompt but starts at an edge midpoint. Base `grid_shared_routes` with route_bonus 2.5, trap 1.0. Arms `reinforce_all`, `reinforce_subset` (easy prompts only) and `rloo_all`; 20 seeds, 400 updates, checkpoints 0, 25, 50, 100, 200, 400 | Chosen by the pre-freeze label check (labels only, 5 seeds, `heldout` units over all checkpoints after 0). Layout v1 (held-out goals that no train prompt shares): 9 / 9 / 81 / 0% capability / compounded / pure / reweighting. Layout v2 (shared goals) at bonus 1.0, trap 2.0: 3 / 49 / 48 / 0%. v2 at (bonus, trap) = (2.0, 2.0): 20 / 36 / 36 / 8%; (0.5, 2.0): 0 / 32 / 68 / 0%; (1.5, 3.0): 19 / 36 / 45 / 0%; **(2.5, 1.0): 25 / 23 / 39 / 13%**, the only setting with every cell ≥ 10%. Rule outputs and per-prompt J were not looked at |
+| RQ4-2 | T5/T8 | The RQ3 rerun (commit 46490ae, this machine, Python 3.12.14, numpy 2.5.5, torch 2.15.0, 8 workers, 20 min) does **not** reproduce the committed numbers: base success rates differ by up to about 2% relative from pre-training on, and `tables/main.csv` differs by up to 0.257. All four RQ3 verdicts (H1–H4) reproduce | Same code, so most likely a torch or BLAS difference; the original manifests don't record the torch version. Phase 2's data source is the user's decision (pending) |

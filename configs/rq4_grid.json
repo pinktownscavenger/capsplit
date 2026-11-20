@@ -1,0 +1,251 @@
+{
+  "name": "rq4_grid",
+  "task": {
+    "type": "grid",
+    "params": {
+      "n": 5,
+      "H": 8,
+      "variants": [
+        {
+          "start": [
+            0,
+            0
+          ],
+          "goal": [
+            4,
+            4
+          ],
+          "walls": [
+            [
+              2,
+              2
+            ]
+          ],
+          "difficulty": "easy",
+          "split": "train"
+        },
+        {
+          "start": [
+            4,
+            0
+          ],
+          "goal": [
+            0,
+            4
+          ],
+          "walls": [
+            [
+              2,
+              2
+            ]
+          ],
+          "difficulty": "easy",
+          "split": "train"
+        },
+        {
+          "start": [
+            0,
+            4
+          ],
+          "goal": [
+            4,
+            0
+          ],
+          "walls": [
+            [
+              2,
+              2
+            ]
+          ],
+          "difficulty": "hard",
+          "split": "train"
+        },
+        {
+          "start": [
+            4,
+            4
+          ],
+          "goal": [
+            0,
+            0
+          ],
+          "walls": [
+            [
+              2,
+              2
+            ]
+          ],
+          "difficulty": "hard",
+          "split": "train"
+        },
+        {
+          "start": [
+            0,
+            2
+          ],
+          "goal": [
+            4,
+            4
+          ],
+          "walls": [
+            [
+              2,
+              2
+            ]
+          ],
+          "difficulty": "easy",
+          "split": "heldout"
+        },
+        {
+          "start": [
+            2,
+            0
+          ],
+          "goal": [
+            0,
+            4
+          ],
+          "walls": [
+            [
+              2,
+              2
+            ]
+          ],
+          "difficulty": "easy",
+          "split": "heldout"
+        },
+        {
+          "start": [
+            2,
+            4
+          ],
+          "goal": [
+            4,
+            0
+          ],
+          "walls": [
+            [
+              2,
+              2
+            ]
+          ],
+          "difficulty": "hard",
+          "split": "heldout"
+        },
+        {
+          "start": [
+            4,
+            2
+          ],
+          "goal": [
+            0,
+            0
+          ],
+          "walls": [
+            [
+              2,
+              2
+            ]
+          ],
+          "difficulty": "hard",
+          "split": "heldout"
+        }
+      ]
+    }
+  },
+  "base": {
+    "type": "grid_shared_routes",
+    "params": {
+      "route_bonus": 2.5,
+      "trap": 1.0,
+      "route": "seeded"
+    }
+  },
+  "backend": {
+    "type": "exact",
+    "params": {}
+  },
+  "arms": [
+    {
+      "name": "none",
+      "trainer": "none",
+      "params": {}
+    },
+    {
+      "name": "reinforce_all",
+      "trainer": "tabular_reinforce",
+      "params": {
+        "batch": 32,
+        "lr": 0.5,
+        "optimizer": "sgd"
+      }
+    },
+    {
+      "name": "reinforce_subset",
+      "trainer": "tabular_reinforce",
+      "params": {
+        "batch": 32,
+        "lr": 0.5,
+        "optimizer": "sgd",
+        "only_tags": {
+          "difficulty": "easy"
+        }
+      }
+    },
+    {
+      "name": "rloo_all",
+      "trainer": "rloo",
+      "params": {
+        "group": 32,
+        "lr": 0.1
+      }
+    }
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "budget": 400,
+  "checkpoints": [
+    0,
+    25,
+    50,
+    100,
+    200,
+    400
+  ],
+  "measure": {
+    "ns": [
+      16,
+      64
+    ],
+    "cs": [
+      0.5,
+      1,
+      2
+    ],
+    "group_by": [
+      "difficulty",
+      "split"
+    ]
+  },
+  "save_policies": "checkpoints"
+}
