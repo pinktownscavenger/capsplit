@@ -181,9 +181,40 @@ So each tail has probability at most $\delta/8$. There are four means with two t
 - **Exact lookup is assumed.** If $q_{\pi_0}$ is estimated instead, samples can land on the wrong side of $c/N$, which this bound doesn't cover.
 - **Rare mass.** Below $\mu$ the bound is only absolute. Importance sampling is the fallback and isn't in the pilot.
 
+## 7. Time to cross on an isolated route
+
+> **Status: written 2026-11-19; not yet re-derived by a second teammate.** Sections 1 to 6 are closed; this section is new for RQ2 and needs its own check.
+
+**Setting.** A grid world has exactly one correct route $\tau^* = (s_1, a_1, \ldots, s_H, a_H)$, whose length equals the horizon $H$, so any trajectory that leaves it fails. Its cells $s_1, \ldots, s_H$ are distinct. The policy is tabular softmax with logits $\theta(s, a)$ over $A$ actions, so $J(\theta) = \prod_{i=1}^{H} \pi(a_i \mid s_i)$. The base gives the route action $a_i$ the logit $g_0$ and every other action at $s_i$ the logit 0. Training is exact gradient ascent, $\theta \leftarrow \theta + \eta \nabla J$.
+
+**Statement.** Every update keeps all route cells identical. With $p = e^g / (e^g + A - 1)$ and $q = J = p^H$, the logit gap $g$ (route action minus any other action at a route cell) evolves as
+
+$$g_{t+1} = g_t + \eta \, \frac{A}{A-1} \, q_t (1 - p_t).$$
+
+In continuous time, the time from $q_0$ to the line $\ell$ is
+
+$$T(q_0) = \frac{A-1}{A \eta} \int_{q_0^{1/H}}^{\ell^{1/H}} \frac{dp}{p^{H+1} (1-p)^2}, \qquad T(q_0) = \frac{A-1}{A \eta H q_0} \big(1 + O(q_0^{1/H})\big) \text{ as } q_0 \to 0.$$
+
+**Proof.** Since $\partial \log \pi(a_i \mid s_i) / \partial \theta(s_i, a) = \mathbb{1}[a = a_i] - \pi(a \mid s_i)$, and $J$ is a product over distinct cells,
+
+$$\frac{\partial J}{\partial \theta(s_i, a)} = J \big(\mathbb{1}[a = a_i] - \pi(a \mid s_i)\big),$$
+
+and the gradient is 0 at cells off the route. Suppose that at some step every route cell has gap $g$ and equal logits on its $A - 1$ other actions (true at step 0). Then $\pi(a_i \mid s_i) = p$, and $\pi(a \mid s_i) = (1-p)/(A-1)$ for $a \ne a_i$. The route action gains $\eta J (1 - p)$, and each other action loses $\eta J (1-p)/(A-1)$. These are the same at every route cell, so the cells stay identical and the other actions stay equal. The gap grows by the sum, $\eta J (1-p)(1 + 1/(A-1)) = \eta \frac{A}{A-1} J (1-p)$. Softmax depends only on logit differences, so $p$, and therefore $q = p^H$, depends only on $g$. That proves the recursion by induction.
+
+For the continuous version, $dp/dg = p(1-p)$, so $dp/dt = \eta \frac{A}{A-1} p^{H+1}(1-p)^2$. Separating variables from $p_0 = q_0^{1/H}$ to $\ell^{1/H}$ gives the integral. For the asymptotic, expand $(1-p)^{-2} = 1 + 2p + 3p^2 + \cdots$. The first term integrates to $(q_0^{-1} - \ell^{-1})/H$, and the next to $2(q_0^{-1 + 1/H} - \ell^{-1+1/H})/(H-1)$, which is smaller by a factor of order $q_0^{1/H}$. $\blacksquare$
+
+**What this means for RQ2.** The local log-log slope of $T$ against $q_0$ tends to $-1$, the plan's "roughly $1/q_0$". It gets there slowly, because the correction is of order $q_0^{1/H}$, which is 0.18 at $q_0 = 10^{-6}$ and $H = 8$. That is why the slope over $[10^{-6}, 10^{-2}]$ is $-0.844$ rather than $-1$, and why the local slope between the two smallest points is only $-0.928$. At larger $q_0$ the fixed cost of climbing to $\ell$ dominates and the curve flattens. Since $p_0$ is far from 0, the leading term alone underestimates $T$: at $q_0 = 10^{-6}$ it gives 93,750 updates against 148,403. Keeping the factor $(1 - p_0)^{-2}$ gets within about 7%.
+
+**Limits.**
+
+- **Symmetry is needed.** If the off-route logits differ between cells, or within one cell, the cells no longer move together and the recursion is only an approximation. RQ2's robustness draws (design §6.2, R1) measure how far it drifts.
+- **The route must fill the horizon.** If $H$ is longer than the route, detours that loop back are erased onto the same route (`loop_erased`), so more trajectories count as correct and $J$ is no longer a product over $H$ fixed cells (R2).
+- **Exact gradients only.** Under sampled REINFORCE, a rare route has to be sampled before it gets any gradient, so time to cross is random and can be censored (design §6.4).
+- **The factor $A/(A-1)$ depends on the action count.** It is 4/3 for the grid's 4 moves. Leaving it out, as a first draft of the design did, overestimates $T$ by a third.
+
 ## Numerical checks
 
-These were run on Nov 6 with a throwaway script that isn't in the repo. They support the proofs but don't replace checking them.
+These were run on Nov 6 with a throwaway script that isn't in the repo, except the last three rows, which are tests in `tests/test_crossing.py` (added Nov 19). They support the proofs but don't replace checking them.
 
 | Check | Expected | Got |
 |---|---|---|
@@ -196,3 +227,6 @@ These were run on Nov 6 with a throwaway script that isn't in the repo. They sup
 | Corollary example | $q(s)$ falls at $\beta = 2$ | 0.308 and 0.185, from 0.4 |
 | Newton reconstruction, 200 random multisets of size 5 | Recovers the multiset | Recovered |
 | Exact binomial tails at $\mu = 0.05, \eta = 0.5, \delta = 0.05$ ($M = 1219$), means from 0.001 to 0.9 | Each tail at most 0.00625 | Largest $8.2 \times 10^{-5}$ |
+| Section 7 recursion against the pilot's full-table exact PG, isolated world, $\eta = 1$, $q_0 = 10^{-5} \ldots 10^{-2}$ | 17,842, 2,358, 362, 63 updates | Match exactly |
+| Section 7 integral against the blueprint's D6 table, $q_0 = 10^{-6} \ldots 10^{-2}$ | 148,403, 17,837, 2,354, 359, 61 | Match exactly (rounded) |
+| Section 7 slopes over 9 log-spaced $q_0$ in $[10^{-6}, 10^{-2}]$ | Fitted near $-0.85$, local slope tending to $-1$ | Fitted $-0.844$; smallest-pair local $-0.928$ |

@@ -35,14 +35,15 @@ is known.
 The pilot is built: exact engine and metrics, planted cases, tabular and sequence
 training, the sample estimator and the pass@k rule. Results and open issues are in
 [docs/pilot-report.md](docs/pilot-report.md), which is a draft for team review. The
-proofs in [docs/proofs.md](docs/proofs.md) have been checked and independently
-re-derived by a teammate. The
-metric definitions may change as the team ratifies the proposals in the blueprint.
+proofs in [docs/proofs.md](docs/proofs.md), sections 1 to 6, have been checked and
+independently re-derived by a teammate; section 7 (time to cross) still needs that check.
+The metric definitions may change as the team ratifies the proposals in the blueprint.
 
 The experiment harness (`src/capsplit/harness/`) and the pre-registered RQ3 Phase 2
-experiment are done. Results are in [docs/report.md](docs/report.md). Still to do:
-RQ2's time-to-cross curve, RQ3 in the tabular grid worlds (Phase 1) and RQ4, the pass@k
-misdiagnosis rate.
+experiment are done. Results are in [docs/report.md](docs/report.md). RQ2's
+pre-registered time-to-cross experiment is done; results are in
+[docs/rq2-time-to-cross.md](docs/rq2-time-to-cross.md). Still to do: RQ2's training
+dynamics, RQ3 in the tabular grid worlds (Phase 1) and RQ4, the pass@k misdiagnosis rate.
 
 ## Setup
 
@@ -74,9 +75,11 @@ Results go under `results/`, which is git-ignored.
 | `src/capsplit/estimator.py` | Sampled split and sample-size bounds |
 | `src/capsplit/diagnostics.py` | The pass@k rule and its scoring |
 | `src/capsplit/runlog.py` | Run directories and manifests |
+| `src/capsplit/crossing.py` | Time to cross, log-log slopes, and the isolated-route scalar model (RQ2) |
 | `src/capsplit/harness/` | Plug-in experiment harness: tasks, policies, trainers, backends, runner, report |
 | `configs/` | Harness experiment configs (`main.json` is the RQ3 Phase 2 run) |
 | `experiments/` | Scripts that reproduce results with fixed configurations |
+| `experiments/rq2_time_to_cross.py` | RQ2 time-to-cross runs (`arm-a`, `robust`, `arm-b`, `sampled`) and `report` |
 | `tests/` | Unit and regression tests |
 | `docs/project-plan.pdf` | Research plan: definitions, propositions and hypotheses |
 | `docs/blueprint.md` | Technical blueprint: design, schedule and decisions to ratify |
@@ -86,6 +89,9 @@ Results go under `results/`, which is git-ignored.
 | `docs/report.md` | RQ3 Phase 2 results (not the final report) |
 | `docs/preregistration.md` | Frozen RQ3 Phase 2 hypotheses and decision rules |
 | `docs/harness.md` | Harness developer guide |
+| `docs/rq2-time-to-cross-design.md` | RQ2 time-to-cross design |
+| `docs/rq2-preregistration.md` | Frozen RQ2 time-to-cross predictions and decision rules |
+| `docs/rq2-time-to-cross.md` | RQ2 time-to-cross results |
 
 ## Workflow
 
