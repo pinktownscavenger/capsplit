@@ -282,3 +282,87 @@ def test_sft_then_rl_edge_fractions(make_policy, fraction, expected):
     assert seen == [0, 3] and steps["n"] == 3
     log = trainer.training_log()
     assert log is not None and (log["n_sft"], log["n_rl"]) == expected
+
+
+# --------------------------------------------------------------------------- micro-batched RL gradient
+
+
+def _grads(policy) -> list[torch.Tensor]:
+    return [p.grad.detach().clone() for p in policy.parameters()]
+
+
+def test_micro_batched_gradient_equals_full_batch(make_policy):
+    """accumulate_pg_gradient at any micro_batch == gradient of -mean(A * log_prob) over the whole batch."""
+    from capsplit.harness.lm.trainers import accumulate_pg_gradient
+    from capsplit.harness.trainers.rl import group_advantages
+
+    policy, task = make_policy(), ParityTask()
+    with torch.no_grad():  # sample has no graph under no_grad
+        rollout = policy.sample(task, [p for p in (0, 1, 2) for _ in range(4)], torch.Generator().manual_seed(3))
+    assert not rollout.log_prob.requires_grad
+    rewards = torch.tensor([1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0])
+    adv = group_advantages(rewards, 4, "grpo", 1e-6)
+    ids, actions = list(rollout.prompt_ids), list(rollout.actions)
+    params = list(policy.parameters())
+    # Reference: full-batch loss and one backward.
+    for p in params:
+        p.grad = None
+    full_loss = -(adv * policy.log_prob(task, ids, actions)).mean()
+    full_loss.backward()
+    reference = _grads(policy)
+    assert any(torch.count_nonzero(g) for g in reference)
+    for micro in (1, 3, 5, 12, 64):
+        for p in params:
+            p.grad = torch.zeros_like(p)
+        loss = accumulate_pg_gradient(policy, task, ids, actions, adv, micro)
+        assert loss == pytest.approx(full_loss.item(), abs=1e-6)
+        for got, want in zip(_grads(policy), reference):
+            torch.testing.assert_close(got, want, rtol=1e-5, atol=1e-6)
+
+
+def test_rl_update_gradient_independent_of_micro_batch(make_policy):
+    """The first update's (pre-clip) gradient and the samples are the same for any micro_batch."""
+    results = []
+    for micro in (1, 4, 16):
+        task = ParityTask()
+        _, _, steps = _run(LMRL(group=3, problems_per_update=2, lr=1e-2, micro_batch=micro, max_grad_norm=None),
+                           make_policy(), task, budget=1, checkpoints=(0, 1))
+        results.append((task.calls, steps["grads"][0]))
+    for calls, grads in results[1:]:
+        assert calls == results[0][0]
+        for got, want in zip(grads, results[0][1]):
+            # float32 sums over differently padded batches: compare relative to the gradient's scale.
+            scale = float(want.abs().max())
+            assert float((got - want).abs().max()) <= 1e-5 * max(scale, 1.0), (scale, float((got - want).abs().max()))
+
+
+def test_rl_micro_batch_param_validated():
+    assert LMRL().micro_batch == 16
+    for bad in (0, -1, 2.5, True):
+        with pytest.raises(ValueError, match="micro_batch"):
+            LMRL(micro_batch=bad)
+    assert LMSFTThenRL(rl={"micro_batch": 4}).rl_trainer.micro_batch == 4
+
+
+def test_rl_same_seed_same_weights_micro_batched(make_policy):
+    out = []
+    for _ in range(2):
+        policy = make_policy()
+        trainer = LMRL(group=2, problems_per_update=2, lr=1e-2, micro_batch=3)
+        _run(trainer, policy, ParityTask(), budget=2, checkpoints=(0, 2), seed=5)
+        out.append((policy.state_dict(), trainer.training_log()))
+    assert _same(out[0][0], out[1][0]) and out[0][1] == out[1][1]
+
+
+def test_rl_oom_becomes_memory_guard_error(make_policy, monkeypatch):
+    from capsplit.harness.lm.device import MemoryGuardError
+
+    policy = make_policy()
+
+    def boom(*args, **kwargs):
+        raise RuntimeError("MPS backend out of memory (MPS allocated: 7.9 GB, max allowed: 8.0 GB).")
+
+    monkeypatch.setattr(policy, "log_prob", boom)
+    with pytest.raises(MemoryGuardError, match="micro_batch"):
+        LMRL(group=2, problems_per_update=2).train(policy, ParityTask(always=None), 1, 0, TRAIN, [0, 1],
+                                                    lambda s, p: None)

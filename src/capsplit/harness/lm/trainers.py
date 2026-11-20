@@ -11,8 +11,8 @@ after update k for every k in `checkpoints`; only `prompt_ids` (the train split)
 all randomness comes from `seed`; unknown params raise (H14). Trainers write no files: the stage
 saves adapters from `on_checkpoint` and writes `training_log()` as training.json.
 
-Reuse. The group-normalised advantage and policy-gradient loss are `trainers.rl.group_advantages`
-/ `rl_loss` (kind "grpo"); rewards go through `rl.episode_rewards` on a text view of the rollout
+Reuse. The group-normalised advantage is `trainers.rl.group_advantages` (kind "grpo") and the
+policy-gradient loss is `rl_loss`'s -mean(A * log_prob), accumulated over micro-batches; rewards go through `rl.episode_rewards` on a text view of the rollout
 (LM verifiers take the decoded text, not token ids); the SFT loss and minibatching are
 `trainers.sft.sft_loss` / `minibatch` (LM `log_prob` accepts answer strings and appends the stop
 token); the SFT-then-RL budget and seed split are `trainers.sft_rl.split_budget` / `phase_seeds`;
@@ -31,6 +31,15 @@ Choices (each also stated where implemented):
   so no problem repeats within an update). Every problem is used once per cycle, and counts per
   problem never differ by more than one cycle. One torch CPU generator seeded by `seed` drives
   both the shuffles and the sampling (H19).
+* `lm_rl` memory: completions are sampled under `torch.no_grad()` (no autograd graph), then the
+  teacher-forced log-probs are recomputed with `policy.log_prob` in micro-batches of `micro_batch`
+  sequences, each chunk's share of the loss backpropagated at once (`accumulate_pg_gradient`). The
+  accumulated gradient equals that of the full-batch loss -mean(A * log_prob) (up to float summation
+  order), so the update is unchanged while only one micro-batch's graph is ever alive. Cost: one
+  extra (gradient-free) scoring forward per update, since `policy.sample` always scores.
+* On MPS each gradient arm sets the allocator's hard cap (`device.limit_mps_memory`, unless
+  `memory.mps_hard_cap` is false), and a torch out-of-memory error inside an update is re-raised
+  as a `MemoryGuardError` that names the config values to lower (`device.explain_oom`).
 * `lm_sft` receives the base classification through `set_base_classes(mapping)`, called by the
   stage before `train` (`needs_base_classes` is True for `lm_sft` and `lm_sft_then_rl`). The
   mapping is {problem_id: "reachable" | "unreachable" | "ambiguous"} (keys int or str, as read
@@ -39,7 +48,8 @@ Choices (each also stated where implemented):
 """
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Iterator, Mapping, Sequence
+from contextlib import contextmanager
 from typing import Any, ClassVar, cast
 
 import torch
@@ -47,9 +57,10 @@ import torch
 from ..interfaces import CheckpointHook, Policy, Rollout, Task, Trainer, call_checkpoints
 from ..registry import TRAINERS
 from ..trainers.none import NoTraining
-from ..trainers.rl import SampleLog, episode_rewards, rl_loss
+from ..trainers.rl import SampleLog, episode_rewards, group_advantages
 from ..trainers.sft import minibatch, sft_loss
 from ..trainers.sft_rl import phase_seeds, split_budget
+from .device import explain_oom, limit_mps_memory
 
 __all__ = [
     "CLASSES",
@@ -59,6 +70,7 @@ __all__ = [
     "LMSFTThenRL",
     "LMSampleLog",
     "ProblemCycle",
+    "accumulate_pg_gradient",
     "lm_rewards",
 ]
 
@@ -83,6 +95,27 @@ def _guard(policy: Policy, stage: str) -> None:
         guard.check_running(stage)
 
 
+def _hard_cap(policy: Policy) -> None:
+    """Set the MPS allocator cap from the policy's memory config (LocalLMPolicy; others have none)."""
+    config = getattr(policy, "config", None)
+    memory = getattr(config, "memory", None)
+    device = getattr(policy, "device", None)
+    if memory is not None and isinstance(device, torch.device):
+        limit_mps_memory(memory, device)
+
+
+@contextmanager
+def _explain_oom(policy: Policy, stage: str) -> Iterator[None]:
+    """Re-raise torch out-of-memory errors as a MemoryGuardError saying which config values to lower."""
+    try:
+        yield
+    except RuntimeError as error:
+        explained = explain_oom(error, getattr(getattr(policy, "config", None), "memory", None), stage)
+        if explained is None:
+            raise
+        raise explained from error
+
+
 def _optimizer(policy: Policy, lr: float, betas: tuple[float, float], weight_decay: float) -> torch.optim.Optimizer:
     params = list(policy.parameters())
     if not params:
@@ -90,9 +123,11 @@ def _optimizer(policy: Policy, lr: float, betas: tuple[float, float], weight_dec
     return torch.optim.AdamW(params, lr=lr, betas=betas, weight_decay=weight_decay)
 
 
-def _step(optimizer: torch.optim.Optimizer, loss: torch.Tensor, max_grad_norm: float | None) -> None:
-    optimizer.zero_grad(set_to_none=False)
-    loss.backward()
+def _step(optimizer: torch.optim.Optimizer, loss: torch.Tensor | None, max_grad_norm: float | None) -> None:
+    """zero_grad, backward `loss`, clip, step. With loss None the gradients are already accumulated."""
+    if loss is not None:
+        optimizer.zero_grad(set_to_none=False)
+        loss.backward()
     if max_grad_norm is not None:
         params = [p for group in optimizer.param_groups for p in group["params"]]
         torch.nn.utils.clip_grad_norm_(params, max_grad_norm)
@@ -201,6 +236,33 @@ def lm_rewards(task: Task, rollout: Rollout) -> torch.Tensor:
     return episode_rewards(task, view).to(rollout.log_prob.device)  # rl.py builds them on CPU
 
 
+def accumulate_pg_gradient(policy: Policy, task: Task, prompt_ids: Sequence[int], actions: Sequence[Any],
+                           advantages: torch.Tensor, micro_batch: int) -> float:
+    """Backpropagate the policy-gradient loss -mean_i(A_i * log pi(a_i | x_i)) in micro-batches.
+
+    Each chunk c of at most `micro_batch` episodes recomputes its teacher-forced log-probs with
+    `policy.log_prob` and backpropagates -sum_{i in c}(A_i * log_prob_i) / B (B = all episodes), so
+    the gradients accumulated in `.grad` sum to the full-batch gradient; only one chunk's graph is
+    alive at a time. Gradients are added to whatever `.grad` holds (zero them first). Chunks whose
+    advantages are all zero contribute exactly zero gradient and are skipped. Returns the loss value.
+    """
+    n = len(prompt_ids)
+    if len(actions) != n or advantages.numel() != n:
+        raise ValueError(f"{n} prompt ids, {len(actions)} actions and {advantages.numel()} advantages must match")
+    total = 0.0
+    for lo in range(0, n, micro_batch):
+        hi = min(n, lo + micro_batch)
+        adv = advantages[lo:hi]
+        if not bool(torch.any(adv != 0)):
+            continue
+        log_prob = policy.log_prob(task, list(prompt_ids[lo:hi]), list(actions[lo:hi]))
+        loss = -(adv.to(log_prob.device, log_prob.dtype) * log_prob).sum() / n
+        loss.backward()
+        total += float(loss.detach())
+        del log_prob, loss
+    return total
+
+
 class ProblemCycle:
     """Seeded epoch-like cycle over `ids` (see the module docstring); `next(k)` returns k distinct ids."""
 
@@ -250,18 +312,22 @@ class LMRL(Trainer):
     """GRPO-style policy gradient on LoRA parameters (no KL, one on-policy step per batch, H18).
 
     Each update: choose `problems_per_update` train problems (`ProblemCycle`); sample G = `group`
-    completions each with `policy.sample` (log_prob carries gradients); reward = 1[task.verify];
-    A = (r - mean_group r) / (std_group r + eps) (`rl.group_advantages`, kind "grpo"), so an
-    all-fail or all-success group gives exactly zero gradient; loss = -mean(A * log_prob)
-    (`rl.rl_loss`); clip to `max_grad_norm`; one optimizer step; memory guard.
+    completions each with `policy.sample` under no_grad; reward = 1[task.verify];
+    A = (r - mean_group r) / (std_group r + eps) (`rl.group_advantages`, kind "grpo", over the full
+    groups), so an all-fail or all-success group gives exactly zero gradient; loss =
+    -mean(A * log_prob) as `rl.rl_loss`, backpropagated in micro-batches of `micro_batch` sequences
+    with recomputed log-probs (`accumulate_pg_gradient`); clip to `max_grad_norm`; one optimizer
+    step; memory guard.
 
     Params: group (8), problems_per_update (8, capped at the number of train problems), lr (1e-4),
-    betas ((0.9, 0.999)), weight_decay (0.0), max_grad_norm (1.0, None disables), eps (1e-6).
+    betas ((0.9, 0.999)), weight_decay (0.0), max_grad_norm (1.0, None disables), eps (1e-6),
+    micro_batch (16; sequences per backward pass; peak memory scales with it, the update does not).
     """
 
     name = "lm_rl"
     needs_base_classes = False
-    KNOWN: ClassVar[frozenset[str]] = frozenset({"group", "problems_per_update", "lr", "betas", "weight_decay", "max_grad_norm", "eps"})
+    KNOWN: ClassVar[frozenset[str]] = frozenset({"group", "problems_per_update", "lr", "betas", "weight_decay", "max_grad_norm", "eps",
+                                               "micro_batch"})
 
     def __init__(self, **params: Any):
         _check_params(self.name, params, self.KNOWN)
@@ -270,6 +336,7 @@ class LMRL(Trainer):
         self.problems_per_update = _positive_int(self.name, "problems_per_update", params.get("problems_per_update", 8))
         self.opt = _common(self.name, params)
         self.eps = float(params.get("eps", 1e-6))
+        self.micro_batch = _positive_int(self.name, "micro_batch", params.get("micro_batch", 16))
         self.sample_log: LMSampleLog | None = None
 
     def training_log(self) -> dict | None:
@@ -288,14 +355,23 @@ class LMRL(Trainer):
         generator = torch.Generator().manual_seed(int(seed))
         cycle = ProblemCycle(ids, generator)
         optimizer = _optimizer(policy, self.opt["lr"], self.opt["betas"], self.opt["weight_decay"])
+        _hard_cap(policy)
         for step in range(1, int(budget) + 1):
+            stage = f"{self.name} update {step}"
             batch = cycle.next(self.problems_per_update)
-            rollout = policy.sample(task, [p for p in batch for _ in range(self.group)], generator)
-            rewards = lm_rewards(task, rollout)
-            log.record(step, rollout, rewards)
-            _step(optimizer, rl_loss(rollout, rewards, self.group, "grpo", 0.0, self.eps), self.opt["max_grad_norm"])
-            del rollout
-            _guard(policy, f"{self.name} update {step}")
+            with _explain_oom(policy, stage):
+                # No graph while sampling: sample()'s log_prob is discarded and recomputed per micro-batch.
+                with torch.no_grad():
+                    rollout = policy.sample(task, [p for p in batch for _ in range(self.group)], generator)
+                rewards = lm_rewards(task, rollout)
+                log.record(step, rollout, rewards)
+                prompt_ids, actions = list(rollout.prompt_ids), list(rollout.actions)
+                del rollout
+                advantages = group_advantages(rewards, self.group, "grpo", self.eps)
+                optimizer.zero_grad(set_to_none=False)
+                accumulate_pg_gradient(policy, task, prompt_ids, actions, advantages, self.micro_batch)
+                _step(optimizer, None, self.opt["max_grad_norm"])
+            _guard(policy, stage)
             call_checkpoints(step, checkpoints, policy, on_checkpoint)
         log.updates = int(budget)
 
@@ -369,8 +445,10 @@ class LMSFT(Trainer):
         pairs = cast(list[tuple[int, tuple]], [(p, task.demonstrations(p)[0]) for p in ids])
         generator = torch.Generator().manual_seed(int(seed))
         optimizer = _optimizer(policy, self.opt["lr"], self.opt["betas"], self.opt["weight_decay"])
+        _hard_cap(policy)
         for step in range(1, int(budget) + 1):
-            _step(optimizer, sft_loss(policy, task, minibatch(pairs, self.batch, generator)), self.opt["max_grad_norm"])
+            with _explain_oom(policy, f"{self.name} update {step}"):
+                _step(optimizer, sft_loss(policy, task, minibatch(pairs, self.batch, generator)), self.opt["max_grad_norm"])
             _guard(policy, f"{self.name} update {step}")
             call_checkpoints(step, checkpoints, policy, on_checkpoint)
 

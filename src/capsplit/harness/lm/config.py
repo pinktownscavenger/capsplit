@@ -64,6 +64,9 @@ class MemoryConfig:
 
     min_free_gb: float = 4.0  # refuse to start a stage with less system memory available
     max_process_gb: float = 9.0  # abort a stage if this process's memory (RSS + MPS) exceeds it
+    # On MPS, also cap the Metal allocator at max_process_gb (torch.mps.set_per_process_memory_fraction),
+    # so a transient peak inside one update raises an out-of-memory error instead of swapping the machine.
+    mps_hard_cap: bool = True
 
 
 @dataclass(frozen=True)
@@ -190,6 +193,11 @@ def parse_config(data: dict) -> LMConfig:
         raise LMConfigError(f"model.device must be auto, mps or cpu, got {model.device!r}")
     lora = _section(LoraConfig, "lora", top["lora"])
     memory = _section(MemoryConfig, "memory", top["memory"])
+    if not isinstance(memory.mps_hard_cap, bool):
+        raise LMConfigError(f"memory.mps_hard_cap must be true or false, got {memory.mps_hard_cap!r}")
+    if isinstance(memory.max_process_gb, bool) or not isinstance(memory.max_process_gb, (int, float)) \
+            or memory.max_process_gb <= 0:
+        raise LMConfigError(f"memory.max_process_gb must be a positive number, got {memory.max_process_gb!r}")
     runtime = _section(RuntimeConfig, "runtime", top["runtime"])
     task_raw = _take("task", top["task"], {"generators": None, "seed": 0, "prompt_template": TaskConfig.prompt_template},
                      required=("generators",))
