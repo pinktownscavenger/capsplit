@@ -422,6 +422,81 @@ def _cmd_score(args) -> None:
     write_report(phase2, phase1, Path(args.out), frozen=not args.allow_unfrozen)
 
 
+# ----------------------------------------------------------------------------- RQ3 reproduction
+
+REPRO_FILES = ("summary.json", "tables/main.csv", "verdicts.json")
+REPRO_TOL = 1e-6
+
+
+def _num(x):
+    try:
+        return float(x)
+    except (TypeError, ValueError):
+        return None
+
+
+def _diff(a, b, path: str = "") -> tuple[float, str | None]:
+    """(largest numeric difference, first non-numeric difference's path or None)."""
+    if isinstance(a, dict) and isinstance(b, dict):
+        if set(a) != set(b):
+            return 0.0, f"{path} keys {sorted(set(a) ^ set(b))[:3]}"
+        worst = 0.0
+        for k in sorted(a):
+            d, where = _diff(a[k], b[k], f"{path}.{k}")
+            if where:
+                return d, where
+            worst = max(worst, d)
+        return worst, None
+    if isinstance(a, list) and isinstance(b, list):
+        if len(a) != len(b):
+            return 0.0, f"{path} length {len(a)} vs {len(b)}"
+        worst = 0.0
+        for i, (x, y) in enumerate(zip(a, b)):
+            d, where = _diff(x, y, f"{path}[{i}]")
+            if where:
+                return d, where
+            worst = max(worst, d)
+        return worst, None
+    x, y = _num(a), _num(b)
+    if x is not None and y is not None and not isinstance(a, bool) and not isinstance(b, bool):
+        if np.isnan(x) and np.isnan(y):
+            return 0.0, None
+        return abs(x - y), None
+    return (0.0, None) if a == b else (0.0, f"{path}: {a!r} vs {b!r}")
+
+
+def _parse(path: Path):
+    if path.suffix == ".json":
+        return json.loads(path.read_text())
+    with path.open(newline="") as f:
+        return list(csv.reader(f))
+
+
+def repro_compare(new_report_dir: str | Path, committed_dir: str | Path = Path("docs/experiment_main")) -> dict:
+    """Compare a rerun RQ3 report with the committed one: identical bytes, numeric-only differences, or different."""
+    new_report_dir, committed_dir = Path(new_report_dir), Path(committed_dir)
+    files = {}
+    for name in REPRO_FILES:
+        new, old = new_report_dir / name, committed_dir / name
+        if not new.exists() or not old.exists():
+            files[name] = {"status": "missing", "where": str(new if not new.exists() else old)}
+        elif new.read_bytes() == old.read_bytes():
+            files[name] = {"status": "identical"}
+        else:
+            worst, where = _diff(_parse(old), _parse(new))
+            files[name] = {"status": "different", "where": where} if where else {"status": "numeric", "max_abs_diff": worst}
+    match = all(f["status"] == "identical" or (f["status"] == "numeric" and f["max_abs_diff"] <= REPRO_TOL)
+                for f in files.values())
+    return {"match": match, "tolerance": REPRO_TOL, "files": files}
+
+
+def _cmd_repro(args) -> None:
+    result = repro_compare(args.new_report_dir)
+    print(json.dumps(result, indent=2))
+    if not result["match"]:
+        raise SystemExit(1)
+
+
 # ----------------------------------------------------------------------------- command line
 
 
@@ -450,6 +525,9 @@ def main(argv: list[str] | None = None) -> None:
     srr.add_argument("results_dir")
     srr.add_argument("--out", default="results/rq4_report")
     srr.set_defaults(func=_cmd_srr_ndr)
+    repro = sub.add_parser("repro", help="compare a rerun RQ3 report with docs/experiment_main")
+    repro.add_argument("new_report_dir")
+    repro.set_defaults(func=_cmd_repro)
     args = parser.parse_args(argv)
     args.func(args)
 
