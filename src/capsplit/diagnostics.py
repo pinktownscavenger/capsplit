@@ -56,3 +56,17 @@ def score_rule(rule_outputs: list[str], cells: list[str]) -> dict:
         "undetermined_rate": overall["undetermined_rate"],
         "per_cell": per_cell,
     }
+
+
+def srr_ndr(q0, q1, eps: float) -> dict:
+    """SRR and NDR (The Invisible Leash, Def. 3.3) for one prompt, from exact solution probabilities.
+
+    UNVERIFIED: follows docs/notes/invisible-leash-scores.md, which a person has not yet checked
+    against the paper. Counts correct solutions, not mass, with the note's strict `> eps`:
+    P = kept (q0 > eps and q1 > eps), S = shrunk (q0 > eps, q1 <= eps), E = expanded
+    (q0 <= eps, q1 > eps). SRR = P / (P + S) and NDR = E / (P + E), None when the denominator is 0.
+    """
+    q0, q1 = np.asarray(q0, dtype=float), np.asarray(q1, dtype=float)
+    in0, in1 = q0 > eps, q1 > eps
+    p, s, e = int((in0 & in1).sum()), int((in0 & ~in1).sum()), int((~in0 & in1).sum())
+    return {"P": p, "S": s, "E": e, "srr": p / (p + s) if p + s else None, "ndr": e / (p + e) if p + e else None}

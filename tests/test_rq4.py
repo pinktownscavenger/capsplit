@@ -125,3 +125,32 @@ def test_score_refuses_before_freeze(tmp_path, capsys, monkeypatch):
     with pytest.raises(SystemExit):
         main(["score", "--phase2", str(tmp_path), "--phase1", str(tmp_path)])
     assert "rq4-frozen" in capsys.readouterr().err
+
+
+# ------------------------------------------------------------------- report outputs and SRR/NDR
+
+
+@pytest.fixture(scope="module")
+def quick_grid_with_policies(tmp_path_factory):
+    out = tmp_path_factory.mktemp("rq4_quick_policies")
+    return run_experiment(parse_config(_quick_config("checkpoints")), out_root=out, workers=1)
+
+
+def test_report_writes_everything_and_keeps_srr_out(tmp_path, quick_grid):
+    main(["score", "--phase2", str(quick_grid), "--phase1", str(quick_grid), "--out", str(tmp_path), "--allow-unfrozen"])
+    for name in ("tables/agreement.csv", "tables/k_large_sensitivity.csv", "tables/units.csv",
+                 "figures/agreement_by_cell.png", "figures/disagreement_examples.png", "verdicts.json", "verdicts.md"):
+        assert (tmp_path / name).exists(), name
+    text = (tmp_path / "verdicts.md").read_text()
+    assert "UNFROZEN TEST" in text
+    assert "SRR" not in text.upper().replace("SRR/NDR PENDING", "")
+    v = json.loads((tmp_path / "verdicts.json").read_text())
+    assert v["frozen"] is False and set(v) >= {"Q1", "Q2", "Q3", "validity"}
+    assert set(v["Q1"]["per_cell"]) == set(rq4_passk.CELLS)  # every cell reported, even if empty
+
+
+def test_srr_ndr_cli_writes_only_unverified_file(tmp_path, quick_grid_with_policies):
+    main(["srr-ndr", str(quick_grid_with_policies), "--out", str(tmp_path)])
+    assert [p.name for p in tmp_path.iterdir()] == ["srr_ndr_UNVERIFIED.csv"]
+    header = (tmp_path / "srr_ndr_UNVERIFIED.csv").read_text().splitlines()[0]
+    assert header.split(",")[:4] == ["phase", "arm", "seed", "step"]
