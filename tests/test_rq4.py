@@ -63,3 +63,65 @@ def test_label_distribution_counts_every_unit(quick_grid):
     units = load_units(quick_grid)
     dist = label_distribution(units)
     assert sum(sum(c.values()) for c in dist.values()) == len(units)
+
+
+# ------------------------------------------------------------------- scoring and verdicts
+
+import rq4_passk  # noqa: E402
+from rq4_passk import Unit, main, q1_verdict, q3_verdict, rule_of, score_units  # noqa: E402
+
+KS = (1, 2, 5, 10, 20, 50, 77)
+
+
+def _unit(j0, j1, label, seed=0, arm="rloo"):
+    return Unit(arm, "rloo", (), seed, 1000, "heldout", tuple(j0), tuple(j1), label, label)
+
+
+def test_all_prompts_improve_is_capability():
+    assert rule_of(_unit([0.1, 0.2], [0.5, 0.6], "reweighting"), KS) == "capability"
+
+
+def test_one_prompt_drops_is_sharpening():
+    assert rule_of(_unit([0.3, 0.05], [0.9, 0.0], "pure_sharpening"), KS) == "sharpening"
+
+
+def test_saturated_ties_are_undetermined_and_count_as_disagreement():
+    u = _unit([1.0, 1.0], [1.0, 1.0], "capability")
+    assert rule_of(u, KS) == "undetermined"
+    s = score_units([u], KS)
+    assert s["primary"] == 0.0 and s["undetermined_rate"] == 1.0 and s["n_units"] == 1
+
+
+def test_per_seed_rates_and_ci():
+    units = [_unit([0.1], [0.5], "capability", seed=s) for s in range(5)] + [
+        _unit([0.1], [0.5], "reweighting", seed=s) for s in range(5)
+    ]
+    s = score_units(units, KS)
+    assert s["per_seed_primary"] == {i: 0.5 for i in range(5)}
+    assert s["ci"] == pytest.approx((0.5, 0.5))
+
+
+def test_q1_rules():
+    assert q1_verdict((0.4, 0.6)) == "supported"
+    assert q1_verdict((0.96, 0.99)) == "contradicted"
+    assert q1_verdict((0.9, 0.97)) == "inconclusive"
+
+
+def _cell(primary, runs=20):
+    return {"primary": primary, "runs": runs}
+
+
+def test_q3_rules_and_small_cells():
+    good = {"compounded_sharpening": _cell(0.1), "reweighting": _cell(0.2), "capability": _cell(0.9), "pure_sharpening": _cell(0.8)}
+    assert q3_verdict(good)["verdict"] == "supported"
+    assert q3_verdict({**good, "reweighting": _cell(0.95)})["verdict"] == "contradicted"
+    assert q3_verdict({**good, "capability": _cell(0.9, runs=5)})["verdict"] == "inconclusive"
+    missing = {k: v for k, v in good.items() if k != "pure_sharpening"}
+    assert q3_verdict(missing)["verdict"] == "inconclusive"
+
+
+def test_score_refuses_before_freeze(tmp_path, capsys, monkeypatch):
+    monkeypatch.setattr(rq4_passk, "_tag_is_ancestor", lambda: False)
+    with pytest.raises(SystemExit):
+        main(["score", "--phase2", str(tmp_path), "--phase1", str(tmp_path)])
+    assert "rq4-frozen" in capsys.readouterr().err
