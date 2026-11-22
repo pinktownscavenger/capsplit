@@ -15,6 +15,7 @@ from pathlib import Path
 
 from .config import LMConfig, LMConfigError, load_config
 from .device import DeviceError, MemoryGuardError
+from .report import ReportError
 
 StageFn = Callable[[LMConfig, Path, argparse.Namespace], list[Path]]
 
@@ -59,11 +60,16 @@ def _experiment_stages() -> dict[str, tuple[StageFn, str]]:
     def report(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
         return st.run_report(c, o)
 
+    def verdicts(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
+        from .verdicts import build_verdicts
+
+        return [build_verdicts(o, Path(a.prereg))]
+
     return {"data": (data, "base"), "base": (base, "train"), "train": (train, "measure"),
-            "measure": (measure, "report"), "report": (report, "")}
+            "measure": (measure, "report"), "report": (report, "verdicts"), "verdicts": (verdicts, "")}
 
 
-STAGE_NAMES = ("doctor", "fetch", "speedtest", "setup", "data", "base", "train", "measure", "report")
+STAGE_NAMES = ("doctor", "fetch", "speedtest", "setup", "data", "base", "train", "measure", "report", "verdicts")
 
 
 def stages() -> dict[str, tuple[StageFn, str]]:
@@ -77,6 +83,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("config", help="path to an LM experiment config (JSON)")
     parser.add_argument("--out", default="results", help="results root (default: results)")
     parser.add_argument("--fallback", action="store_true", help="use model.fallback_id instead of model.id")
+    parser.add_argument("--prereg", default="configs/lm_prereg.json",
+                        help="verdict thresholds for the verdicts stage (default: configs/lm_prereg.json)")
     parser.add_argument("--all-checkpoints", action="store_true",
                         help="measure: also measure intermediate checkpoints (default: final only)")
     return parser
@@ -92,7 +100,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         out.mkdir(parents=True, exist_ok=True)
         run, next_stage = stages()[args.stage]
         written = run(config, out, args)
-    except (LMConfigError, MemoryGuardError, DeviceError, StageError) as error:
+    except (LMConfigError, MemoryGuardError, DeviceError, StageError, ReportError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 2
     except OSError as error:  # model files not in the cache, network down, unreadable file
