@@ -631,6 +631,22 @@ def _md_cell(x: Any) -> str:
     return "n/a" if x is None else str(x).replace("|", "/")
 
 
+STAGES_TIMED = ("speedtest", "data", "base", "train", "measure", "report", "verdicts")
+
+
+def stage_durations(out: Path) -> list[list[str]]:
+    """[stage, invocations, total seconds, total hours] per stage, or "not recorded"."""
+    rows = []
+    for stage in STAGES_TIMED:
+        entries = list(read_jsonl(out / "timing" / f"{stage}.jsonl"))
+        if not entries:
+            rows.append([stage, "0", "not recorded", "not recorded"])
+            continue
+        total = sum(float(e["wall_seconds"]) for e in entries)
+        rows.append([stage, str(len(entries)), f"{total:.0f}", f"{total / 3600:.2f}"])
+    return rows
+
+
 def build_report(out_dir: str | Path) -> Path:
     """Write `<out_dir>/report/` from the stage outputs; returns the path of report.md."""
     run = load_run(out_dir)
@@ -758,6 +774,13 @@ def build_report(out_dir: str | Path) -> Path:
     md += md_table(["arm", "tag", "split", "samples", "valid", "correct", "correct given valid"],
                    [[r[0], r[1], r[3], r[4], md_num(r[5], sign=False), md_num(r[6], sign=False),
                      md_num(r[7], sign=False)] for r in validity])
+    md.append("")
+
+    md += ["## Stage durations", "",
+           ("Wall-clock time of each stage, measured by the command itself (`timing/<stage>.jsonl`, one line per "
+           "invocation; a resumed stage has several). A stage with no file was run by a version that did not record "
+           "its duration."), ""]
+    md += md_table(["stage", "invocations", "total wall s", "total wall h"], stage_durations(run.out))
     md.append("")
 
     md += ["## Training", "",

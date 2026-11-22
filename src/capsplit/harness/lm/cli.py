@@ -10,12 +10,14 @@ from __future__ import annotations
 
 import argparse
 import sys
+import time
 from collections.abc import Callable, Sequence
 from pathlib import Path
 
 from .config import LMConfig, LMConfigError, load_config
 from .device import DeviceError, MemoryGuardError
 from .report import ReportError
+from .storage import append_jsonl
 
 StageFn = Callable[[LMConfig, Path, argparse.Namespace], list[Path]]
 
@@ -77,6 +79,17 @@ def stages() -> dict[str, tuple[StageFn, str]]:
     return {**_setup_stages(), **_experiment_stages()}
 
 
+def record_timing(out: Path, stage: str, seconds: float) -> Path:
+    """Append this invocation's wall time to `<out>/timing/<stage>.jsonl`.
+
+    One line per successful invocation, so a stage that was interrupted and resumed has several
+    lines; the report sums them. Durations are measured here, never typed into documents.
+    """
+    path = out / "timing" / f"{stage}.jsonl"
+    append_jsonl(path, [{"stage": stage, "wall_seconds": round(seconds, 3)}])
+    return path
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="python -m capsplit.harness.lm", description="Staged LM capability/reliability experiment")
     parser.add_argument("stage", choices=STAGE_NAMES, help="stage to run")
@@ -99,7 +112,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         out = Path(args.out) / config.name
         out.mkdir(parents=True, exist_ok=True)
         run, next_stage = stages()[args.stage]
+        started = time.monotonic()
         written = run(config, out, args)
+        written.append(record_timing(out, args.stage, time.monotonic() - started))
     except (LMConfigError, MemoryGuardError, DeviceError, StageError, ReportError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 2
