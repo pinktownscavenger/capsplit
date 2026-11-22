@@ -28,11 +28,29 @@ Resuming:
   optimizer and sampler state in memory only, so a mid-run restart would not reproduce the run.
 * **Measurement** is resumable at sample level; the statistics are recomputed (cheap) every run.
 
+Stale outputs: every manifest records a `fingerprint` (one hash per config section that
+determines the stage's outputs, plus the model actually used, i.e. whether `--fallback` was given):
+
+* data: `task`
+* base: data's + `model` (id, revision, max_new_tokens, system_prompt, dtype) + `sampling`
+* train (per arm x seed): base's + `lora` + `arms.<name>` (each arm separately) + `budget` +
+  `checkpoints` + `seeds`
+* measure: train's + `measure`; the eval samples of one run carry their own manifest
+  (`samples/<arm>/seed<s>/manifest.eval.json`, the run's train sections).
+
+Before a stage reuses anything it compares the current fingerprint with the earlier stages'
+manifests and its own (`check_manifest`) and raises `StageError` naming the differing sections.
+A manifest without a fingerprint (written by older code) is checked by recomputing the
+fingerprint from its stored full `config` and `model`. Each stage writes its manifest before it
+starts work, so an interrupted run is guarded too; outputs with no manifest at all (older code,
+interrupted) are reused with a warning.
+
 `measure_seed` is `getattr(config.sampling, "seed", 0)`: `SamplingConfig` has no `seed` field yet,
 so it is 0 and recorded as such. Likewise `measure.n_splits` defaults to `DEFAULT_N_SPLITS`.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 import time
@@ -168,6 +186,138 @@ def load_task(config: LMConfig, out: Path) -> Any:
     return LMTask(load_problems(out), config.task.prompt_template)
 
 
+# --------------------------------------------------------------------------- stale-output guard
+
+RUN_KEYS = ("task", "model", "sampling", "lora", "budget", "checkpoints", "seeds")  # + arms.<name>
+
+
+def model_choice(config: LMConfig, use_fallback: bool = False) -> dict:
+    """{"id", "revision"} of the checkpoint a stage loads (the primary, or the fallback with --fallback)."""
+    m = config.model
+    if not use_fallback:
+        return {"id": m.id, "revision": m.revision}
+    if not m.fallback_id or not m.fallback_revision:
+        raise StageError("--fallback was given but model.fallback_id / model.fallback_revision are not set")
+    return {"id": m.fallback_id, "revision": m.fallback_revision}
+
+
+def plain_config(config: LMConfig) -> dict:
+    """`config.to_dict()` as it reads back from a manifest (tuples become lists)."""
+    return dict(json.loads(json.dumps(config.to_dict())))
+
+
+def config_sections(cfg: dict, model: dict | None, stage: str) -> dict[str, Any]:
+    """The config sections (JSON values) that determine `stage`'s outputs; `cfg` is a `plain_config`."""
+    sections: dict[str, Any] = {"task": cfg["task"]}
+    if stage == "data":
+        return sections
+    if model is None:
+        raise ValueError(f"the {stage} fingerprint needs the model choice")
+    mc = cfg["model"]
+    sections["model"] = {"id": model["id"], "revision": model["revision"], "max_new_tokens": mc["max_new_tokens"],
+                         "system_prompt": mc["system_prompt"], "dtype": mc["dtype"]}
+    sections["sampling"] = cfg["sampling"]
+    if stage == "base":
+        return sections
+    sections["lora"] = cfg["lora"]
+    for arm in cfg["arms"]:
+        sections[f"arms.{arm['name']}"] = arm
+    for key in ("budget", "checkpoints", "seeds"):
+        sections[key] = cfg[key]
+    if stage in ("train", "step", "eval"):
+        return sections
+    if stage != "measure":
+        raise ValueError(f"no fingerprint is defined for stage {stage!r}")
+    sections["measure"] = cfg["measure"]
+    return sections
+
+
+def _digest(value: Any) -> str:
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).hexdigest()[:16]
+
+
+def fingerprint(cfg: dict, model: dict | None, stage: str) -> dict[str, str]:
+    """{section: hash} for `stage` (see the module docstring for the sections)."""
+    return {key: _digest(value) for key, value in config_sections(cfg, model, stage).items()}
+
+
+def stored_fingerprint(manifest: dict, stage: str) -> dict[str, str] | None:
+    """A manifest's fingerprint; for an older manifest without one, recomputed from its stored config
+    and model (no recorded model = the config's primary model). None if it cannot be recovered."""
+    stored = manifest.get("fingerprint")
+    if isinstance(stored, dict):
+        return {str(k): str(v) for k, v in stored.items()}
+    cfg = manifest.get("config")
+    if not isinstance(cfg, dict):
+        return None
+    try:
+        model = manifest.get("model") or {"id": cfg["model"]["id"], "revision": cfg["model"]["revision"]}
+        return fingerprint(cfg, model, stage)
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
+def _delete_hint(paths: Sequence[Path]) -> str:
+    return " and ".join(str(p) for p in paths)
+
+
+def check_manifest(path: Path, stage: str, current: dict[str, str], keys: Iterable[str],
+                   delete: Sequence[Path]) -> bool:
+    """Compare the manifest at `path` with `current` on `keys`; StageError on any difference.
+
+    Returns False if there is no manifest (nothing to compare), True if it matches.
+    """
+    if not path.exists():
+        return False
+    advice = f"use a new experiment name, or delete {_delete_hint(delete)} to recompute"
+    try:
+        stored = stored_fingerprint(read_json(path), stage)
+    except (OSError, ValueError):
+        stored = None
+    if stored is None:
+        raise StageError(f"{path} records no usable config, so its outputs cannot be checked against the current "
+                         f"config; {advice}")
+    differing = [k for k in keys if stored.get(k) != current[k]]
+    if differing:
+        hint = (" (the model section includes the checkpoint: give --fallback to every stage or to none)"
+                if "model" in differing else "")
+        raise StageError(f"outputs under {path.parent} were produced with a config that differs from the current "
+                         f"config/model in: {', '.join(differing)}{hint}; {advice}")
+    return True
+
+
+def _has_files(*paths: Path) -> bool:
+    for path in paths:
+        if path.is_file() or (path.is_dir() and any(p.is_file() for p in path.rglob("*"))):
+            return True
+    return False
+
+
+def _warn_unverified(what: str, where: Path) -> None:
+    print(f"WARNING: {what} in {where} has no manifest (written by older code, or interrupted before it wrote "
+          "one), so it cannot be checked against the current config; reusing it. Delete it to recompute.",
+          file=sys.stderr)
+
+
+def run_keys(arm: str) -> list[str]:
+    """Sections one (arm, seed) training run (and its eval samples) depend on."""
+    return [*RUN_KEYS, f"arms.{arm}"]
+
+
+def eval_dir(out: Path, arm: str, seed: int) -> Path:
+    return out / "samples" / arm / f"seed{seed}"
+
+
+def _check_upstream(out: Path, current: dict[str, str], base: bool) -> None:
+    """Compare the data (and with `base`, base) manifests with the current config."""
+    check_manifest(out / "data" / "manifest.data.json", "data", current, ["task"], [out / "data"])
+    if base:
+        keys = ["task", "model", "sampling"]
+        if not check_manifest(out / "base" / "manifest.base.json", "base", current, keys,
+                              [out / "base", out / "samples" / "base"]) and _has_files(out / "base"):
+            _warn_unverified("base output", out / "base")
+
+
 # --------------------------------------------------------------------------- policies
 
 PolicyFactory = Callable[[int], Any]  # seed -> LocalLMPolicy (fresh LoRA seeded by `seed`)
@@ -272,6 +422,8 @@ def run_data(config: LMConfig, out: Path, device: Any = "cpu") -> list[Path]:
     from .tasks import build_problems
 
     with _stage(config, "data", device):
+        fp = fingerprint(plain_config(config), None, "data")
+        check_manifest(out / "data" / "manifest.data.json", "data", fp, fp, [out / "data"])
         rows = build_problems(config.task)
         path = out / "data" / "problems.jsonl"
         text = "".join(json.dumps(r, sort_keys=True) + "\n" for r in rows)
@@ -292,7 +444,7 @@ def run_data(config: LMConfig, out: Path, device: Any = "cpu") -> list[Path]:
         summary_path = out / "data" / "summary.json"
         write_json(summary_path, summary)
         manifest = write_manifest(out / "data", "data", config.to_dict(), config.task.seed, str(device),
-                                  extra={"seeds": seed_streams(config)})
+                                  extra={"seeds": seed_streams(config), "fingerprint": fp})
     return [path, summary_path, manifest]
 
 
@@ -308,23 +460,32 @@ def base_jobs(config: LMConfig) -> list[SampleJob]:
     return jobs
 
 
-def run_base(config: LMConfig, out: Path, device: Any = "cpu", factory: PolicyFactory | None = None) -> list[Path]:
+def run_base(config: LMConfig, out: Path, device: Any = "cpu", factory: PolicyFactory | None = None,
+             use_fallback: bool = False) -> list[Path]:
     """Sample the base (adapter disabled) for sets A, B, C, null; classify on A; summarise."""
     _plugins()
     from .measure import classify, clopper_pearson
 
+    chosen = model_choice(config, use_fallback)
+    fp = fingerprint(plain_config(config), chosen, "base")
     with _stage(config, "base", device):
         task = load_task(config, out)
+        _check_upstream(out, fp, base=False)
+        own = [out / "base", out / "samples" / "base"]
+        if not check_manifest(out / "base" / "manifest.base.json", "base", fp, fp, own) and _has_files(*own):
+            _warn_unverified("base output", out / "samples" / "base")
+        write_manifest(out / "base", "base", config.to_dict(), measure_seed(config), str(device),
+                       extra={"seeds": seed_streams(config), "model": chosen, "fingerprint": fp, "status": "started"})
         jobs = base_jobs(config)
         written: list[Path] = []
         if any(_incomplete(out, job, len(task.prompts())) for job in jobs):
             policy = (factory or default_policy_factory(config, device))(0)
             written += sample_jobs(policy, task, jobs, out, measure_seed(config), "base samples")
-            model = _model_info(policy)
+            model = _model_info(policy) or chosen
             del policy
         else:
             written += [sample_path(out, j.tag, j.set_name, j.temperature) for j in jobs]
-            model = None
+            model = chosen
         rows = task.rows
         n_problems = len(rows)
         s, m = config.sampling, config.measure
@@ -368,7 +529,8 @@ def run_base(config: LMConfig, out: Path, device: Any = "cpu", factory: PolicyFa
                   f"cannot attribute gains to an empty class; consider other difficulties, measure.n or "
                   f"sampling.n_classify.\n{bar}", file=sys.stderr)
         manifest = write_manifest(out / "base", "base", config.to_dict(), measure_seed(config), str(device),
-                                  extra={"seeds": seed_streams(config), "model": model})
+                                  extra={"seeds": seed_streams(config), "model": model, "fingerprint": fp,
+                                         "status": "finished"})
     return written + [classes_path, summary_path, manifest]
 
 
@@ -389,14 +551,27 @@ def _empty_log(trainer: Any, config: LMConfig) -> dict:
             "totals": {"episodes_sampled": 0, "tokens_sampled": 0}, "note": "this arm samples nothing"}
 
 
-def run_train(config: LMConfig, out: Path, device: Any = "cpu", factory: PolicyFactory | None = None) -> list[Path]:
+def sft_updates(trainer: Any, budget: int) -> int:
+    """Updates the trainer spends in SFT: all of them for lm_sft, round(sft_fraction * budget) for lm_sft_then_rl."""
+    if hasattr(trainer, "sft_fraction"):
+        from ..trainers.sft_rl import split_budget
+
+        return int(split_budget(budget, trainer.sft_fraction)[0])
+    return budget
+
+
+def run_train(config: LMConfig, out: Path, device: Any = "cpu", factory: PolicyFactory | None = None,
+              use_fallback: bool = False) -> list[Path]:
     """Train every arm x seed on the train split, saving adapters at every checkpoint."""
     _plugins()
     from ..registry import TRAINERS
 
+    chosen = model_choice(config, use_fallback)
+    fp = fingerprint(plain_config(config), chosen, "train")
     written: list[Path] = []
     with _stage(config, "train", device):
         task = load_task(config, out)
+        _check_upstream(out, fp, base=True)
         train_ids = [int(r["id"]) for r in task.rows if r["split"] == "train"]
         if not train_ids:
             raise StageError("no train-split problems in data/problems.jsonl; raise task.generators[*].n_train")
@@ -406,12 +581,17 @@ def run_train(config: LMConfig, out: Path, device: Any = "cpu", factory: PolicyF
             if getattr(check, "needs_base_classes", False):
                 check.set_base_classes(read_json(_require(classes_file, "base"))["classes"])
                 sft = getattr(check, "sft_trainer", check)
-                if config.budget > 0 and hasattr(sft, "target_ids") and not sft.target_ids(train_ids):
+                if sft_updates(check, config.budget) > 0 and hasattr(sft, "target_ids") and not sft.target_ids(train_ids):
                     raise StageError(f"arm {arm.name}: no train problem is in its SFT target class(es) "
                                      f"{list(sft.targets)} (see base/summary.json); change the arm's `target` "
                                      "or the problem difficulties")
         runs = [(arm, seed) for arm in config.arms for seed in config.seeds]
         todo = [(arm, seed) for arm, seed in runs if not train_done(out, config, arm.name, seed)]
+        for arm, seed in runs:  # every finished run must match the current config before anything trains
+            if (arm, seed) not in todo:
+                directory = run_dir(out, arm.name, seed)
+                if not check_manifest(directory / "manifest.train.json", "train", fp, run_keys(arm.name), [directory]):
+                    _warn_unverified(f"training run {arm.name} seed {seed}", directory)
         for arm, seed in runs:
             if (arm, seed) not in todo:
                 print(f"[train] {arm.name} seed {seed}: finished earlier, skipped", file=sys.stderr)
@@ -424,15 +604,18 @@ def run_train(config: LMConfig, out: Path, device: Any = "cpu", factory: PolicyF
             policy = (factory or default_policy_factory(config, device))(seed) if policy is None \
                 else reseed_policy(policy, seed)
             directory = run_dir(out, arm.name, seed)
+            model = _model_info(policy) or chosen
+            run_extra = {"arm": arm.name, "trainer": arm.trainer, "seeds": seed_streams(config, seed),
+                         "model": model, "train_ids": train_ids, "fingerprint": fp}
+            write_manifest(directory, "train", config.to_dict(), seed, str(device), extra={**run_extra, "status": "started"})
             progress = Progress(f"train {arm.name} seed {seed}", config.budget)
-            model = _model_info(policy)
 
             def on_checkpoint(step: int, p: Any, arm_name: str = arm.name, seed_: int = seed,
                               progress_: Progress = progress, model: dict | None = model) -> None:
                 path = p.save_adapter(adapter_path(out, arm_name, seed_, step))
                 write_manifest(path.parent, "step", config.to_dict(), seed_, str(device),
                                extra={"arm": arm_name, "step": step, "seeds": seed_streams(config, seed_),
-                                      "model": model})
+                                      "model": model, "fingerprint": fp})
                 progress_.update(step)
 
             t0 = time.monotonic()
@@ -444,10 +627,9 @@ def run_train(config: LMConfig, out: Path, device: Any = "cpu", factory: PolicyF
             write_json(directory / "timing.json", {"wall_seconds": seconds, "budget": config.budget,
                                                    "seconds_per_update": seconds / config.budget if config.budget else None})
             log = trainer.training_log() or _empty_log(trainer, config)
-            write_json(directory / "training.json", log)  # last: marks the run finished
             manifest = write_manifest(directory, "train", config.to_dict(), seed, str(device),
-                                      extra={"arm": arm.name, "trainer": arm.trainer, "seeds": seed_streams(config, seed),
-                                             "model": model, "train_ids": train_ids})
+                                      extra={**run_extra, "status": "finished"})
+            write_json(directory / "training.json", log)  # last: marks the run finished
             written += [adapter_path(out, arm.name, seed, c) for c in config.checkpoints]
             written += [directory / "timing.json", directory / "training.json", manifest]
     return written
@@ -490,7 +672,7 @@ def n_train_from_log(log: dict, step: int) -> dict:
 
 
 def run_measure(config: LMConfig, out: Path, device: Any = "cpu", factory: PolicyFactory | None = None,
-                all_checkpoints: bool = False) -> list[Path]:
+                all_checkpoints: bool = False, use_fallback: bool = False) -> list[Path]:
     """Sample every run's checkpoint(s) on all problems, then split, null check and budget curve."""
     _plugins()
     from ..budget import default_grid, resolvable_n_max
@@ -499,15 +681,33 @@ def run_measure(config: LMConfig, out: Path, device: Any = "cpu", factory: Polic
     s, m = config.sampling, config.measure
     ref = float(s.reference_temperature)
     steps = sorted(config.checkpoints) if all_checkpoints else [config.budget]
+    chosen = model_choice(config, use_fallback)
+    plain = plain_config(config)
+    fp = fingerprint(plain, chosen, "measure")
+    run_fp = fingerprint(plain, chosen, "eval")
     with _stage(config, "measure", device):
         task = load_task(config, out)
         rows = task.rows
         n_problems = len(rows)
         _require(out / "base" / "classes.json", "base")
+        _check_upstream(out, fp, base=True)
         runs = [(arm.name, seed) for arm in config.arms for seed in config.seeds]
         for arm, seed in runs:
             if not train_done(out, config, arm, seed):
                 raise StageError(f"run {arm} seed {seed} has not finished training; run the `train` stage first")
+            directory = run_dir(out, arm, seed)
+            if not check_manifest(directory / "manifest.train.json", "train", fp, run_keys(arm), [directory]):
+                _warn_unverified(f"training run {arm} seed {seed}", directory)
+            samples = eval_dir(out, arm, seed)
+            if not check_manifest(samples / "manifest.eval.json", "eval", run_fp, run_keys(arm), [samples]) \
+                    and _has_files(samples):
+                _warn_unverified(f"eval samples of {arm} seed {seed}", samples)
+        measure_keys = [k for k in fp if not k.startswith("arms.")]  # runs were checked one by one above
+        check_manifest(out / "measure" / "manifest.measure.json", "measure", fp, measure_keys, [out / "measure"])
+        for arm, seed in runs:
+            write_manifest(eval_dir(out, arm, seed), "eval", config.to_dict(), measure_seed(config), str(device),
+                           extra={"arm": arm, "seeds": seed_streams(config, seed), "model": chosen,
+                                  "fingerprint": run_fp})
         jobs = [(arm, seed, step, SampleJob(run_tag(arm, seed, step), "eval", ref, s.n_trained, True))
                 for arm, seed in runs for step in steps]
         policy = None
@@ -567,7 +767,8 @@ def run_measure(config: LMConfig, out: Path, device: Any = "cpu", factory: Polic
         write_json(null_path, {**meta, "set": "null", "records": nulls})
         write_json(curve_path, {**meta, "n_max_resolvable": n_max, "records": curves})
         manifest = write_manifest(out / "measure", "measure", config.to_dict(), measure_seed(config), str(device),
-                                  extra={"seeds": seed_streams(config), "all_checkpoints": all_checkpoints})
+                                  extra={"seeds": seed_streams(config), "all_checkpoints": all_checkpoints,
+                                         "model": chosen, "fingerprint": fp})
     return written + [results_path, null_path, curve_path, manifest]
 
 

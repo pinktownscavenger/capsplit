@@ -14,7 +14,7 @@ from collections.abc import Callable, Sequence
 from pathlib import Path
 
 from .config import LMConfig, LMConfigError, load_config
-from .device import MemoryGuardError
+from .device import DeviceError, MemoryGuardError
 
 StageFn = Callable[[LMConfig, Path, argparse.Namespace], list[Path]]
 
@@ -45,16 +45,16 @@ def _experiment_stages() -> dict[str, tuple[StageFn, str]]:
 
     def base(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
         device, factory = _factory(c, a)
-        return st.run_base(c, o, device=device, factory=factory)  # type: ignore[arg-type]
+        return st.run_base(c, o, device=device, factory=factory, use_fallback=a.fallback)  # type: ignore[arg-type]
 
     def train(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
         device, factory = _factory(c, a)
-        return st.run_train(c, o, device=device, factory=factory)  # type: ignore[arg-type]
+        return st.run_train(c, o, device=device, factory=factory, use_fallback=a.fallback)  # type: ignore[arg-type]
 
     def measure(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
         device, factory = _factory(c, a)
         return st.run_measure(c, o, device=device, factory=factory,  # type: ignore[arg-type]
-                              all_checkpoints=a.all_checkpoints)
+                              all_checkpoints=a.all_checkpoints, use_fallback=a.fallback)
 
     def report(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
         return st.run_report(c, o)
@@ -92,8 +92,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         out.mkdir(parents=True, exist_ok=True)
         run, next_stage = stages()[args.stage]
         written = run(config, out, args)
-    except (LMConfigError, MemoryGuardError, FileNotFoundError, StageError) as error:
+    except (LMConfigError, MemoryGuardError, DeviceError, StageError) as error:
         print(f"error: {error}", file=sys.stderr)
+        return 2
+    except OSError as error:  # model files not in the cache, network down, unreadable file
+        if args.stage in ("fetch", "setup"):
+            hint = "Downloading the model failed: check your network connection, then re-run this stage."
+        else:
+            hint = ("If the model files are missing: run the fetch stage first "
+                    f"(python -m capsplit.harness.lm fetch {args.config} --out {args.out}); "
+                    "if fetch fails, check your network connection.")
+        print(f"error: {type(error).__name__}: {error}\n{hint}", file=sys.stderr)
         return 2
     except (KeyError, ValueError) as error:  # unknown trainer / generator, bad trainer params
         print(f"error: {error}", file=sys.stderr)

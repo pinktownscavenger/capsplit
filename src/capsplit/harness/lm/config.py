@@ -183,6 +183,10 @@ def _positive_int(value: Any, where: str) -> int:
     return value
 
 
+def _is_number(value: Any) -> bool:
+    return not isinstance(value, bool) and isinstance(value, (int, float))
+
+
 def parse_config(data: dict) -> LMConfig:
     """Validate a parsed JSON object and return the typed config."""
     top = _take("config", data, _TOP, required=tuple(_TOP))
@@ -210,6 +214,12 @@ def parse_config(data: dict) -> LMConfig:
     )
     task = TaskConfig(generators=generators, seed=task_raw["seed"], prompt_template=task_raw["prompt_template"])
     sampling = _section(SamplingConfig, "sampling", top["sampling"])
+    if not isinstance(sampling.temperatures, tuple) or not sampling.temperatures or \
+            not all(_is_number(t) and t > 0 for t in sampling.temperatures):
+        raise LMConfigError(f"sampling.temperatures must be a non-empty list of positive numbers, "
+                            f"got {sampling.temperatures!r}")
+    if not _is_number(sampling.top_p) or not 0 < sampling.top_p <= 1:
+        raise LMConfigError(f"sampling.top_p must be a number in (0, 1], got {sampling.top_p!r}")
     if sampling.reference_temperature not in sampling.temperatures:
         raise LMConfigError("sampling.reference_temperature must be one of sampling.temperatures")
     measure = _section(MeasureConfig, "measure", top["measure"])
@@ -231,7 +241,9 @@ def parse_config(data: dict) -> LMConfig:
     if not seeds or any(isinstance(s, bool) or not isinstance(s, int) for s in seeds):
         raise LMConfigError("seeds must be a non-empty list of integers")
     for where, value in (("sampling.n_classify", sampling.n_classify), ("sampling.n_measure", sampling.n_measure),
-                         ("sampling.batch_size", sampling.batch_size), ("measure.n", measure.n)):
+                         ("sampling.n_trained", sampling.n_trained), ("sampling.n_temperature", sampling.n_temperature),
+                         ("sampling.batch_size", sampling.batch_size), ("measure.n", measure.n),
+                         ("measure.n_splits", measure.n_splits), ("measure.n_boot", measure.n_boot)):
         _positive_int(value, where)
     return LMConfig(top["name"], model, lora, memory, runtime, task, sampling, measure, arms, budget,
                     tuple(sorted(set(checkpoints))), seeds, raw=data)

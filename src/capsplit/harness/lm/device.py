@@ -28,11 +28,15 @@ class MemoryGuardError(RuntimeError):
     """Not enough memory to start or continue a stage. The message says what to change."""
 
 
+class DeviceError(RuntimeError):
+    """The requested device cannot be used. The message says which config value to change."""
+
+
 def pick_device(requested: str) -> torch.device:
     """`auto` -> mps if available, else cpu (with a message saying why); `mps`/`cpu` as asked."""
     mps_ok = torch.backends.mps.is_available()
     if requested == "mps" and not mps_ok:
-        raise RuntimeError("model.device is 'mps' but PyTorch reports MPS unavailable; set model.device to 'auto' or 'cpu'")
+        raise DeviceError("model.device is 'mps' but PyTorch reports MPS unavailable; set model.device to 'auto' or 'cpu'")
     if requested == "cpu" or (requested == "auto" and not mps_ok):
         if requested == "auto":
             print("[capsplit.lm] MPS is not available, falling back to CPU (much slower).", file=sys.stderr)
