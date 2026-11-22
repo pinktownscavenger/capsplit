@@ -106,6 +106,7 @@ class SamplingConfig:
     reference_temperature: float = 1.0  # sets A and B and every trained policy are sampled at this
     top_p: float = 1.0
     batch_size: int = 64  # sequences generated at once
+    seed: int = 0  # measurement-sampling seed stream (docs/lm_design.md)
 
 
 @dataclass(frozen=True)
@@ -114,6 +115,7 @@ class MeasureConfig:
     alpha: float = 0.05  # confidence level for classification intervals and bootstrap
     n_boot: int = 2000
     boot_seed: int = 0
+    n_splits: int = 20  # random half-splits for the temperature baseline
 
 
 @dataclass(frozen=True)
