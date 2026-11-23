@@ -1,0 +1,3956 @@
+{
+  "arms": [
+    {
+      "arm": "rl",
+      "by_class": {
+        "ambiguous": {
+          "n": 0
+        },
+        "reachable": {
+          "discovered_p_zero": 0,
+          "n": 219,
+          "n_p_zero": 0,
+          "observed_discovered": 219,
+          "pit_p_positive": {
+            "bins": 10,
+            "histogram": [
+              28,
+              16,
+              18,
+              20,
+              18,
+              25,
+              14,
+              20,
+              30,
+              30
+            ],
+            "histogram_fraction": [
+              0.1278538812785388,
+              0.0730593607305936,
+              0.0821917808219178,
+              0.091324200913242,
+              0.0821917808219178,
+              0.1141552511415525,
+              0.0639269406392694,
+              0.091324200913242,
+              0.136986301369863,
+              0.136986301369863
+            ],
+            "mean": 0.5253855224672964,
+            "n": 219,
+            "z": 1.3013639942245376
+          },
+          "predicted_discovered": 218.99992485796088,
+          "predicted_discovered_at_p_upper": 218.99999869232755,
+          "predicted_discovered_p_zero_at_p_upper": 0.0
+        },
+        "unreachable": {
+          "discovered_p_zero": 0,
+          "n": 141,
+          "n_p_zero": 105,
+          "observed_discovered": 18,
+          "pit_p_positive": {
+            "bins": 10,
+            "histogram": [
+              4,
+              2,
+              3,
+              3,
+              9,
+              2,
+              5,
+              2,
+              2,
+              4
+            ],
+            "histogram_fraction": [
+              0.1111111111111111,
+              0.05555555555555555,
+              0.08333333333333333,
+              0.08333333333333333,
+              0.25,
+              0.05555555555555555,
+              0.1388888888888889,
+              0.05555555555555555,
+              0.05555555555555555,
+              0.1111111111111111
+            ],
+            "mean": 0.49330651756512073,
+            "n": 36,
+            "z": -0.13912141988136886
+          },
+          "predicted_discovered": 20.097173143714507,
+          "predicted_discovered_at_p_upper": 97.44082130238554,
+          "predicted_discovered_p_zero_at_p_upper": 65.71436588362042
+        }
+      },
+      "by_seed": {
+        "ambiguous": {
+          "0": {
+            "n": 0
+          },
+          "1": {
+            "n": 0
+          },
+          "2": {
+            "n": 0
+          }
+        },
+        "reachable": {
+          "0": {
+            "discovered_p_zero": 0,
+            "n": 73,
+            "n_p_zero": 0,
+            "observed_discovered": 73,
+            "pit_p_positive": {
+              "bins": 10,
+              "histogram": [
+                4,
+                6,
+                3,
+                9,
+                4,
+                5,
+                7,
+                5,
+                14,
+                16
+              ],
+              "histogram_fraction": [
+                0.0547945205479452,
+                0.0821917808219178,
+                0.0410958904109589,
+                0.1232876712328767,
+                0.0547945205479452,
+                0.0684931506849315,
+                0.0958904109589041,
+                0.0684931506849315,
+                0.1917808219178082,
+                0.2191780821917808
+              ],
+              "mean": 0.6110410398729075,
+              "n": 73,
+              "z": 3.2865146556170424
+            },
+            "predicted_discovered": 72.99997491665378,
+            "predicted_discovered_at_p_upper": 72.99999956373567,
+            "predicted_discovered_p_zero_at_p_upper": 0.0
+          },
+          "1": {
+            "discovered_p_zero": 0,
+            "n": 73,
+            "n_p_zero": 0,
+            "observed_discovered": 73,
+            "pit_p_positive": {
+              "bins": 10,
+              "histogram": [
+                10,
+                10,
+                4,
+                10,
+                8,
+                2,
+                5,
+                10,
+                7,
+                7
+              ],
+              "histogram_fraction": [
+                0.136986301369863,
+                0.136986301369863,
+                0.0547945205479452,
+                0.136986301369863,
+                0.1095890410958904,
+                0.0273972602739726,
+                0.0684931506849315,
+                0.136986301369863,
+                0.0958904109589041,
+                0.0958904109589041
+              ],
+              "mean": 0.47254205163613583,
+              "n": 73,
+              "z": -0.8126810575108201
+            },
+            "predicted_discovered": 72.99998494986356,
+            "predicted_discovered_at_p_upper": 72.99999979023092,
+            "predicted_discovered_p_zero_at_p_upper": 0.0
+          },
+          "2": {
+            "discovered_p_zero": 0,
+            "n": 73,
+            "n_p_zero": 0,
+            "observed_discovered": 73,
+            "pit_p_positive": {
+              "bins": 10,
+              "histogram": [
+                5,
+                4,
+                12,
+                10,
+                6,
+                6,
+                8,
+                6,
+                9,
+                7
+              ],
+              "histogram_fraction": [
+                0.0684931506849315,
+                0.0547945205479452,
+                0.1643835616438356,
+                0.136986301369863,
+                0.0821917808219178,
+                0.0821917808219178,
+                0.1095890410958904,
+                0.0821917808219178,
+                0.1232876712328767,
+                0.0958904109589041
+              ],
+              "mean": 0.5155201159290732,
+              "n": 73,
+              "z": 0.4593534833261198
+            },
+            "predicted_discovered": 72.99996499144355,
+            "predicted_discovered_at_p_upper": 72.99999933836098,
+            "predicted_discovered_p_zero_at_p_upper": 0.0
+          }
+        },
+        "unreachable": {
+          "0": {
+            "discovered_p_zero": 0,
+            "n": 47,
+            "n_p_zero": 35,
+            "observed_discovered": 7,
+            "pit_p_positive": {
+              "bins": 10,
+              "histogram": [
+                2,
+                0,
+                3,
+                0,
+                2,
+                2,
+                2,
+                1,
+                0,
+                0
+              ],
+              "histogram_fraction": [
+                0.16666666666666666,
+                0.0,
+                0.25,
+                0.0,
+                0.16666666666666666,
+                0.16666666666666666,
+                0.16666666666666666,
+                0.08333333333333333,
+                0.0,
+                0.0
+              ],
+              "mean": 0.41354522883838546,
+              "n": 12,
+              "z": -1.0374572539393745
+            },
+            "predicted_discovered": 6.7377293867361825,
+            "predicted_discovered_at_p_upper": 32.45207675604739,
+            "predicted_discovered_p_zero_at_p_upper": 21.832105185790905
+          },
+          "1": {
+            "discovered_p_zero": 0,
+            "n": 47,
+            "n_p_zero": 35,
+            "observed_discovered": 6,
+            "pit_p_positive": {
+              "bins": 10,
+              "histogram": [
+                0,
+                1,
+                1,
+                3,
+                2,
+                2,
+                3,
+                0,
+                0,
+                0
+              ],
+              "histogram_fraction": [
+                0.0,
+                0.08333333333333333,
+                0.08333333333333333,
+                0.25,
+                0.16666666666666666,
+                0.16666666666666666,
+                0.25,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "mean": 0.46376598614397846,
+              "n": 12,
+              "z": -0.4348081662722585
+            },
+            "predicted_discovered": 6.656727338755182,
+            "predicted_discovered_at_p_upper": 32.45732306375635,
+            "predicted_discovered_p_zero_at_p_upper": 21.913874058133793
+          },
+          "2": {
+            "discovered_p_zero": 0,
+            "n": 47,
+            "n_p_zero": 35,
+            "observed_discovered": 5,
+            "pit_p_positive": {
+              "bins": 10,
+              "histogram": [
+                2,
+                2,
+                0,
+                0,
+                1,
+                0,
+                1,
+                1,
+                2,
+                3
+              ],
+              "histogram_fraction": [
+                0.16666666666666666,
+                0.16666666666666666,
+                0.0,
+                0.0,
+                0.08333333333333333,
+                0.0,
+                0.08333333333333333,
+                0.08333333333333333,
+                0.16666666666666666,
+                0.25
+              ],
+              "mean": 0.5757101489352116,
+              "n": 12,
+              "z": 0.9085217872225386
+            },
+            "predicted_discovered": 6.702716418223141,
+            "predicted_discovered_at_p_upper": 32.53142148258181,
+            "predicted_discovered_p_zero_at_p_upper": 21.96838663969572
+          }
+        }
+      },
+      "cycle_mismatches": {
+        "0": 0,
+        "1": 0,
+        "2": 0
+      },
+      "draw_index_exact": true,
+      "group": 8,
+      "per_problem": [
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 3,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 13,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 4,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": 5,
+          "first_success_update": 65,
+          "p": 0.0175,
+          "p_upper": 0.03572287359362068,
+          "problem": 5,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 7,
+          "p": 0.8725,
+          "p_upper": 0.9035749266956352,
+          "problem": 6,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 8,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 9,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 10,
+          "p": 0.995,
+          "p_upper": 0.9993939021906779,
+          "problem": 10,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 0.925,
+          "p_upper": 0.9488283203953316,
+          "problem": 11,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 12,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 14,
+          "p": 0.73,
+          "p_upper": 0.7729153041183767,
+          "problem": 13,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 14,
+          "p": 0.9625,
+          "p_upper": 0.9788623252156521,
+          "problem": 15,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 16,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 17,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 18,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 10,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 20,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 21,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 13,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 22,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 12,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 23,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 24,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 0.985,
+          "p_upper": 0.9944758904954198,
+          "problem": 26,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 5,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 27,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 14,
+          "p": 0.185,
+          "p_upper": 0.22658691489621963,
+          "problem": 28,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 29,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 30,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 0.51,
+          "p_upper": 0.5600078715103702,
+          "problem": 31,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 5,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 32,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0025,
+          "p_upper": 0.013849769962013519,
+          "problem": 34,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 10,
+          "p": 0.83,
+          "p_upper": 0.8655028091051069,
+          "problem": 35,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 36,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 12,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 37,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 10,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 38,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 39,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 15,
+          "p": 0.0075,
+          "p_upper": 0.02176066851441768,
+          "problem": 44,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 2,
+          "p": 0.025,
+          "p_upper": 0.04549427929878165,
+          "problem": 45,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 0.7575,
+          "p_upper": 0.7987116531130121,
+          "problem": 46,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 0.495,
+          "p_upper": 0.5451269279490931,
+          "problem": 48,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 49,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 0.3,
+          "p_upper": 0.34752187907365495,
+          "problem": 50,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 51,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 5,
+          "p": 0.4,
+          "p_upper": 0.4498538382728442,
+          "problem": 53,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 0.8275,
+          "p_upper": 0.8632344149993441,
+          "problem": 54,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": 4,
+          "first_success_update": 52,
+          "p": 0.0225,
+          "p_upper": 0.042281030036674064,
+          "problem": 56,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0025,
+          "p_upper": 0.013849769962013519,
+          "problem": 57,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 0.4075,
+          "p_upper": 0.45744113612297554,
+          "problem": 60,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 1,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 61,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 1,
+          "p": 0.89,
+          "p_upper": 0.9189278374589362,
+          "problem": 62,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 64,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 65,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 67,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 1,
+          "p": 0.9475,
+          "p_upper": 0.9672115754228467,
+          "problem": 68,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 70,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 73,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 74,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 76,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 81,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 82,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0025,
+          "p_upper": 0.013849769962013519,
+          "problem": 83,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 0.9925,
+          "p_upper": 0.9984506410500944,
+          "problem": 84,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 85,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 1,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 86,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 0.8175,
+          "p_upper": 0.8541329662038208,
+          "problem": 87,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 88,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 89,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 15,
+          "p": 0.7575,
+          "p_upper": 0.7987116531130121,
+          "problem": 90,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 15,
+          "p": 0.4675,
+          "p_upper": 0.517731283103638,
+          "problem": 91,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 92,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 11,
+          "p": 0.6625,
+          "p_upper": 0.7087361716894565,
+          "problem": 93,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 5,
+          "p": 0.985,
+          "p_upper": 0.9944758904954198,
+          "problem": 95,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 96,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 98,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 2,
+          "first_success_update": 24,
+          "p": 0.14,
+          "p_upper": 0.1779204995467582,
+          "problem": 99,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 2,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 102,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 2,
+          "p": 0.4825,
+          "p_upper": 0.5326926573812054,
+          "problem": 103,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 11,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 108,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 15,
+          "p": 0.955,
+          "p_upper": 0.9731153743848591,
+          "problem": 110,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 111,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 112,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": 3,
+          "first_success_update": 45,
+          "p": 0.02,
+          "p_upper": 0.03902627671162151,
+          "problem": 113,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 10,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 114,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 0.775,
+          "p_upper": 0.8150068059997135,
+          "problem": 115,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0025,
+          "p_upper": 0.013849769962013519,
+          "problem": 116,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 120,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 121,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 123,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 11,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 124,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 14,
+          "p": 0.395,
+          "p_upper": 0.4447891860784866,
+          "problem": 126,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 129,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 130,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 13,
+          "p": 0.8975,
+          "p_upper": 0.9254353049597617,
+          "problem": 131,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 7,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 136,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 5,
+          "p": 0.995,
+          "p_upper": 0.9993939021906779,
+          "problem": 137,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 138,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 141,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 0.885,
+          "p_upper": 0.9145642527566107,
+          "problem": 142,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 5,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 143,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 4,
+          "first_success_update": 54,
+          "p": 0.1,
+          "p_upper": 0.13367785829068912,
+          "problem": 144,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 11,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 145,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 146,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0025,
+          "p_upper": 0.013849769962013519,
+          "problem": 148,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 149,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 151,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 15,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 153,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 154,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 155,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 11,
+          "p": 0.9925,
+          "p_upper": 0.9984506410500944,
+          "problem": 156,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 7,
+          "p": 0.9575,
+          "p_upper": 0.9750503807978861,
+          "problem": 159,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 0.9425,
+          "p_upper": 0.9632044804907285,
+          "problem": 162,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": 3,
+          "first_success_update": 43,
+          "p": 0.035,
+          "p_upper": 0.058027261682417536,
+          "problem": 165,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 10,
+          "p": 0.96,
+          "p_upper": 0.9769666042594523,
+          "problem": 167,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 0.9875,
+          "p_upper": 0.9959291641554007,
+          "problem": 168,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 169,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 12,
+          "p": 0.9325,
+          "p_upper": 0.9550491988077472,
+          "problem": 170,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 5,
+          "first_success_update": 67,
+          "p": 0.1,
+          "p_upper": 0.13367785829068912,
+          "problem": 171,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 172,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 2,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 173,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 12,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 175,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 176,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 177,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": 7,
+          "first_success_update": 99,
+          "p": 0.005,
+          "p_upper": 0.01794414460558591,
+          "problem": 178,
+          "seed": 0
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 0.895,
+          "p_upper": 0.9232714126691961,
+          "problem": 179,
+          "seed": 0
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 3,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 2,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 4,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": 7,
+          "first_success_update": 104,
+          "p": 0.0175,
+          "p_upper": 0.03572287359362068,
+          "problem": 5,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 15,
+          "p": 0.8725,
+          "p_upper": 0.9035749266956352,
+          "problem": 6,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 8,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 9,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 0.995,
+          "p_upper": 0.9993939021906779,
+          "problem": 10,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 1,
+          "p": 0.925,
+          "p_upper": 0.9488283203953316,
+          "problem": 11,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 12,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 0.73,
+          "p_upper": 0.7729153041183767,
+          "problem": 13,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 7,
+          "p": 0.9625,
+          "p_upper": 0.9788623252156521,
+          "problem": 15,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 16,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 12,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 17,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 18,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 5,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 20,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 21,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 22,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 1,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 23,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 13,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 24,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 2,
+          "p": 0.985,
+          "p_upper": 0.9944758904954198,
+          "problem": 26,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 14,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 27,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 10,
+          "p": 0.185,
+          "p_upper": 0.22658691489621963,
+          "problem": 28,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 29,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 30,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 7,
+          "p": 0.51,
+          "p_upper": 0.5600078715103702,
+          "problem": 31,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 32,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0025,
+          "p_upper": 0.013849769962013519,
+          "problem": 34,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 10,
+          "p": 0.83,
+          "p_upper": 0.8655028091051069,
+          "problem": 35,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 36,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 14,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 37,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 38,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 39,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": 3,
+          "first_success_update": 42,
+          "p": 0.0075,
+          "p_upper": 0.02176066851441768,
+          "problem": 44,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": 3,
+          "first_success_update": 31,
+          "p": 0.025,
+          "p_upper": 0.04549427929878165,
+          "problem": 45,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 0.7575,
+          "p_upper": 0.7987116531130121,
+          "problem": 46,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 15,
+          "p": 0.495,
+          "p_upper": 0.5451269279490931,
+          "problem": 48,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 49,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 0.3,
+          "p_upper": 0.34752187907365495,
+          "problem": 50,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 51,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 5,
+          "p": 0.4,
+          "p_upper": 0.4498538382728442,
+          "problem": 53,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 2,
+          "p": 0.8275,
+          "p_upper": 0.8632344149993441,
+          "problem": 54,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": 4,
+          "first_success_update": 51,
+          "p": 0.0225,
+          "p_upper": 0.042281030036674064,
+          "problem": 56,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0025,
+          "p_upper": 0.013849769962013519,
+          "problem": 57,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 11,
+          "p": 0.4075,
+          "p_upper": 0.45744113612297554,
+          "problem": 60,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 11,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 61,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 0.89,
+          "p_upper": 0.9189278374589362,
+          "problem": 62,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 64,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 65,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 67,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 0.9475,
+          "p_upper": 0.9672115754228467,
+          "problem": 68,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 70,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 73,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 74,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 76,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 81,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 82,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0025,
+          "p_upper": 0.013849769962013519,
+          "problem": 83,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 0.9925,
+          "p_upper": 0.9984506410500944,
+          "problem": 84,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 13,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 85,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 86,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 14,
+          "p": 0.8175,
+          "p_upper": 0.8541329662038208,
+          "problem": 87,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 13,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 88,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 89,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 14,
+          "p": 0.7575,
+          "p_upper": 0.7987116531130121,
+          "problem": 90,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 15,
+          "p": 0.4675,
+          "p_upper": 0.517731283103638,
+          "problem": 91,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 92,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 13,
+          "p": 0.6625,
+          "p_upper": 0.7087361716894565,
+          "problem": 93,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 14,
+          "p": 0.985,
+          "p_upper": 0.9944758904954198,
+          "problem": 95,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 12,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 96,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 15,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 98,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 2,
+          "first_success_update": 29,
+          "p": 0.14,
+          "p_upper": 0.1779204995467582,
+          "problem": 99,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 2,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 102,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 7,
+          "p": 0.4825,
+          "p_upper": 0.5326926573812054,
+          "problem": 103,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 15,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 108,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 12,
+          "p": 0.955,
+          "p_upper": 0.9731153743848591,
+          "problem": 110,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 111,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 112,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": 4,
+          "first_success_update": 49,
+          "p": 0.02,
+          "p_upper": 0.03902627671162151,
+          "problem": 113,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 7,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 114,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 0.775,
+          "p_upper": 0.8150068059997135,
+          "problem": 115,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0025,
+          "p_upper": 0.013849769962013519,
+          "problem": 116,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 120,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 11,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 121,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 123,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 124,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 1,
+          "p": 0.395,
+          "p_upper": 0.4447891860784866,
+          "problem": 126,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 129,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 130,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 13,
+          "p": 0.8975,
+          "p_upper": 0.9254353049597617,
+          "problem": 131,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 12,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 136,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 2,
+          "p": 0.995,
+          "p_upper": 0.9993939021906779,
+          "problem": 137,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 138,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 141,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 5,
+          "p": 0.885,
+          "p_upper": 0.9145642527566107,
+          "problem": 142,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 143,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 1,
+          "p": 0.1,
+          "p_upper": 0.13367785829068912,
+          "problem": 144,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 145,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 146,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0025,
+          "p_upper": 0.013849769962013519,
+          "problem": 148,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 149,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 151,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 153,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 154,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 155,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 0.9925,
+          "p_upper": 0.9984506410500944,
+          "problem": 156,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 0.9575,
+          "p_upper": 0.9750503807978861,
+          "problem": 159,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 1,
+          "p": 0.9425,
+          "p_upper": 0.9632044804907285,
+          "problem": 162,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": 4,
+          "first_success_update": 58,
+          "p": 0.035,
+          "p_upper": 0.058027261682417536,
+          "problem": 165,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 12,
+          "p": 0.96,
+          "p_upper": 0.9769666042594523,
+          "problem": 167,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 12,
+          "p": 0.9875,
+          "p_upper": 0.9959291641554007,
+          "problem": 168,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 11,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 169,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 11,
+          "p": 0.9325,
+          "p_upper": 0.9550491988077472,
+          "problem": 170,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 3,
+          "first_success_update": 34,
+          "p": 0.1,
+          "p_upper": 0.13367785829068912,
+          "problem": 171,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 172,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 7,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 173,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 5,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 175,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 2,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 176,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 177,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.005,
+          "p_upper": 0.01794414460558591,
+          "problem": 178,
+          "seed": 1
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 0.895,
+          "p_upper": 0.9232714126691961,
+          "problem": 179,
+          "seed": 1
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 3,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 12,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 4,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 0.0175,
+          "p_upper": 0.03572287359362068,
+          "problem": 5,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 12,
+          "p": 0.8725,
+          "p_upper": 0.9035749266956352,
+          "problem": 6,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 8,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 9,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 5,
+          "p": 0.995,
+          "p_upper": 0.9993939021906779,
+          "problem": 10,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 5,
+          "p": 0.925,
+          "p_upper": 0.9488283203953316,
+          "problem": 11,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 12,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 0.73,
+          "p_upper": 0.7729153041183767,
+          "problem": 13,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 1,
+          "p": 0.9625,
+          "p_upper": 0.9788623252156521,
+          "problem": 15,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 16,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 2,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 17,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 18,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 20,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 21,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 22,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 23,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 7,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 24,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 13,
+          "p": 0.985,
+          "p_upper": 0.9944758904954198,
+          "problem": 26,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 27,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 13,
+          "p": 0.185,
+          "p_upper": 0.22658691489621963,
+          "problem": 28,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 29,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 30,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 0.51,
+          "p_upper": 0.5600078715103702,
+          "problem": 31,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 12,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 32,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0025,
+          "p_upper": 0.013849769962013519,
+          "problem": 34,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 1,
+          "p": 0.83,
+          "p_upper": 0.8655028091051069,
+          "problem": 35,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 36,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 10,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 37,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 1,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 38,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 13,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 39,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 5,
+          "p": 0.0075,
+          "p_upper": 0.02176066851441768,
+          "problem": 44,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 5,
+          "p": 0.025,
+          "p_upper": 0.04549427929878165,
+          "problem": 45,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 10,
+          "p": 0.7575,
+          "p_upper": 0.7987116531130121,
+          "problem": 46,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 0.495,
+          "p_upper": 0.5451269279490931,
+          "problem": 48,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 49,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 7,
+          "p": 0.3,
+          "p_upper": 0.34752187907365495,
+          "problem": 50,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 15,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 51,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 11,
+          "p": 0.4,
+          "p_upper": 0.4498538382728442,
+          "problem": 53,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 0.8275,
+          "p_upper": 0.8632344149993441,
+          "problem": 54,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0225,
+          "p_upper": 0.042281030036674064,
+          "problem": 56,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0025,
+          "p_upper": 0.013849769962013519,
+          "problem": 57,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 0.4075,
+          "p_upper": 0.45744113612297554,
+          "problem": 60,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 61,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 13,
+          "p": 0.89,
+          "p_upper": 0.9189278374589362,
+          "problem": 62,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 64,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 65,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 67,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 0.9475,
+          "p_upper": 0.9672115754228467,
+          "problem": 68,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 70,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 73,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 74,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 76,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 81,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 82,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0025,
+          "p_upper": 0.013849769962013519,
+          "problem": 83,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 11,
+          "p": 0.9925,
+          "p_upper": 0.9984506410500944,
+          "problem": 84,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 85,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 86,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 1,
+          "p": 0.8175,
+          "p_upper": 0.8541329662038208,
+          "problem": 87,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 88,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 89,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 11,
+          "p": 0.7575,
+          "p_upper": 0.7987116531130121,
+          "problem": 90,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 1,
+          "p": 0.4675,
+          "p_upper": 0.517731283103638,
+          "problem": 91,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 92,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 4,
+          "p": 0.6625,
+          "p_upper": 0.7087361716894565,
+          "problem": 93,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 14,
+          "p": 0.985,
+          "p_upper": 0.9944758904954198,
+          "problem": 95,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 7,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 96,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 1,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 98,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 0.14,
+          "p_upper": 0.1779204995467582,
+          "problem": 99,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 102,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 7,
+          "p": 0.4825,
+          "p_upper": 0.5326926573812054,
+          "problem": 103,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 7,
+          "p": 0.9975,
+          "p_upper": 0.9999367074830952,
+          "problem": 108,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 0.955,
+          "p_upper": 0.9731153743848591,
+          "problem": 110,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 111,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 112,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": 2,
+          "first_success_update": 19,
+          "p": 0.02,
+          "p_upper": 0.03902627671162151,
+          "problem": 113,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 3,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 114,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 0.775,
+          "p_upper": 0.8150068059997135,
+          "problem": 115,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0025,
+          "p_upper": 0.013849769962013519,
+          "problem": 116,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 120,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 14,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 121,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 123,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 7,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 124,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 10,
+          "p": 0.395,
+          "p_upper": 0.4447891860784866,
+          "problem": 126,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 129,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 130,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 10,
+          "p": 0.8975,
+          "p_upper": 0.9254353049597617,
+          "problem": 131,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 15,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 136,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 0.995,
+          "p_upper": 0.9993939021906779,
+          "problem": 137,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 138,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 141,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 13,
+          "p": 0.885,
+          "p_upper": 0.9145642527566107,
+          "problem": 142,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 11,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 143,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 2,
+          "first_success_update": 30,
+          "p": 0.1,
+          "p_upper": 0.13367785829068912,
+          "problem": 144,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 2,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 145,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 146,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0025,
+          "p_upper": 0.013849769962013519,
+          "problem": 148,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 149,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 151,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 153,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 154,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 155,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 7,
+          "p": 0.9925,
+          "p_upper": 0.9984506410500944,
+          "problem": 156,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 0.9575,
+          "p_upper": 0.9750503807978861,
+          "problem": 159,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 14,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 0.9425,
+          "p_upper": 0.9632044804907285,
+          "problem": 162,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": 3,
+          "first_success_update": 37,
+          "p": 0.035,
+          "p_upper": 0.058027261682417536,
+          "problem": 165,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 0.96,
+          "p_upper": 0.9769666042594523,
+          "problem": 167,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 6,
+          "p": 0.9875,
+          "p_upper": 0.9959291641554007,
+          "problem": 168,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 10,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 169,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 11,
+          "p": 0.9325,
+          "p_upper": 0.9550491988077472,
+          "problem": 170,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 0.1,
+          "p_upper": 0.13367785829068912,
+          "problem": 171,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 14,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 172,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 8,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 173,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 9,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 175,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 14,
+          "p": 1.0,
+          "p_upper": 1.0,
+          "problem": 176,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.0,
+          "p_upper": 0.009179804583665296,
+          "problem": 177,
+          "seed": 2
+        },
+        {
+          "class": "unreachable",
+          "draws": 13,
+          "first_success_draw": null,
+          "first_success_update": null,
+          "p": 0.005,
+          "p_upper": 0.01794414460558591,
+          "problem": 178,
+          "seed": 2
+        },
+        {
+          "class": "reachable",
+          "draws": 13,
+          "first_success_draw": 1,
+          "first_success_update": 14,
+          "p": 0.895,
+          "p_upper": 0.9232714126691961,
+          "problem": 179,
+          "seed": 2
+        }
+      ],
+      "problems_per_update": 8
+    }
+  ],
+  "excluded": [
+    "sft_then_rl"
+  ],
+  "model": "P(no correct sample in the first k draws) = (1 - p)^(G k), p from set A",
+  "status": "descriptive (pre-registered as 'also reported'; implemented after results were seen, DECISIONS L22); not a hypothesis test"
+}

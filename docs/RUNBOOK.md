@@ -52,6 +52,7 @@ python -m capsplit.harness.lm sensitivity $C # report/sensitivity_p0.md, sensiti
 - `discovery` compares each RL training problem's first success with the waiting-time model (descriptive; DECISIONS L22).
 - `sensitivity` is post-hoc (DECISIONS L21): it diagnoses the null check from the saved samples and re-applies the L1–L3 rules with the base rate taken from set B, from the null set, and from both pooled. It never changes `verdicts.md`.
 - `report`, `verdicts`, `discovery` and `sensitivity` only read files; they do not load the model and take seconds.
+- `scripts/publish_lm_report.sh results/lm_main docs/lm_main` copies a finished run's generated outputs, runs the independent check `scripts/rederive_lm_headlines.py` (output `docs/lm_main/rederive_headlines.txt`), (reports, summaries, training logs, timings; not samples or adapters) into `docs/lm_main/` and assembles `docs/report_lm.md` from the generated markdown.
 - Every stage writes a `manifest.<stage>.json` next to its outputs (commit, config, seeds, device, versions).
 
 Then run the full experiment with `C=configs/lm_main.json` and the same commands. It takes several hours on an M3 Pro. The run records its own durations: training wall time is in `train/<arm>/seed<s>/timing.json`, and progress lines with elapsed time and ETA go to stderr, so keep a log (section 4). `lm_main.json` is frozen with the pre-registration (tag `lm-prereg-frozen`). Do not edit it. Make a copy with a new `name` instead.

@@ -1,0 +1,10 @@
+{
+  "note": "this arm samples nothing",
+  "prompts": {},
+  "totals": {
+    "episodes_sampled": 0,
+    "tokens_sampled": 0
+  },
+  "trainer": "lm_none",
+  "updates": 200
+}
