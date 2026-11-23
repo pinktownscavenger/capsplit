@@ -199,8 +199,8 @@ Wall-clock time of each stage, measured by the command itself (`timing/<stage>.j
 | base | 0 | not recorded | not recorded |
 | train | 1 | 4265 | 1.18 |
 | measure | 1 | 4920 | 1.37 |
-| report | 1 | 1 | 0.00 |
-| verdicts | 1 | 1 | 0.00 |
+| report | 2 | 3 | 0.00 |
+| verdicts | 2 | 2 | 0.00 |
 
 ## Training
 
