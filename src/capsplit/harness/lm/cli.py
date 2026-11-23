@@ -4,7 +4,9 @@ Each stage prints the files it wrote and the command to run next. Errors that th
 (bad config, low memory, missing earlier stage) exit with code 2 and a message saying what to do.
 
 Stages: doctor, fetch, speedtest, setup (fetch + speedtest), data, base, train, measure, report,
-verdicts, discovery (descriptive, DECISIONS L22) and the optional post-hoc `sensitivity` (L21).
+verdicts, discovery (descriptive, DECISIONS L22), the optional post-hoc `sensitivity` (L21), and the
+exploratory function-space layer `kl` / `kl-report` (L23-L31), which read `<out>/<name>/` and write
+only `<out>/<name>_kl/` (their timing lines included).
 Long stages should run under `caffeinate -i` (DECISIONS L13) so the machine does not sleep.
 """
 from __future__ import annotations
@@ -17,6 +19,7 @@ from pathlib import Path
 
 from .config import LMConfig, LMConfigError, load_config
 from .device import DeviceError, MemoryGuardError
+from .kl import KLConfigError
 from .report import ReportError
 from .storage import append_jsonl
 
@@ -84,13 +87,34 @@ def _experiment_stages() -> dict[str, tuple[StageFn, str]]:
         path = build_discovery(o)
         return [path, path.with_suffix(".md")]
 
+    def kl_stage(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
+        from .kl import load_kl_config, run_kl
+
+        device, factory = _factory(c, a)
+        return run_kl(c, load_kl_config(a.kl_config), o, kl_dir(o), device=device, factory=factory,  # type: ignore[arg-type]
+                      use_fallback=a.fallback)
+
+    def kl_report(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
+        from .kl import build_kl_report, load_kl_config
+
+        path = build_kl_report(o, kl_dir(o), load_kl_config(a.kl_config))
+        rep = path.parent
+        return [path, rep / "report.md", *sorted((rep / "tables").glob("*")), *sorted((rep / "figures").glob("*"))]
+
     return {"data": (data, "base"), "base": (base, "train"), "train": (train, "measure"),
             "measure": (measure, "report"), "report": (report, "verdicts"), "verdicts": (verdicts, "discovery"),
-            "discovery": (discovery, "sensitivity"), "sensitivity": (sensitivity, "")}
+            "discovery": (discovery, "sensitivity"), "sensitivity": (sensitivity, ""),
+            "kl": (kl_stage, "kl-report"), "kl-report": (kl_report, "")}
 
 
 STAGE_NAMES = ("doctor", "fetch", "speedtest", "setup", "data", "base", "train", "measure", "report", "verdicts",
-               "discovery", "sensitivity")
+               "discovery", "sensitivity", "kl", "kl-report")
+KL_STAGES = ("kl", "kl-report")
+
+
+def kl_dir(out: Path) -> Path:
+    """`<out>/<name>_kl`: the function-space layer's own folder next to the run it reads (DECISIONS L24)."""
+    return out.parent / f"{out.name}_kl"
 
 
 def stages() -> dict[str, tuple[StageFn, str]]:
@@ -117,6 +141,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--fallback", action="store_true", help="use model.fallback_id instead of model.id")
     parser.add_argument("--prereg", default="configs/lm_prereg.json",
                         help="verdict thresholds for the verdicts and sensitivity stages (default: configs/lm_prereg.json)")
+    parser.add_argument("--kl-config", default="configs/lm_kl.json",
+                        help="kl and kl-report stages: the KL layer's config (default: configs/lm_kl.json)")
     parser.add_argument("--all-checkpoints", action="store_true",
                         help="measure: also measure intermediate checkpoints (default: final only)")
     return parser
@@ -133,8 +159,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         run, next_stage = stages()[args.stage]
         started = time.monotonic()
         written = run(config, out, args)
-        written.append(record_timing(out, args.stage, time.monotonic() - started))
-    except (LMConfigError, MemoryGuardError, DeviceError, StageError, ReportError) as error:
+        timing_out = kl_dir(out) if args.stage in KL_STAGES else out
+        written.append(record_timing(timing_out, args.stage, time.monotonic() - started))
+    except (LMConfigError, KLConfigError, MemoryGuardError, DeviceError, StageError, ReportError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 2
     except OSError as error:  # model files not in the cache, network down, unreadable file

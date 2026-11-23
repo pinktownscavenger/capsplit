@@ -1,0 +1,14 @@
+{
+  "arms": ["rl", "sft", "sft_then_rl"],
+  "m_final": 64,
+  "checkpoints": [25, 50, 100],
+  "m_checkpoint": 16,
+  "m_zero": 4,
+  "max_problems": null,
+  "seed": 0,
+  "smoothing": "jeffreys",
+  "alt_smoothing": "laplace",
+  "violation_se": 2.0,
+  "n_boot": 2000,
+  "boot_seed": 0
+}
