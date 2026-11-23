@@ -9,8 +9,9 @@ DEST=${2:-docs/lm_main}
 for f in report/report.md report/verdicts.md report/discovery_lm.md report/sensitivity_p0.md; do
   [ -f "$RUN/$f" ] || { echo "missing $RUN/$f: run the report, verdicts, discovery and sensitivity stages" >&2; exit 2; }
 done
-rm -rf "$DEST"
 mkdir -p "$DEST"
+# keep the function-space layer's folder (docs/lm_main/kl, published by scripts/publish_lm_kl.sh; DECISIONS L32)
+find "$DEST" -mindepth 1 -maxdepth 1 ! -name kl -exec rm -rf {} +
 cp -R "$RUN/report" "$DEST/report"
 for d in data base measure timing; do
   mkdir -p "$DEST/$d"

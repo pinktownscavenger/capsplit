@@ -1,4 +1,4 @@
-"""Function-space layer: per-problem KL(pi1 || pi0) of each trained policy from the base (DECISIONS L23-L31).
+"""Function-space layer: per-problem KL(pi1 || pi0) of each trained policy from the base (DECISIONS L23-L33).
 
 The output metric asks whether a completion is correct. This layer asks how far the whole
 completion distribution moved. For a problem x, pi0 is the base (LoRA adapter disabled) and pi1 the
@@ -364,6 +364,13 @@ def run_kl(config: LMConfig, kcfg: KLConfig, out: Path, kl_out: Path, device: An
             d = st.run_dir(out, arm, seed)
             st.check_manifest(d / "manifest.train.json", "train", fp, st.run_keys(arm), [d])
         hashes = {j.tag: file_sha256(st.adapter_path(out, j.arm, j.seed, j.step)) for j in present}
+        old_path = kl_out / "manifest.kl.json"
+        if old_path.exists():
+            old = json.loads(old_path.read_text()).get("adapter_sha256", {})
+            changed = sorted(t for t in hashes if t in old and old[t] != hashes[t])
+            if changed:
+                raise st.StageError(f"adapters {changed[:3]} differ from those the existing KL samples in {kl_out} were "
+                                    "drawn from; delete that folder (or use another --out) to start over")
         manifest = write_manifest(kl_out, "kl", config.to_dict(), kcfg.seed, str(device),
                                   extra={"kl_config": _kl_dict(kcfg), "model": chosen, "source": str(out),
                                          "adapter_sha256": hashes, "missing_adapters": missing_adapters,
@@ -450,7 +457,9 @@ def compute_kl(out: Path, kl_out: Path, kcfg: KLConfig) -> dict[str, Any]:
     k0, n0 = (k_a + k_b)[:n_problems], (m_a + n_b)[:n_problems]
     p0_raw = k0 / n0
     cls = run.class_array()[:n_problems]
-    split = np.array([r["split"] for r in run.problems])[:n_problems]
+    by_id = {int(r["id"]): str(r["split"]) for r in run.problems}
+    split = np.array([by_id[i] for i in range(n_problems)])
+    p0_b = k_b[:n_problems] / n_b
     final = run.final_step
 
     per: dict[str, dict[int, dict]] = {}
@@ -470,8 +479,9 @@ def compute_kl(out: Path, kl_out: Path, kcfg: KLConfig) -> dict[str, Any]:
         log = run.training.get((job.arm, job.seed)) or {}
         prompts = log.get("prompts", {})
         sampled = int((log.get("totals") or {}).get("episodes_sampled", 0)) > 0
-        bounds = {kind: bernoulli_kl(smooth(k1, np.full(n_problems, n_t), kind), smooth(k0, n0, kind))
-                  for kind in (kcfg.smoothing, kcfg.alt_smoothing)}
+        p1s = {kind: smooth(k1, np.full(n_problems, n_t), kind) for kind in (kcfg.smoothing, kcfg.alt_smoothing)}
+        bounds = {kind: bernoulli_kl(p1s[kind], smooth(k0, n0, kind)) for kind in (kcfg.smoothing, kcfg.alt_smoothing)}
+        bound_b = bernoulli_kl(p1s[kcfg.smoothing], smooth(k_b[:n_problems], np.full(n_problems, n_b), kcfg.smoothing))
         for pid in problems:
             v = per[job.tag][pid]
             entry = prompts.get(str(pid)) or {}
@@ -484,8 +494,11 @@ def compute_kl(out: Path, kl_out: Path, kcfg: KLConfig) -> dict[str, Any]:
                          "kl": v["kl"], "se": v["se"], "m": v["m"], "mean_tokens": v["mean_tokens"],
                          "p0_hat": float(p0_raw[pid]), "p1_hat": float(k1[pid] / n_t), "p1_kl_samples": v["p1_kl"],
                          "delta_p": float(k1[pid] / n_t - p0_raw[pid]), "bound": d, "bound_alt": d_alt,
+                         "p0_hat_b": float(p0_b[pid]), "delta_p_b": float(k1[pid] / n_t - p0_b[pid]),
+                         "bound_b": float(bound_b[pid]),
                          "violation": bool(v["kl"] + kcfg.violation_se * se < d),
-                         "violation_alt": bool(v["kl"] + kcfg.violation_se * se < d_alt)})
+                         "violation_alt": bool(v["kl"] + kcfg.violation_se * se < d_alt),
+                         "violation_b": bool(v["kl"] + kcfg.violation_se * se < bound_b[pid])})
 
     def k1_row(arm: str, sel: list[dict]) -> dict:
         n = len(sel)
@@ -493,6 +506,8 @@ def compute_kl(out: Path, kl_out: Path, kcfg: KLConfig) -> dict[str, Any]:
                 "fraction": sum(r["violation"] for r in sel) / n if n else None,
                 "violations_alt": sum(r["violation_alt"] for r in sel),
                 "fraction_alt": sum(r["violation_alt"] for r in sel) / n if n else None,
+                "violations_b": sum(r["violation_b"] for r in sel),
+                "fraction_b": sum(r["violation_b"] for r in sel) / n if n else None,
                 "kl_minus_bound_min_in_se": min(((r["kl"] - r["bound"]) / r["se"] for r in sel
                                                  if r["se"] and not math.isnan(r["se"])), default=None)}
 
@@ -506,11 +521,16 @@ def compute_kl(out: Path, kl_out: Path, kcfg: KLConfig) -> dict[str, Any]:
             sel = [r for r in rows if r["arm"] == arm and r["group"] == key]
             kl_v = np.array([r["kl"] for r in sel])
             dp = np.array([r["delta_p"] for r in sel])
+            dp_b = np.array([r["delta_p_b"] for r in sel])
             clusters = np.array([r["problem"] for r in sel])
             k2.append({"arm": arm, "group": key, "label": label,
                        "kl": cluster_bootstrap(kl_v, clusters, kcfg.n_boot, _rng(kcfg, f"k2/{arm}/{key}")),
                        "delta_p": cluster_bootstrap(dp, clusters, kcfg.n_boot, _rng(kcfg, f"dp/{arm}/{key}")),
                        "efficiency": ratio_bootstrap(dp, kl_v, clusters, kcfg.n_boot, _rng(kcfg, f"eff/{arm}/{key}")),
+                       "delta_p_b": cluster_bootstrap(dp_b, clusters, kcfg.n_boot, _rng(kcfg, f"dpb/{arm}/{key}")),
+                       "efficiency_b": ratio_bootstrap(dp_b, kl_v, clusters, kcfg.n_boot,
+                                                       _rng(kcfg, f"effb/{arm}/{key}")),
+                       "bound_b": float(np.mean([r["bound_b"] for r in sel])) if sel else None,
                        "bound": float(np.mean([r["bound"] for r in sel])) if sel else None,
                        "per_seed_kl": {str(s): float(np.mean([r["kl"] for r in sel if r["seed"] == s]))
                                        for s in sorted({r["seed"] for r in sel})}})
@@ -535,8 +555,9 @@ def compute_kl(out: Path, kl_out: Path, kcfg: KLConfig) -> dict[str, Any]:
                 early.append({"arm": arm, "seed": seed, **{f"fraction_at_{s}": by[s] / by[final]
                                                             for s in sorted(by) if s not in (0, final)}})
     return {"status": "exploratory function-space layer on the completed lm_main run; pre-registered in "
-                      "docs/lm_main/kl/preregistration_kl.md (DECISIONS L23-L31); no verdict on L1-L3",
+                      "docs/lm_main/kl/preregistration_kl.md (DECISIONS L23-L33); no verdict on L1-L3",
             "kl_config": _kl_dict(kcfg), "source_run": str(out), "n_problems": n_problems,
+            "n_train_ambiguous_excluded_from_k2": len({r["problem"] for r in rows if r["group"] is None}),
             "p0_source": f"base sets A and B pooled ({n_a} + {n_b} samples per problem)",
             "p1_source": f"the trained arm's saved eval samples ({n_t} per problem)",
             "zero_checks": zero, "k1": k1, "k2": k2, "trajectory": traj, "early_fraction": early,
@@ -664,17 +685,21 @@ def _tables(res: dict, tab: Path) -> list[Path]:
     pp = res["per_problem"]
     cols = ["arm", "seed", "problem", "split", "class", "group", "ever_correct_in_training", "kl", "se", "m",
             "mean_tokens", "p0_hat", "p1_hat", "p1_kl_samples", "delta_p", "bound", "bound_alt", "violation",
-            "violation_alt"]
+            "violation_alt", "p0_hat_b", "delta_p_b", "bound_b", "violation_b"]
     paths.append(write_csv(tab / "per_problem.csv", cols, [[r[c] for c in cols] for r in pp]))
-    k1c = ["arm", "n", "violations", "fraction", "violations_alt", "fraction_alt", "kl_minus_bound_min_in_se"]
+    k1c = ["arm", "n", "violations", "fraction", "violations_alt", "fraction_alt", "violations_b", "fraction_b",
+           "kl_minus_bound_min_in_se"]
     paths.append(write_csv(tab / "k1.csv", k1c, [[r[c] for c in k1c] for r in res["k1"]]))
     paths.append(write_csv(tab / "k2_groups.csv",
                            ["arm", "group", "n_obs", "n_problems", "kl", "kl_lo", "kl_hi", "delta_p", "delta_p_lo",
-                            "delta_p_hi", "efficiency", "efficiency_lo", "efficiency_hi", "mean_bound"],
+                            "delta_p_hi", "efficiency", "efficiency_lo", "efficiency_hi", "mean_bound", "delta_p_b",
+                            "delta_p_b_lo", "delta_p_b_hi", "efficiency_b", "efficiency_b_lo", "efficiency_b_hi"],
                            [[g["arm"], g["group"], g["kl"]["n"], g["kl"].get("n_clusters"), g["kl"]["estimate"],
                              g["kl"]["lo"], g["kl"]["hi"], g["delta_p"]["estimate"], g["delta_p"]["lo"],
                              g["delta_p"]["hi"], g["efficiency"]["estimate"], g["efficiency"]["lo"],
-                             g["efficiency"]["hi"], g["bound"]] for g in res["k2"]]))
+                             g["efficiency"]["hi"], g["bound"], g["delta_p_b"]["estimate"], g["delta_p_b"]["lo"],
+                             g["delta_p_b"]["hi"], g["efficiency_b"]["estimate"], g["efficiency_b"]["lo"],
+                             g["efficiency_b"]["hi"]] for g in res["k2"]]))
     tc = ["arm", "seed", "step", "m", "mean_kl", "mean_kl_train", "mean_kl_heldout", "gain"]
     paths.append(write_csv(tab / "trajectory.csv", tc, [[r[c] for c in tc] for r in res["trajectory"]]))
     zc = ["arm", "seed", "step", "m", "max_abs_log_ratio", "mean_kl"]
@@ -715,14 +740,19 @@ def render(res: dict, name: str) -> str:
           "## Exact-zero checks", "",
           "A fresh adapter (lora_B = 0) is the `none` arm at every step and every arm at step 0; KL must be exactly 0.",
           "", *md_table(["arm", "seed", "step", "m", "max |ln pi1 - ln pi0|", "mean KL_hat"],
-                        [[z["arm"], z["seed"], z["step"], z["m"], md_num(z["max_abs_log_ratio"], 6, sign=False),
-                          md_num(z["mean_kl"], 6, sign=False)] for z in res["zero_checks"]]), "",
+                        [[z["arm"], z["seed"], z["step"], z["m"], repr(z["max_abs_log_ratio"]), repr(z["mean_kl"])]
+                         for z in res["zero_checks"]]), "",
           "## K1: bound check", "",
           *md_table(["arm", "problems x seeds", "violations", "fraction", f"violations ({kc['alt_smoothing']})",
-                     f"fraction ({kc['alt_smoothing']})", "min (KL_hat - d) / SE"],
+                     f"fraction ({kc['alt_smoothing']})", "violations (p̂0 from B only)", "fraction (B only)",
+                     "min (KL_hat - d) / SE"],
                     [[r["arm"], r["n"], r["violations"], md_num(r["fraction"], 4, sign=False), r["violations_alt"],
-                      md_num(r["fraction_alt"], 4, sign=False), md_num(r["kl_minus_bound_min_in_se"], 2)]
-                     for r in res["k1"]]), "",
+                      md_num(r["fraction_alt"], 4, sign=False), r["violations_b"], md_num(r["fraction_b"], 4, sign=False),
+                      md_num(r["kl_minus_bound_min_in_se"], 2)] for r in res["k1"]]), "",
+          ("Selection effect (post-hoc sensitivity, DECISIONS L33): set A both classifies each problem and supplies "
+           "most of the pooled p̂0, so problems classed unreachable on A tend to have p̂0 biased low (and reachable "
+           "ones high); that inflates d and Δp for the unreachable groups. The 'B only' columns here and in K2 use "
+           "p̂0 from set B alone, which is independent of the classification. The registered analysis is A + B."), "",
           "![K1 scatter](figures/k1_scatter.png)", "",
           "## K2 and K3: KL, gain and efficiency by group (final checkpoint)", "",
           ("Seeds pooled; one observation = one problem in one seed; intervals resample problems (all seeds of a "
@@ -730,11 +760,13 @@ def render(res: dict, name: str) -> str:
            "arms that never sample (sft) have no such split, so all their train unreachable problems are in the "
            "'never' row. Efficiency = mean Δp / mean KL_hat (Δp = p̂1 - p̂0, gain per nat)."), "",
           *md_table(["arm", "group", "obs", "problems", "KL_hat [95%]", "Δp [95%]", "Δp / KL [95%]", "mean bound d",
-                     "KL_hat per seed"],
+                     "Δp, p̂0 from B [95%]", "Δp / KL, p̂0 from B [95%]", "KL_hat per seed"],
                     [[g["arm"], g["label"], g["kl"]["n"], g["kl"].get("n_clusters", 0), _ci(g["kl"]),
                       _sci(g["delta_p"]), _sci(g["efficiency"]), md_num(g["bound"], 3, sign=False),
+                      _sci(g["delta_p_b"]), _sci(g["efficiency_b"]),
                       ", ".join(f"{s}: {md_num(v, 3, sign=False)}" for s, v in g["per_seed_kl"].items())]
                      for g in res["k2"] if g["kl"]["n"]]), "",
+          f"Train problems classed ambiguous (in no K2 group): {res['n_train_ambiguous_excluded_from_k2']}.", "",
           "![KL by group](figures/kl_by_group.png)", "",
           "## Over updates", "",
           ("Mean KL_hat over all problems and the total gain at each saved checkpoint. Here p̂1 comes from the KL "

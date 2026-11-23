@@ -290,3 +290,21 @@ def test_sample_completions_match_policy_sample(tiny_model_factory, tokenizer, t
         ref = policy.sample(task, [3] * 12, torch.Generator().manual_seed(21))
     got = kl.sample_completions(policy, task, 3, 12, torch.Generator().manual_seed(21))
     assert [list(a) for a in got] == ref.completion_ids
+
+
+def test_resume_refuses_changed_adapters(base_dir, tmp_path, tiny_model_factory, tokenizer):  # noqa: F811
+    s = make(base_dir, tmp_path)
+    default_runs(s)
+    config = parse_config(raw_config())
+
+    def factory(seed: int) -> LocalLMPolicy:
+        return LocalLMPolicy.from_loaded(tiny_model_factory(), tokenizer, config, seed=seed)
+
+    _write_tiny_adapters(s, factory)
+    kcfg = kl.parse_kl_config({**json.loads((ROOT / "configs" / "lm_kl.json").read_text()),
+                               "arms": ["rl"], "m_final": 2, "checkpoints": [], "m_zero": 1, "max_problems": 2})
+    kl_out = tmp_path / "synth_kl"
+    kl.run_kl(config, kcfg, s.out, kl_out, device="cpu", factory=factory)
+    perturb(factory(0), seed=99).save_adapter(st.adapter_path(s.out, "rl", 0, 2))
+    with pytest.raises(st.StageError, match="differ"):
+        kl.run_kl(config, kcfg, s.out, kl_out, device="cpu", factory=factory)
