@@ -346,3 +346,89 @@ def test_prereg_unknown_arm(base_dir, tmp_path):
     default_runs(s)
     with pytest.raises(vd.PreregError, match="not in the config"):
         vd.build_verdicts(s.out, prereg(tmp_path, l3_arms=["nope"]))
+
+
+# --------------------------------------------------------------------------- post-hoc p0 sensitivity (L21)
+
+
+def test_sensitivity_p0(base_dir, tmp_path):
+    from capsplit.harness.lm import sensitivity as sn
+
+    s = make(base_dir, tmp_path, null_shift=6)
+    default_runs(s)
+    path = sn.build_sensitivity(s.out, prereg(tmp_path))
+    res = json.loads(path.read_text())
+    assert res["null_check_passed"] is False
+    dg = res["null_diagnostic"]
+    # null = B + 6 successes on every non-saturated problem: the diagnostic sees a positive shift
+    assert dg["null_minus_B"]["mean"] > 0 and dg["mean_success"]["null"] > dg["mean_success"]["B"]
+    assert set(res["verdicts_by_p0_source"]["L1"]) == set(sn.SOURCES)
+    # p0 from B reproduces the registered verdicts exactly
+    registered = json.loads(vd.build_verdicts(s.out, prereg(tmp_path)).read_text())["verdicts"]
+    for claim in ("L1", "L2", "L3"):
+        assert res["verdicts_by_p0_source"][claim]["B"] == registered[claim]["verdict"]
+    # base_rates is restored afterwards and the output is deterministic
+    run = rp.load_run(s.out)
+    assert "base_rates" not in vars(run)
+    first = path.read_bytes()
+    sn.build_sensitivity(s.out, prereg(tmp_path))
+    assert path.read_bytes() == first
+    assert "Post-hoc" in (s.out / "report" / "sensitivity_p0.md").read_text()
+
+
+def test_sensitivity_identical_sets_pass(base_dir, tmp_path):
+    from capsplit.harness.lm import sensitivity as sn
+
+    s = make(base_dir, tmp_path)
+    default_runs(s)
+    res = sn.compute_sensitivity(rp.load_run(s.out), vd.load_prereg(prereg(tmp_path)))
+    assert res["null_diagnostic"]["null_minus_B"]["mean"] == 0.0
+    assert all(res["verdicts_stable"].values())
+
+
+# --------------------------------------------------------------------------- discovery vs waiting time (L22)
+
+
+def test_draw_index_epoch_cycle():
+    from capsplit.harness.lm import discovery as dc
+
+    # 120 problems, 8 per update: updates 1..15 are draw 1, 16..30 draw 2
+    assert [dc.draw_index(u, 8, 120) for u in (1, 15, 16, 30, 31, 200)] == [1, 1, 2, 2, 3, 14]
+
+
+def test_discovery_summary_known_values():
+    import numpy as np
+
+    from capsplit.harness.lm import discovery as dc
+
+    rows = [{"p": 0.5, "p_upper": 0.6, "draws": 3, "first_success_draw": 1},
+            {"p": 0.0, "p_upper": 0.01, "draws": 3, "first_success_draw": None},
+            {"p": 1.0, "p_upper": 1.0, "draws": 3, "first_success_draw": 1}]
+    s = dc.summarise(rows, 2, np.random.default_rng(0))
+    assert s["n"] == 3 and s["observed_discovered"] == 2
+    assert s["predicted_discovered"] == pytest.approx((1 - 0.5 ** 6) + 0.0 + 1.0)
+    assert s["n_p_zero"] == 1 and s["discovered_p_zero"] == 0
+    assert s["predicted_discovered_p_zero_at_p_upper"] == pytest.approx(1 - 0.99 ** 6)
+    assert s["pit_p_positive"]["n"] == 2
+    # p = 0.5, G = 2, first success at draw 1: U in [0, F(1)] = [0, 0.75]
+    assert 0.0 <= s["pit_p_positive"]["mean"] <= 1.0
+
+
+def test_discovery_report_on_synth(base_dir, tmp_path):
+    from capsplit.harness.lm import discovery as dc
+
+    s = make(base_dir, tmp_path)
+    ever = s.ids("unreachable", "train")[:2]
+    default_runs(s, rl_eval={p: 8 for p in ever}, ever=ever)
+    path = dc.build_discovery(s.out)
+    res = json.loads(path.read_text())
+    (unit,) = res["arms"]
+    assert unit["arm"] == "rl" and unit["draw_index_exact"] is True
+    # the hand-written synth logs draw every problem twice in 2 updates, which the 6-update epoch cycle
+    # cannot do: the consistency check must flag every problem
+    assert unit["cycle_mismatches"] == {"0": 12, "1": 12}
+    un = unit["by_class"]["unreachable"]
+    assert un["n"] == 16 and un["observed_discovered"] == 4 and un["discovered_p_zero"] == 4
+    first = path.read_bytes()
+    dc.build_discovery(s.out)
+    assert path.read_bytes() == first

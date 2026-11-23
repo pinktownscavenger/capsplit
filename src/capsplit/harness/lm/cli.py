@@ -3,7 +3,8 @@
 Each stage prints the files it wrote and the command to run next. Errors that the user can fix
 (bad config, low memory, missing earlier stage) exit with code 2 and a message saying what to do.
 
-Stages: doctor, fetch, speedtest, setup (fetch + speedtest), data, base, train, measure, report.
+Stages: doctor, fetch, speedtest, setup (fetch + speedtest), data, base, train, measure, report,
+verdicts, discovery (descriptive, DECISIONS L22) and the optional post-hoc `sensitivity` (L21).
 Long stages should run under `caffeinate -i` (DECISIONS L13) so the machine does not sleep.
 """
 from __future__ import annotations
@@ -67,11 +68,23 @@ def _experiment_stages() -> dict[str, tuple[StageFn, str]]:
 
         return [build_verdicts(o, Path(a.prereg))]
 
+    def sensitivity(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
+        from .sensitivity import build_sensitivity
+
+        return [build_sensitivity(o, Path(a.prereg))]
+
+    def discovery(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
+        from .discovery import build_discovery
+
+        return [build_discovery(o)]
+
     return {"data": (data, "base"), "base": (base, "train"), "train": (train, "measure"),
-            "measure": (measure, "report"), "report": (report, "verdicts"), "verdicts": (verdicts, "")}
+            "measure": (measure, "report"), "report": (report, "verdicts"), "verdicts": (verdicts, "discovery"),
+            "discovery": (discovery, ""), "sensitivity": (sensitivity, "")}
 
 
-STAGE_NAMES = ("doctor", "fetch", "speedtest", "setup", "data", "base", "train", "measure", "report", "verdicts")
+STAGE_NAMES = ("doctor", "fetch", "speedtest", "setup", "data", "base", "train", "measure", "report", "verdicts",
+               "discovery", "sensitivity")
 
 
 def stages() -> dict[str, tuple[StageFn, str]]:
@@ -97,7 +110,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--out", default="results", help="results root (default: results)")
     parser.add_argument("--fallback", action="store_true", help="use model.fallback_id instead of model.id")
     parser.add_argument("--prereg", default="configs/lm_prereg.json",
-                        help="verdict thresholds for the verdicts stage (default: configs/lm_prereg.json)")
+                        help="verdict thresholds for the verdicts and sensitivity stages (default: configs/lm_prereg.json)")
     parser.add_argument("--all-checkpoints", action="store_true",
                         help="measure: also measure intermediate checkpoints (default: final only)")
     return parser

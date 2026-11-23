@@ -40,6 +40,8 @@ python -m capsplit.harness.lm measure   $C   # samples/<arm>/seed<s>/step<k>/eva
                                              #   measure/results.json, null_check.json, budget_curve.json
 python -m capsplit.harness.lm report    $C   # report/report.md, summary.json, tables/*.csv, figures/*.png
 python -m capsplit.harness.lm verdicts  $C   # report/verdicts.md, verdicts.json
+python -m capsplit.harness.lm discovery $C   # report/discovery_lm.md, discovery_lm.json
+python -m capsplit.harness.lm sensitivity $C # report/sensitivity_p0.md, sensitivity_p0.json (post-hoc)
 ```
 
 - `setup` runs `fetch` and then `speedtest` in one command.
@@ -47,6 +49,9 @@ python -m capsplit.harness.lm verdicts  $C   # report/verdicts.md, verdicts.json
 - `train` trains one LoRA adapter for each arm × seed and saves one at each checkpoint.
 - `measure` samples each trained adapter and computes the split, the temperature baseline, the bootstrap intervals, the null check and the budget curve. By default it measures only the final checkpoint. Add `--all-checkpoints` to measure the intermediate ones too.
 - `verdicts` reads the thresholds from `configs/lm_prereg.json` (override with `--prereg`). The verdicts are pre-registered only for `configs/lm_main.json`.
+- `discovery` compares each RL training problem's first success with the waiting-time model (descriptive; DECISIONS L22).
+- `sensitivity` is post-hoc (DECISIONS L21): it diagnoses the null check from the saved samples and re-applies the L1–L3 rules with the base rate taken from set B, from the null set, and from both pooled. It never changes `verdicts.md`.
+- `report`, `verdicts`, `discovery` and `sensitivity` only read files; they do not load the model and take seconds.
 - Every stage writes a `manifest.<stage>.json` next to its outputs (commit, config, seeds, device, versions).
 
 Then run the full experiment with `C=configs/lm_main.json` and the same commands. It takes several hours on an M3 Pro. The run records its own durations: training wall time is in `train/<arm>/seed<s>/timing.json`, and progress lines with elapsed time and ETA go to stderr, so keep a log (section 4). `lm_main.json` is frozen with the pre-registration (tag `lm-prereg-frozen`). Do not edit it. Make a copy with a new `name` instead.
