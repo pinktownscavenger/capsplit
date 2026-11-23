@@ -1,4 +1,4 @@
-"""Function-space layer: per-problem KL(pi1 || pi0) of each trained policy from the base (DECISIONS L23-L33).
+"""Function-space layer: per-problem KL(pi1 || pi0) of each trained policy from the base (DECISIONS L23-L34).
 
 The output metric asks whether a completion is correct. This layer asks how far the whole
 completion distribution moved. For a problem x, pi0 is the base (LoRA adapter disabled) and pi1 the
@@ -141,6 +141,25 @@ def smooth(k: np.ndarray, n: np.ndarray, kind: str) -> np.ndarray:
     if kind == "laplace":
         return (k + 1.0) / (n + 2.0)
     raise ValueError(f"unknown smoothing {kind!r}; use one of {SMOOTHINGS}")
+
+
+def bound_se(p1: np.ndarray, n1: np.ndarray, p0: np.ndarray, n0: np.ndarray) -> np.ndarray:
+    """Delta-method standard error of d(p1 || p0) from independent binomial estimates of p1 and p0.
+
+    Gradients: dd/dp1 = ln(p1/p0) - ln((1-p1)/(1-p0)); dd/dp0 = (1-p1)/(1-p0) - p1/p0. Variances
+    p(1-p)/n, evaluated at the (smoothed, interior) estimates. Post-hoc (DECISIONS L34).
+    """
+    p1, n1, p0, n0 = (np.asarray(x, dtype=float) for x in (p1, n1, p0, n0))
+    g1 = np.log(p1 / p0) - np.log((1 - p1) / (1 - p0))
+    g0 = (1 - p1) / (1 - p0) - p1 / p0
+    return np.sqrt(g1 ** 2 * p1 * (1 - p1) / n1 + g0 ** 2 * p0 * (1 - p0) / n0)
+
+
+def degenerate_pair(k1: np.ndarray, n1: np.ndarray, k0: np.ndarray, n0: np.ndarray) -> np.ndarray:
+    """True where both raw rates are 0 or both are 1: the raw bound is exactly 0, and any positive
+    smoothed bound is an artifact of smoothing two different sample sizes."""
+    k1, n1, k0, n0 = (np.asarray(x) for x in (k1, n1, k0, n0))
+    return ((k1 == 0) & (k0 == 0)) | ((k1 == n1) & (k0 == n0))
 
 
 def kl_estimate(log_ratios: np.ndarray) -> tuple[float, float]:
@@ -481,6 +500,9 @@ def compute_kl(out: Path, kl_out: Path, kcfg: KLConfig) -> dict[str, Any]:
         sampled = int((log.get("totals") or {}).get("episodes_sampled", 0)) > 0
         p1s = {kind: smooth(k1, np.full(n_problems, n_t), kind) for kind in (kcfg.smoothing, kcfg.alt_smoothing)}
         bounds = {kind: bernoulli_kl(p1s[kind], smooth(k0, n0, kind)) for kind in (kcfg.smoothing, kcfg.alt_smoothing)}
+        sm1, sm0 = smooth(k1, np.full(n_problems, n_t), kcfg.smoothing), smooth(k0, n0, kcfg.smoothing)
+        dse = bound_se(sm1, np.full(n_problems, n_t), sm0, n0)
+        degenerate = degenerate_pair(k1, np.full(n_problems, n_t), k0, n0)
         bound_b = bernoulli_kl(p1s[kcfg.smoothing], smooth(k_b[:n_problems], np.full(n_problems, n_b), kcfg.smoothing))
         for pid in problems:
             v = per[job.tag][pid]
@@ -498,7 +520,10 @@ def compute_kl(out: Path, kl_out: Path, kcfg: KLConfig) -> dict[str, Any]:
                          "bound_b": float(bound_b[pid]),
                          "violation": bool(v["kl"] + kcfg.violation_se * se < d),
                          "violation_alt": bool(v["kl"] + kcfg.violation_se * se < d_alt),
-                         "violation_b": bool(v["kl"] + kcfg.violation_se * se < bound_b[pid])})
+                         "violation_b": bool(v["kl"] + kcfg.violation_se * se < bound_b[pid]),
+                         "bound_se": float(dse[pid]), "degenerate": bool(degenerate[pid]),
+                         "violation_posthoc": bool(not degenerate[pid] and v["kl"] + kcfg.violation_se
+                                                   * math.sqrt(se ** 2 + float(dse[pid]) ** 2) < d)})
 
     def k1_row(arm: str, sel: list[dict]) -> dict:
         n = len(sel)
@@ -508,6 +533,9 @@ def compute_kl(out: Path, kl_out: Path, kcfg: KLConfig) -> dict[str, Any]:
                 "fraction_alt": sum(r["violation_alt"] for r in sel) / n if n else None,
                 "violations_b": sum(r["violation_b"] for r in sel),
                 "fraction_b": sum(r["violation_b"] for r in sel) / n if n else None,
+                "degenerate": sum(r["degenerate"] for r in sel),
+                "violations_posthoc": sum(r["violation_posthoc"] for r in sel),
+                "fraction_posthoc": sum(r["violation_posthoc"] for r in sel) / n if n else None,
                 "kl_minus_bound_min_in_se": min(((r["kl"] - r["bound"]) / r["se"] for r in sel
                                                  if r["se"] and not math.isnan(r["se"])), default=None)}
 
@@ -555,7 +583,7 @@ def compute_kl(out: Path, kl_out: Path, kcfg: KLConfig) -> dict[str, Any]:
                 early.append({"arm": arm, "seed": seed, **{f"fraction_at_{s}": by[s] / by[final]
                                                             for s in sorted(by) if s not in (0, final)}})
     return {"status": "exploratory function-space layer on the completed lm_main run; pre-registered in "
-                      "docs/lm_main/kl/preregistration_kl.md (DECISIONS L23-L33); no verdict on L1-L3",
+                      "docs/lm_main/kl/preregistration_kl.md (DECISIONS L23-L34); no verdict on L1-L3",
             "kl_config": _kl_dict(kcfg), "source_run": str(out), "n_problems": n_problems,
             "n_train_ambiguous_excluded_from_k2": len({r["problem"] for r in rows if r["group"] is None}),
             "p0_source": f"base sets A and B pooled ({n_a} + {n_b} samples per problem)",
@@ -685,10 +713,11 @@ def _tables(res: dict, tab: Path) -> list[Path]:
     pp = res["per_problem"]
     cols = ["arm", "seed", "problem", "split", "class", "group", "ever_correct_in_training", "kl", "se", "m",
             "mean_tokens", "p0_hat", "p1_hat", "p1_kl_samples", "delta_p", "bound", "bound_alt", "violation",
-            "violation_alt", "p0_hat_b", "delta_p_b", "bound_b", "violation_b"]
+            "violation_alt", "p0_hat_b", "delta_p_b", "bound_b", "violation_b", "bound_se", "degenerate",
+            "violation_posthoc"]
     paths.append(write_csv(tab / "per_problem.csv", cols, [[r[c] for c in cols] for r in pp]))
     k1c = ["arm", "n", "violations", "fraction", "violations_alt", "fraction_alt", "violations_b", "fraction_b",
-           "kl_minus_bound_min_in_se"]
+           "degenerate", "violations_posthoc", "fraction_posthoc", "kl_minus_bound_min_in_se"]
     paths.append(write_csv(tab / "k1.csv", k1c, [[r[c] for c in k1c] for r in res["k1"]]))
     paths.append(write_csv(tab / "k2_groups.csv",
                            ["arm", "group", "n_obs", "n_problems", "kl", "kl_lo", "kl_hi", "delta_p", "delta_p_lo",
@@ -749,6 +778,15 @@ def render(res: dict, name: str) -> str:
                     [[r["arm"], r["n"], r["violations"], md_num(r["fraction"], 4, sign=False), r["violations_alt"],
                       md_num(r["fraction_alt"], 4, sign=False), r["violations_b"], md_num(r["fraction_b"], 4, sign=False),
                       md_num(r["kl_minus_bound_min_in_se"], 2)] for r in res["k1"]]), "",
+          ("Post-hoc K1 variant (DECISIONS L34, added after the registered K1 was seen to exceed its 5% line): cells "
+           "whose raw success rates are both 0 or both 1 have a raw bound of exactly 0 and are not counted (a "
+           "positive smoothed bound there comes only from smoothing samples of different sizes), and the violation "
+           "margin uses the combined standard error sqrt(SE_KL^2 + SE_d^2), with SE_d the delta-method standard "
+           "error of the bound from the binomial noise in p̂1 and p̂0. The registered K1 above is unchanged."), "",
+          *md_table(["arm", "problems x seeds", "degenerate cells (bound exactly 0)", "violations (post-hoc)",
+                     "fraction (post-hoc)"],
+                    [[r["arm"], r["n"], r["degenerate"], r["violations_posthoc"],
+                      md_num(r["fraction_posthoc"], 4, sign=False)] for r in res["k1"]]), "",
           ("Selection effect (post-hoc sensitivity, DECISIONS L33): set A both classifies each problem and supplies "
            "most of the pooled p̂0, so problems classed unreachable on A tend to have p̂0 biased low (and reachable "
            "ones high); that inflates d and Δp for the unreachable groups. The 'B only' columns here and in K2 use "

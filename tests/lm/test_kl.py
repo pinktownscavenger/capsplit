@@ -308,3 +308,19 @@ def test_resume_refuses_changed_adapters(base_dir, tmp_path, tiny_model_factory,
     perturb(factory(0), seed=99).save_adapter(st.adapter_path(s.out, "rl", 0, 2))
     with pytest.raises(st.StageError, match="differ"):
         kl.run_kl(config, kcfg, s.out, kl_out, device="cpu", factory=factory)
+
+
+def test_bound_se_and_degenerate():
+    # delta-method SE against a finite-difference Monte Carlo of d at moderate rates
+    rng = np.random.default_rng(1)
+    p1, n1, p0, n0 = 0.7, 400, 0.4, 600
+    k1, k0 = rng.binomial(n1, p1, 20000), rng.binomial(n0, p0, 20000)
+    sim = kl.bernoulli_kl(k1 / n1, k0 / n0).std()
+    assert kl.bound_se(np.array(p1), np.array(n1), np.array(p0), np.array(n0)) == pytest.approx(sim, rel=0.05)
+    assert kl.bound_se(np.array(0.3), np.array(50), np.array(0.3), np.array(50)) == pytest.approx(0.0)
+    deg = kl.degenerate_pair(np.array([0, 64, 64, 3]), np.array([64] * 4), np.array([0, 464, 400, 0]),
+                             np.array([464] * 4))
+    assert deg.tolist() == [True, True, False, False]
+    # the artifact the check guards against: equal raw rates of 1, different n, positive smoothed bound
+    d = kl.bernoulli_kl(kl.smooth(np.array(64), np.array(64), "jeffreys"), kl.smooth(np.array(464), np.array(464), "jeffreys"))
+    assert d > 0
