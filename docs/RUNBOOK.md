@@ -5,10 +5,10 @@ How to run the LM experiment (`docs/lm_design.md`, pre-registration `docs/prereg
 ## 1. Requirements
 
 - **Machine:** an Apple Silicon Mac is recommended (the MPS GPU backend). Other machines fall back to the CPU, which is much slower.
-- **Python 3.10–3.12.** torch 2.8.0 may not install on 3.13 or newer.
+- **Python 3.10–3.12.** torch 2.8.0 may not install on 3.13 or newer. The commands below use `python3.12` (on macOS: `brew install python@3.12`); `python3.10` or `python3.11` work the same way.
 - **Disk:** about 2 GB for the two pinned models in the Hugging Face cache (`~/.cache/huggingface`), plus room for results.
 - **Memory:** at least `memory.min_free_gb` free (3 GB in the shipped configs); every stage refuses to start below it.
-- **Why torch is pinned to 2.8.0 (L2):** newer torch (2.15.0) aborts on macOS 14 MPS even on a plain matmul (`-[MPSNDArray arrayViewWithShape:strides:]` unrecognized selector). The `lm` extra pins every LM dependency to the versions verified on the authors' machine. Do not upgrade them.
+- **Why torch is pinned to 2.8.0 (L2):** newer torch (2.15.0) aborts on macOS 14 MPS even on a plain matmul (`-[MPSNDArray arrayViewWithShape:strides:]` unrecognized selector). The `lm` extra pins the direct LM dependencies (torch, transformers, peft, huggingface_hub, safetensors, psutil) to the versions verified on the authors' machine. Do not upgrade them. Transitive dependencies (e.g. numpy, tokenizers, accelerate) are not pinned and resolve at install time; every stage manifest records the torch and transformers versions actually used.
 
 ## 2. Setup
 
@@ -16,16 +16,18 @@ How to run the LM experiment (`docs/lm_design.md`, pre-registration `docs/prereg
 git clone https://github.com/sazandkhalid/capsplit.git
 cd capsplit
 git checkout harness/capability-vs-reliability
+git log -1 --format=%H                 # to reproduce the published lm_main results, compare with the
+                                       # `commit` in docs/lm_main/measure/manifest.measure.json
 python3.12 -m venv .venv
 source .venv/bin/activate
-pip install -e ".[dev,lm,viz]"        # add ,lint for ruff
+pip install -e ".[dev,lm,viz,lint]"   # lint = ruff, for section 8
 ```
 
 ## 3. Running the experiment
 
-Every command has the form `python -m capsplit.harness.lm <stage> <config> [--out results] [--fallback]`. Outputs go to `<out>/<name>/`, where `name` comes from the config (`results/lm_demo/`, `results/lm_main/`). Each stage prints `wrote <path>` for every file and a `next:` line with the command to run next.
+Every command has the form `python -m capsplit.harness.lm <stage> <config> [--out results] [--fallback]`. Outputs go to `<out>/<name>/`, where `name` comes from the config (`results/lm_demo/`, `results/lm_main/`). Each stage prints `wrote <path>` for the files it wrote and a `next:` line with the command to run next.
 
-Run the demo first. It takes a few minutes and checks the whole pipeline:
+Run the demo first. With the model already downloaded its compute takes a few minutes; `fetch` downloads about 1.6 GB the first time, which can take much longer. It checks the whole pipeline:
 
 ```bash
 C=configs/lm_demo.json
@@ -44,7 +46,8 @@ python -m capsplit.harness.lm discovery $C   # report/discovery_lm.md, discovery
 python -m capsplit.harness.lm sensitivity $C # report/sensitivity_p0.md, sensitivity_p0.json (post-hoc)
 ```
 
-- `setup` runs `fetch` and then `speedtest` in one command.
+- `setup` runs `fetch` and then `speedtest` in one command; use either `setup` or the two separate commands.
+- `doctor` prints only the file it wrote. Open `doctor.json` and check that the device is `mps` (or `cpu` if you expect it) and that free memory is above `memory.min_free_gb`.
 - `base` samples the base model to classify each problem as reachable, unreachable or ambiguous. It also draws the measurement, temperature-sweep and null-check sets.
 - `train` trains one LoRA adapter for each arm × seed and saves one at each checkpoint.
 - `measure` samples each trained adapter and computes the split, the temperature baseline, the bootstrap intervals, the null check and the budget curve. By default it measures only the final checkpoint. Add `--all-checkpoints` to measure the intermediate ones too.
@@ -52,15 +55,17 @@ python -m capsplit.harness.lm sensitivity $C # report/sensitivity_p0.md, sensiti
 - `discovery` compares each RL training problem's first success with the waiting-time model (descriptive; DECISIONS L22).
 - `sensitivity` is post-hoc (DECISIONS L21): it diagnoses the null check from the saved samples and re-applies the L1–L3 rules with the base rate taken from set B, from the null set, and from both pooled. It never changes `verdicts.md`.
 - `report`, `verdicts`, `discovery` and `sensitivity` only read files; they do not load the model and take seconds.
-- `scripts/publish_lm_report.sh results/lm_main docs/lm_main` copies a finished run's generated outputs, runs the independent check `scripts/rederive_lm_headlines.py` (output `docs/lm_main/rederive_headlines.txt`), (reports, summaries, training logs, timings; not samples or adapters) into `docs/lm_main/` and assembles `docs/report_lm.md` from the generated markdown.
-- Every stage writes a `manifest.<stage>.json` next to its outputs (commit, config, seeds, device, versions).
+- `scripts/publish_lm_report.sh results/lm_main docs/lm_main` copies a finished run's generated outputs (reports, summaries, training logs, timings; not samples or adapters) into `docs/lm_main/`, runs the independent check `scripts/rederive_lm_headlines.py` (output `docs/lm_main/rederive_headlines.txt`; set `PYTHON` to the venv's python if `python` is not it), and assembles `docs/report_lm.md` from the generated markdown.
+- The stages that load the model or write data (`speedtest`, `data`, `base`, `train`, `measure`) write a `manifest.<stage>.json` next to their outputs (commit, config, seeds, device, versions); each training checkpoint also gets `manifest.step.json`. Every stage appends its wall time to `timing/<stage>.jsonl`. The read-only stages (`report`, `verdicts`, `discovery`, `sensitivity`) write no manifest.
+- **Expected messages that are harmless:** torch's `Redirects are currently not supported in Windows or MacOs` on every stage, a `requires_grad` UserWarning from `speedtest`, and Hugging Face download progress bars.
+- **Expected warnings on the demo:** with only 10 problems the demo usually has an empty class (often `ambiguous`), and `base` and the report print a large warning about it; L1 is then typically inconclusive for having too few problems. That is expected for the demo and does not mean the run is broken. `verdicts.md` is titled "pre-registered" for every config, but the thresholds are pre-registered only for `configs/lm_main.json`; the file says so.
 
 Then run the full experiment with `C=configs/lm_main.json` and the same commands. It takes several hours on an M3 Pro. The run records its own durations: training wall time is in `train/<arm>/seed<s>/timing.json`, and progress lines with elapsed time and ETA go to stderr, so keep a log (section 4). `lm_main.json` is frozen with the pre-registration (tag `lm-prereg-frozen`). Do not edit it. Make a copy with a new `name` instead.
 
 ## 4. Keeping long runs alive
 
 - Wrap long stages in `caffeinate -i` (L13). This stops idle sleep while the command runs. Plug in power and **keep the lid open**: closing the lid sleeps the machine whatever caffeinate does.
-- Optionally run `caffeinate -dimsu` in a separate terminal as well, to keep the display and system awake.
+- `caffeinate -i` alone did not stop macOS "maintenance sleep" in one test run: the machine was idle with its display off when the stage started, and it slept for about 15 minutes mid-stage (the stage then resumed by itself; nothing was lost). To prevent this, also run `caffeinate -dimsu` in a separate terminal for the duration of the run (stop it with Ctrl-C afterwards), and start runs with the machine awake.
 - To run in the background with a log:
 
   ```bash
@@ -114,7 +119,7 @@ Problems you can fix print `error: ...` and exit with code 2. Finished work is a
 ## 8. Tests and lint
 
 ```bash
-pytest -m "not lm_model"                     # everything except the real-model tests
+pytest -m "not lm_model"                     # everything except the real-model tests (about 8 minutes)
 pytest -m lm_model                           # needs the weights downloaded by `fetch`; skips otherwise
 ruff check src/capsplit/harness/lm tests/lm  # lint gate for the LM code (L4); needs the lint extra
 ```

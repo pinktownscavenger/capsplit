@@ -222,18 +222,6 @@ def test_cli_errors_exit_2(cli_config, tmp_path, capsys):
     assert cli.main(["data", str(tmp_path / "missing.json"), "--out", str(out)]) == 2
 
 
-def test_cli_report_missing_module(cli_config, tmp_path, capsys):
-    try:
-        import importlib
-
-        importlib.import_module("capsplit.harness.lm.report")
-    except ImportError:
-        assert cli.main(["report", str(cli_config), "--out", str(tmp_path)]) == 2
-        assert "report" in capsys.readouterr().err
-    else:
-        pytest.skip("report module exists")
-
-
 def test_data_conflict(config, tmp_path):
     out = tmp_path / "tiny"
     st.run_data(config, out)

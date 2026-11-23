@@ -61,26 +61,32 @@ def _experiment_stages() -> dict[str, tuple[StageFn, str]]:
                               all_checkpoints=a.all_checkpoints, use_fallback=a.fallback)
 
     def report(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
-        return st.run_report(c, o)
+        written = st.run_report(c, o)
+        rep = o / "report"
+        extra = [rep / "summary.json", *sorted((rep / "tables").glob("*")), *sorted((rep / "figures").glob("*"))]
+        return written + [p for p in extra if p.is_file() and p not in written]
 
     def verdicts(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
         from .verdicts import build_verdicts
 
-        return [build_verdicts(o, Path(a.prereg))]
+        path = build_verdicts(o, Path(a.prereg))
+        return [path, path.with_suffix(".md")]
 
     def sensitivity(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
         from .sensitivity import build_sensitivity
 
-        return [build_sensitivity(o, Path(a.prereg))]
+        path = build_sensitivity(o, Path(a.prereg))
+        return [path, path.with_suffix(".md")]
 
     def discovery(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
         from .discovery import build_discovery
 
-        return [build_discovery(o)]
+        path = build_discovery(o)
+        return [path, path.with_suffix(".md")]
 
     return {"data": (data, "base"), "base": (base, "train"), "train": (train, "measure"),
             "measure": (measure, "report"), "report": (report, "verdicts"), "verdicts": (verdicts, "discovery"),
-            "discovery": (discovery, ""), "sensitivity": (sensitivity, "")}
+            "discovery": (discovery, "sensitivity"), "sensitivity": (sensitivity, "")}
 
 
 STAGE_NAMES = ("doctor", "fetch", "speedtest", "setup", "data", "base", "train", "measure", "report", "verdicts",
