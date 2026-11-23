@@ -363,6 +363,9 @@ def test_sensitivity_p0(base_dir, tmp_path):
     # null = B + 6 successes on every non-saturated problem: the diagnostic sees a positive shift
     assert dg["null_minus_B"]["mean"] > 0 and dg["mean_success"]["null"] > dg["mean_success"]["B"]
     assert set(res["verdicts_by_p0_source"]["L1"]) == set(sn.SOURCES)
+    # the untrained arm's eval samples equal B in the synth, so they sit exactly at B
+    assert [(u["arm"], u["seed"]) for u in dg["untrained_arms"]] == [("none", 0), ("none", 1)]
+    assert all(u["minus_B"] == 0.0 for u in dg["untrained_arms"])
     # p0 from B reproduces the registered verdicts exactly
     registered = json.loads(vd.build_verdicts(s.out, prereg(tmp_path)).read_text())["verdicts"]
     for claim in ("L1", "L2", "L3"):

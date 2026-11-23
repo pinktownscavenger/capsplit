@@ -68,7 +68,16 @@ def null_diagnostic(run: Run) -> dict[str, Any]:
         member = (pa == lo) if lo == hi else (pa > lo) & (pa < hi)
         buckets.append({"bucket": _bucket_label(lo, hi), "n_problems": int(member.sum()),
                         "contribution": float(d[member].sum() / n)})
+    untrained = []
+    for arm in (a for a in run.arms if a["trainer"] == "lm_none"):
+        for seed in run.seeds:
+            if not run.sample_file(f"{arm['name']}/seed{seed}/step{run.final_step}", "eval").exists():
+                continue
+            p1 = run.eval_rates(arm["name"], seed)
+            untrained.append({"arm": arm["name"], "seed": seed, "mean_success": float(p1.mean()),
+                              "minus_B": float((p1 - pb).mean()), "minus_A": float((p1 - pa).mean())})
     return {
+        "untrained_arms": untrained,
         "n_problems": n, "n_per_problem": {"A": int(m_a.min()), "B": n_b, "null": n_b},
         "mean_success": {"A": float(pa.mean()), "B": float(pb.mean()), "null": float(pn.mean())},
         "null_minus_B": {"mean": float(d.mean()), "se": se, "z": float(d.mean() / se) if se > 0 else None,
@@ -143,6 +152,11 @@ def render(res: dict, name: str) -> str:
           ("B and null are produced by the same sampling job with different seed streams. A variance ratio near 1 "
           "means the per-problem differences scatter as independent binomial samples should; set A (larger, "
           "independent) is a third estimate of the same base rates."), "",
+          ("Untrained arms (`lm_none`: the adapter is never updated, so each is one more independent sample of the "
+           "base policy, drawn by the measure stage):"), "",
+          *md_table(["arm", "seed", "mean success", "minus B", "minus A"],
+                    [[u["arm"], u["seed"], md_num(u["mean_success"], sign=False), md_num(u["minus_B"]),
+                      md_num(u["minus_A"])] for u in dg["untrained_arms"]]), "",
           "Contribution of each set-A success band to the null − B total (summed difference / number of problems):", "",
           *md_table(["set-A band", "problems", "contribution"],
                     [[b["bucket"], b["n_problems"], md_num(b["contribution"])] for b in dg["by_set_A_rate"]]), "",
