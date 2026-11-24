@@ -51,3 +51,16 @@ Each entry is one choice, with a one-line reason. Newest at the bottom. "T*" nam
 | H45 | Gate 2 | Where the pre-registration states only a "supported" condition (H1a, H3), any other outcome is recorded as "not supported", and the output says so | The plan gave no inconclusive band for those parts; this is the literal reading |
 | H46 | T5 | Main run took 6 h 26 min of wall time on 6 workers (240 runs), far above the planned estimate | Recorded for anyone re-running the grid |
 | H47 | T8 | The pre-registered per-arm sample count (prereg §4) was not logged by the harness; the report gives the counts implied by the design and states that the hint arms' extra samples were not recorded | Recorded as an unmet item rather than re-running 6.4 h for a disclosure-only quantity |
+
+## RQ2 time-to-cross
+
+Decisions for `experiments/rq2_time_to_cross.py` (design: `docs/rq2-time-to-cross-design.md`). Same format; ids are `RQ2-*`.
+
+| # | Task | Decision | Reason |
+|---|---|---|---|
+| RQ2-1 | T4 | Noise σ = 1.0 for the robustness and arm B draws; arm B's fixed common-route bonuses are W1 0.75, W2 1.0, W3 1.75, giving q₀(common) = 0.0240, 0.0199 and 0.0226 at ratio 1 with σ = 0 | σ is the middle of the design's [0.5, 1.5]; the bonuses put q₀(common) near the middle of [0.01, 0.04], so 10 × q₀(rare) ≤ 0.4 stays reachable |
+| RQ2-2 | T5 | R2 uses H = 10 | One exact-PG step at H = 10 takes 0.76 ms, so the full R2 sweep is about 3 minutes, far under the 2 CPU-hour limit |
+| RQ2-3 | T9 | Full runs at the `rq2-frozen` commit, clean tree, four runs in parallel: arm-a 114 s, robust 905 s, arm-b 886 s, sampled 2,176 s of wall time | Recorded for anyone re-running |
+| RQ2-4 | T9 | P4 is reported as inconclusive under the frozen primary rule, with the secondary-line result beside it; the rule was not changed after seeing the W2 transients | Changing the rule after the run would be tuning it to the result (D8) |
+| RQ2-5 | Review | In W2 the bisected rare-route bonus also lands on the two moves shared with the common route, so lower ratios push the shared moves down and q₀(common) drifts (0.0199 at ratio 1 to 0.0069 at 0.01 without noise). Disclosed in the report; the frozen code and runs are unchanged | Found after the run; changing the construction now would be a post-freeze change and a rerun. A rare-own-moves-only W2 variant would be a labelled post-hoc check |
+| RQ2-6 | Review | `report` now prefers full runs over newer `--quick` runs in the same root, and marks any report built from quick runs (`quick_runs_used`, a warning in `verdicts.md`) | Reporting tooling only: the analysis and the selected runs are unchanged, and regenerating the report gave identical verdicts |

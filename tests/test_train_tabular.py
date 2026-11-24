@@ -134,3 +134,48 @@ def test_reinforce_is_deterministic_per_seed(competing):
     logits0 = competing_base(state_index, (1, 0))
     np.testing.assert_array_equal(reinforce(table, logits0, 1, steps=20), reinforce(table, logits0, 1, steps=20))
     assert not np.array_equal(reinforce(table, logits0, 1, steps=20), reinforce(table, logits0, 2, steps=20))
+
+
+# ----------------------------------------------------------------- RQ2: fast exact-PG trace
+
+from capsplit.crossing import scalar_isolated_trace, scalar_isolated_updates  # noqa: E402
+from capsplit.train.tabular import exact_pg_step, trace_exact_pg  # noqa: E402
+
+
+def test_exact_pg_step_matches_existing(competing):
+    table, state_index = competing
+    logits = competing_base(state_index, (2, 1.5))
+    gradient, q = exact_pg_step(table, logits)
+    assert np.allclose(gradient, exact_pg_gradient(table, logits)[0], atol=1e-15)
+    assert np.allclose(q, solution_probs(table, trajectory_probs(table, logits)), atol=1e-15)
+
+
+def test_trace_equals_scalar_recursion(isolated):
+    table, state_index = isolated
+    q, _ = trace_exact_pg(table, isolated_base(table, state_index, 1e-4), 1.0, 200, [0])
+    assert np.max(np.abs(q[:, 0] - scalar_isolated_trace(1e-4, 8, 1.0, 200))) < 1e-9
+
+
+def test_trace_stops_at_line_and_matches_pilot(isolated):
+    table, state_index = isolated
+    q, _ = trace_exact_pg(table, isolated_base(table, state_index, 1e-3), 1.0, 30000, [0], stop_line=0.1)
+    assert len(q) - 1 == 362 and q[-1, 0] >= 0.1 > q[-2, 0]
+
+
+def test_trace_leaves_input_alone_and_returns_final_logits(competing):
+    table, state_index = competing
+    logits0 = competing_base(state_index, (3, 2))
+    before = logits0.copy()
+    q, final = trace_exact_pg(table, logits0, 2.0, 50, [table.solutions.index(ROUTE_B)])
+    assert np.array_equal(logits0, before)
+    assert np.allclose(final, train_exact_pg(table, logits0, 2.0, 50))
+    assert q.shape == (51, 1)
+
+
+@pytest.mark.slow
+def test_trace_upcasts_float32_at_1e6(isolated):
+    table, state_index = isolated
+    logits = isolated_base(table, state_index, 1e-6).astype(np.float32)
+    q, _ = trace_exact_pg(table, logits, 1.0, 400_000, [0], stop_line=0.1)
+    assert q.dtype == np.float64
+    assert abs((len(q) - 1) - scalar_isolated_updates(float(q[0, 0]), 8, 1.0, 0.1, 400_000)) <= 1
