@@ -425,6 +425,30 @@ def test_tail_stage_on_synth(base_dir, tmp_path, tiny_model_factory, tokenizer):
     rows = [json.loads(x) for x in next(iter(sorted(paths["is"].glob("*.jsonl")))).read_text().splitlines()]
     assert {r["region"] for r in rows} <= {"won", "dead", "rem"} and len(rows) == 6
 
+    from capsplit.harness.lm.tail_report import build_tail_report
+
+    path = build_tail_report(config, s.out, out, tcfg, None)
+    res = json.loads(path.read_text())
+    assert len(res["per_problem"]) == 6 and res["budget_curve"]["n"][-1] == 2 ** tcfg.grid_max_exp
+    assert all(r["lo"] <= r["hi"] for r in res["per_problem"])
+    for name in ("report.md", "tables/per_problem.csv", "tables/budget_curve.csv", "tables/discovery.csv",
+                 "figures/brackets.png", "figures/budget_labels.png"):
+        assert (out / "report" / name).exists(), name
+    first = (out / "report" / "report.md").read_text()
+    build_tail_report(config, s.out, out, tcfg, None)
+    assert (out / "report" / "report.md").read_text() == first
+
+
+def test_label_of_and_budget_curve():
+    from capsplit.harness.lm.tail_report import budget_curve_ext, label_of
+
+    assert label_of(0.2, 0.3, 8) == "reachable"
+    assert label_of(0.01, 0.05, 16) == "unreachable"
+    assert label_of(0.01, 0.1, 16) == "ambiguous"
+    curve = budget_curve_ext(np.array([0.5, 0.0]), np.array([0.6, 1e-4]), {"rl": [np.array([0.1, 0.2])]}, [2, 4])
+    assert curve["counts"] == [{"reachable": 1, "unreachable": 1, "ambiguous": 0}] * 2
+    assert curve["contributions"]["rl"][0] == {"reachable": 0.05, "unreachable": 0.1, "ambiguous": 0.0}
+
 
 def test_itertools_probe_count():
     assert len(tail._PROBES) == sum(5**n for n in range(6))
