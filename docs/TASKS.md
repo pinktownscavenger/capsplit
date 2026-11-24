@@ -26,14 +26,14 @@ Status values: todo, in progress, verifying, done, failed. A task is **done** on
 |---|---|
 | A. Budget-curve analysis (`budget-curve`) | done (independently reviewed; 3 defects fixed) |
 | B1–B2. Separate seed streams, per-prompt training logs | done (reviewed; old configs byte-identical) |
-| B4. Prediction committed before runs | done (`docs/prediction_discovery.md`, predictions in `docs/seedstudy/predictions/`; a 3-seed scratch preview by the implementer is disclosed) |
-| B3/B5. Seed study (180 runs) and analysis | done (`docs/seedstudy/`) |
+| B4. Prediction committed before runs | done (`docs/prediction_discovery.md`, predictions in `results/published/seedstudy/predictions/`; a 3-seed scratch preview by the implementer is disclosed) |
+| B3/B5. Seed study (180 runs) and analysis | done (`results/published/seedstudy/`) |
 
 ## Local language-model experiment
 
 | Task | Depends on | Status |
 |---|---|---|
-| S1–S4 Model setup (`setup` command, from an empty cache) | — | done (`docs/lm_setup/`); torch pinned to 2.8.0 for macOS 14 MPS |
+| S1–S4 Model setup (`setup` command, from an empty cache) | — | done (`results/published/lm_setup/`); torch pinned to 2.8.0 for macOS 14 MPS |
 | C0 Design note | S | done (`docs/lm_design.md`) |
 | C1 Policy with LoRA | C0 | done, reviewed |
 | C2 Generated arithmetic task | C0 | done, reviewed (commutative-twin leak fixed) |

@@ -1,4 +1,4 @@
-"""Analysis and report of the tail layer (`lm/tail.py`; pre-registration `docs/lm_main/tail/preregistration_tail.md`).
+"""Analysis and report of the tail layer (`lm/tail.py`; pre-registration `results/published/lm_main/tail/preregistration_tail.md`).
 
 Reads `<out>/<name>_tail/` (D, brackets, checks, importance samples, brute force), the run itself and,
 if present, the KL layer; writes `<out>/<name>_tail/report/{tail.json, report.md, tables/, figures/}`.

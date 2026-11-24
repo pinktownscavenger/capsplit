@@ -45,7 +45,7 @@ So the rule's inputs are already in the metrics files. No policy needs reloading
 **Goals**
 - G1. **Phase 2 (headline):** apply the frozen rule to RQ3's runs and score it against the harness's existing labels, reading per-prompt J from the metrics files.
 - G2. **Phase 1:** a new grid sweep with a shared tabular policy, so that training on some prompts can make others worse. Score the rule the same way.
-- G3. A full rerun of RQ3 here, which also checks it reproduces against the committed `docs/experiment_main/`. The RQ3 PR listed this check as never done.
+- G3. A full rerun of RQ3 here, which also checks it reproduces against the committed `results/published/experiment_main/`. The RQ3 PR listed this check as never done.
 - G4. SRR and NDR computed on the same runs, **held out of the report** until a person has verified the note.
 - G5. A pre-registration frozen before any rule output is looked at, and a short RQ4 report.
 
@@ -78,7 +78,7 @@ Grid-policy options:
 
 - **Source:** a fresh run of `configs/main.json` on this machine, at the current `main` commit, with a clean tree.
   - It uses `python -m capsplit.harness run configs/main.json --out results --workers 8` (this machine has 10 cores).
-  - The `report` output is then compared with the committed `docs/experiment_main/` (`summary.json`, `tables/main.csv`, `verdicts.json`), and that comparison is RQ4's G3 deliverable.
+  - The `report` output is then compared with the committed `results/published/experiment_main/` (`summary.json`, `tables/main.csv`, `verdicts.json`), and that comparison is RQ4's G3 deliverable.
   - If it doesn't match, RQ4 stops and the mismatch is reported first.
 - **Unit:** one (run, checkpoint, prompt group).
   - The rule gets the group's per-prompt J₀ and J₁ from the record's `extra.j0` and `extra.j1` at N = 64, c = 1. J doesn't depend on N or c.
@@ -126,7 +126,7 @@ Grid-policy options:
 | `src/capsplit/harness/registry.py` | One line: add the new module to `PLUGIN_MODULES`. No other harness change. |
 | `configs/rq4_grid.json` (new) | The Phase 1 sweep, frozen. |
 | `src/capsplit/diagnostics.py` | Unchanged. If needed, add `srr_ndr(q0, q1, eps)` per prompt with explicit options for the note's open points (aggregation, zero denominators, boundary). |
-| `experiments/rq4_passk.py` (new) | Subcommands: `repro` (compare a rerun RQ3 report with `docs/experiment_main/`), `labels` (label distribution only, for the pre-freeze check; never calls the rule), `score` (rule, agreement, per-cell rates, bootstrap intervals, verdicts, tables and figures). Units are read straight from the harness metrics files. |
+| `experiments/rq4_passk.py` (new) | Subcommands: `repro` (compare a rerun RQ3 report with `results/published/experiment_main/`), `labels` (label distribution only, for the pre-freeze check; never calls the rule), `score` (rule, agreement, per-cell rates, bootstrap intervals, verdicts, tables and figures). Units are read straight from the harness metrics files. |
 | `tests/test_tabular_grid_shared.py`, `tests/test_rq4.py` (new) | See §6.3. |
 | `docs/rq4-preregistration.md`, `docs/rq4-passk.md` (new); `docs/DECISIONS.md`, `README.md` | Pre-registration, report, decision log, status. |
 

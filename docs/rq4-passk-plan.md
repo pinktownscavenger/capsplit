@@ -286,15 +286,15 @@ def test_srr_ndr_cli_writes_only_unverified_file(tmp_path, quick_grid_with_polic
 - Test: `tests/test_rq4.py`
 
 **Interfaces:**
-- Produces: `repro_compare(new_report_dir: Path, committed_dir: Path = Path("docs/experiment_main")) -> dict`. It compares `summary.json`, `tables/main.csv` and `verdicts.json`. For each file it reports `"identical"` (bytes equal), or `"numeric"` with `max_abs_diff` over all numbers if the files parse to the same structure, or `"different"` with the first differing key. Overall `match` is true only if every file is identical, or numeric with `max_abs_diff ≤ 1e-6`. CLI: `repro <new_report_dir>`.
+- Produces: `repro_compare(new_report_dir: Path, committed_dir: Path = Path("results/published/experiment_main")) -> dict`. It compares `summary.json`, `tables/main.csv` and `verdicts.json`. For each file it reports `"identical"` (bytes equal), or `"numeric"` with `max_abs_diff` over all numbers if the files parse to the same structure, or `"different"` with the first differing key. Overall `match` is true only if every file is identical, or numeric with `max_abs_diff ≤ 1e-6`. CLI: `repro <new_report_dir>`.
 
 - [ ] **Step 1: Write the failing tests**
 
 ```python
 def test_repro_identical_and_perturbed(tmp_path):
-    shutil.copytree("docs/experiment_main", tmp_path / "same")
+    shutil.copytree("results/published/experiment_main", tmp_path / "same")
     assert repro_compare(tmp_path / "same")["match"] is True
-    shutil.copytree("docs/experiment_main", tmp_path / "bad")
+    shutil.copytree("results/published/experiment_main", tmp_path / "bad")
     s = json.loads((tmp_path / "bad/verdicts.json").read_text())
     s["H1"]["verdict"] = "supported"  # use the real key path in verdicts.json
     (tmp_path / "bad/verdicts.json").write_text(json.dumps(s))

@@ -11,7 +11,7 @@
    problem 172 and the known-answer (D-set) estimate for problem 138, with `correct` and `in_d`
    recomputed by an own checker / own E set and disagreements counted.
 
-Usage: python scripts/rederive_tail.py > docs/lm_main/tail/rederivation.txt   (run from the repo root)
+Usage: python scripts/rederive_tail.py > results/published/lm_main/tail/rederivation.txt   (run from the repo root)
 """
 import heapq
 import json

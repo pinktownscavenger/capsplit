@@ -1,11 +1,11 @@
 #!/bin/sh
-# Copy the function-space (KL) layer's generated outputs into docs/lm_main/kl/ and assemble its report.
-# Usage: scripts/publish_lm_kl.sh [results/lm_main_kl] [docs/lm_main/kl]
+# Copy the function-space (KL) layer's generated outputs into results/published/lm_main/kl/ and assemble its report.
+# Usage: scripts/publish_lm_kl.sh [results/lm_main_kl] [results/published/lm_main/kl]
 # Nothing is typed: report.md = the hand-written plain-words answer (answer.md, no numbers) followed by
 # the generated report. preregistration_kl.md, audit.md and answer.md in DEST are never touched.
 set -eu
 RUN=${1:-results/lm_main_kl}
-DEST=${2:-docs/lm_main/kl}
+DEST=${2:-results/published/lm_main/kl}
 [ -f "$RUN/report/report.md" ] || { echo "missing $RUN/report/report.md: run the kl and kl-report stages" >&2; exit 2; }
 mkdir -p "$DEST"
 rm -rf "$DEST/tables" "$DEST/figures" "$DEST/timing"

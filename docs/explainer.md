@@ -1,6 +1,6 @@
 # Explainer: capability vs reliability, for a new teammate
 
-This is the plain-language companion to the RQ3 Phase 2 piece of the project (the harness and its experiments), not to the whole project. Read it before `docs/preregistration.md`, `docs/gate2.md` and `docs/experiment_main/report.md`. It has six parts:
+This is the plain-language companion to the RQ3 Phase 2 piece of the project (the harness and its experiments), not to the whole project. Read it before `docs/preregistration.md`, `docs/gate2.md` and `results/published/experiment_main/report.md`. It has six parts:
 - what each piece of the code is;
 - a small worked example of the split;
 - how to read the figures;
@@ -172,7 +172,7 @@ E_N is blind to reliability gains on prompts the base already solves within N tr
 
 ---
 
-## 3. How to read the figures (`docs/experiment_main/figures/`)
+## 3. How to read the figures (`results/published/experiment_main/figures/`)
 
 All figures use the primary budget **N = 64, c = 1**, and the seed mean over 10 seeds.
 
@@ -260,7 +260,7 @@ python -m capsplit.harness verdicts results/main
   - `tables/*.csv` (main, labels, trajectory, frontier, sensitivity, sensitivity_flips, checks);
   - `figures/*.png`;
   - `verdicts.md` and `verdicts.json`, written by the `verdicts` command.
-- `docs/experiment_main/` is the committed copy of `results/main/report/` for the main run.
+- `results/published/experiment_main/` is the committed copy of `results/main/report/` for the main run.
 
 **To add a new task, trainer or backend:** subclass the abstract class in `interfaces.py`, decorate it with the registry, and name it in a JSON config. Unknown config keys or trainer parameters raise an error, so a typo fails loudly (H14, H24).
 
@@ -401,7 +401,7 @@ training logs that trainers now write. If a solution is unreachable at N = 64 bu
 N_train, RL did not need to create anything: it sampled the solution by chance during training
 and then reinforced it.
 
-**The toy finding** (`docs/budget_curve_main/`). The frozen main run predates the logs, so its
+**The toy finding** (`results/published/budget_curve_main/`). The frozen main run predates the logs, so its
 N_train is computed from the config and marked "from_config (not logged)". For `rloo`, that is
 1,000 updates × G = 16 = **16,000 samples per training prompt**. Hard solutions were built to be
 unreachable at N = 64: their base probability is around 0.2/64 ≈ 0.003. But 1/16,000 is about

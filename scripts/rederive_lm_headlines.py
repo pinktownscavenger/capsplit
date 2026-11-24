@@ -2,7 +2,7 @@
 
 Written by a separate checker agent that did not read capsplit/src, the report or the measure outputs, and
 does not import capsplit. Usage: python scripts/rederive_lm_headlines.py [results/lm_main]
-Compare its output with docs/lm_main/report/verdicts.md (L1 rl seed 0, L2 rl pooled, L3 sft pooled) and
+Compare its output with results/published/lm_main/report/verdicts.md (L1 rl seed 0, L2 rl pooled, L3 sft pooled) and
 the null check in report.md.
 """
 import sys
