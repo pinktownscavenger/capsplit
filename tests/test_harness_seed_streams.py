@@ -2,6 +2,7 @@
 import copy
 import hashlib
 import json
+import math
 import pathlib
 
 import pytest
@@ -33,25 +34,58 @@ ARMS = {
     "save_policies": "none",
 }
 
-GOLDEN_DUMMY = {
+GOLDEN_DUMMY = {  # files with no computed floats: exact bytes
     "index.json": "7ce61e218d9097e164aa59ec980e736570171e7b80a427aa95f5cac6e772fd44",
-    "40a6eded98d4/seed-0.metrics.json": "dd1acec0db4f71fb06ccc26a610ffc0182cbdcf90d8e1ef54ded5ed2dad5f9f4",
-    "40a6eded98d4/seed-1.metrics.json": "9aa94b8d4b08acd1040e5939766686813d4a40556119ea360b87fac066e8d295",
-    "7328c2f7f94f/seed-0.metrics.json": "0bf51dab6ad9e297fb50eb384998ca0ac31c563adebecaf7749cd17ef87fd15e",
-    "7328c2f7f94f/seed-1.metrics.json": "a94f0ea941b09b9b9700f052dd8ca2d39a380d2005796501be318e24bba78889",
     "bases/2bbb21621549/info.json": "fd34a3f9328f4ab533e0f10ffca97dc7727894869d01233e7324791590f63009",
     "bases/c71fbc292403/info.json": "35107612cfb4b6a5be02e35d073ceaf52ae483d90cc223b2c94c502fc8fb0cc0",
     "config.json": "538c066442ed7876a516426b4471b04f75fbf62fad7acfe0f5d6dbc972aaf186",
 }
-GOLDEN_ARMS = {  # seed-0 metrics of the rloo, hints and sft_then_rl cells
-    "9a7b1a4e6bb3/seed-0.metrics.json": "1adf8e0d4155b36b9bf53274d1c7bc67c41a42bed7c225da002dd7b9aaf56cca",
-    "853cf62f4f96/seed-0.metrics.json": "1be7e24b9e62d076554e899d64f756686c7e1dcc36df087b66b1a4b4f8db6137",
-    "277a8e79a268/seed-0.metrics.json": "479ca2bf954cbe2ff0b91a31a8ac8f397a37c38509dbde0eaa4a88343adb02e5",
+# Metrics files hold computed floats, whose last bits differ between platforms (macOS vs
+# Linux), so they are compared by fingerprint: (sha256 of the JSON with every finite float
+# replaced by a placeholder, float count, sum, position-weighted sum). Values were produced
+# by the pre-change code (main before base_seed/train_seed) on Linux.
+GOLDEN_DUMMY_METRICS = {
+    "40a6eded98d4/seed-0.metrics.json": ("3d0e243180b5ed954ae89ec408e90794498e87db45a25a7ed2dfb2c42b9724fa", 972, 208.48209440812434, 101266.74861237383),
+    "40a6eded98d4/seed-1.metrics.json": ("26900dccbf1ab014b10382772b077a4ed86da45f8223e7f1618faebdc26525a4", 972, 219.35484065110614, 106978.46957570134),
+    "7328c2f7f94f/seed-0.metrics.json": ("906f0f971a9282f4b990fb9e140ff7cd6e28edbe3d2a861674dbedc4ca403f9c", 972, 208.48209440812434, 101266.74861237383),
+    "7328c2f7f94f/seed-1.metrics.json": ("5a08110fb63f84e755cda04f6277a45c75fca6826daf05dfab82eb049d5f6a3c", 972, 219.35484065110614, 106978.46957570134),
+}
+GOLDEN_ARMS = {  # seed-0 metrics of the rloo, hints and sft_then_rl cells; fingerprints as above
+    "9a7b1a4e6bb3/seed-0.metrics.json": ("a5e5bbf8ed2f67117500414bd52242444185f7fcd50f7a4d39a868efa6cc8f9b", 162, 30.671949400823262, 2450.6151115711777),
+    "853cf62f4f96/seed-0.metrics.json": ("aa537287e0e2aa177e80d2ee4ec25d5ae5eb1d02070d5d01dd9fe6b363660442", 162, 31.269622703894786, 2528.5697265439926),
+    "277a8e79a268/seed-0.metrics.json": ("cc6920c55c80ee192c3485630e43e1a083e999f4a0064e2e77d3f516ef111830", 162, 30.61764196593208, 2449.643168252687),
 }
 
 
 def _sha(path: pathlib.Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _fingerprint(path: pathlib.Path) -> tuple[str, int, float, float]:
+    floats: list[float] = []
+
+    def strip(x):
+        if isinstance(x, dict):
+            return {k: strip(v) for k, v in x.items()}
+        if isinstance(x, list):
+            return [strip(v) for v in x]
+        if isinstance(x, float):
+            if math.isfinite(x):
+                floats.append(x)
+                return "<float>"
+            return repr(x)
+        return x
+
+    skeleton = json.dumps(strip(json.loads(path.read_text())), sort_keys=True)
+    weighted = math.fsum(v * (i + 1) for i, v in enumerate(floats))
+    return hashlib.sha256(skeleton.encode()).hexdigest(), len(floats), math.fsum(floats), weighted
+
+
+def _assert_matches(path: pathlib.Path, golden: tuple[str, int, float, float]) -> None:
+    skeleton, count, total, weighted = _fingerprint(path)
+    assert (skeleton, count) == golden[:2], path.name
+    assert total == pytest.approx(golden[2], rel=1e-9), path.name
+    assert weighted == pytest.approx(golden[3], rel=1e-9), path.name
 
 
 def _rloo_config(**extra) -> dict:
@@ -78,17 +112,19 @@ def _run(exp: pathlib.Path, seed: int) -> dict:
 # ---------------------------------------------------------------------- invariance
 
 
-def test_dummy_outputs_are_byte_identical_to_the_pre_change_code(tmp_path):
+def test_dummy_outputs_match_the_pre_change_code(tmp_path):
     exp = run_experiment(DUMMY, tmp_path)
     for rel, digest in GOLDEN_DUMMY.items():
         assert _sha(exp / rel) == digest, rel
+    for rel, golden in GOLDEN_DUMMY_METRICS.items():
+        _assert_matches(exp / rel, golden)
     assert not list(exp.glob("*/*.training.json"))  # trainer "none" provides no log
 
 
-def test_trained_metrics_are_byte_identical_to_the_pre_change_code(tmp_path):
+def test_trained_metrics_match_the_pre_change_code(tmp_path):
     exp = run_experiment(parse_config(ARMS), tmp_path)
-    for rel, digest in GOLDEN_ARMS.items():
-        assert _sha(exp / rel) == digest, rel
+    for rel, golden in GOLDEN_ARMS.items():
+        _assert_matches(exp / rel, golden)
     index = json.loads((exp / "index.json").read_text())
     for run in index["runs"]:
         assert set(run) == {"factors", "arm", "trainer", "seed", "run_dir", "base", "files"}
