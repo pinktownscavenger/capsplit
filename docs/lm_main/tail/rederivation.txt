@@ -1,0 +1,48 @@
+Independent re-derivation of lm_main_tail numbers (scripts/rederive_tail.py; no capsplit import)
+model Qwen/Qwen2.5-0.5B-Instruct@7ae557604adf67be50417f59c2c2f167def9a775; torch 2.8.0; tokenizer len 151665; stop ids (151643, 151645)
+
+[1] D, problem 138 (112 * 687 = 76944); prompt tokens 37, logit rows 151936, |E| = 145235
+  D: stage=0.0004166144793934387 mine=0.00040713643121647496 abs_diff=9.478048176963713e-06 rel_diff=0.022750165070506152
+    method: CPU float32 weights/forward, log-softmax of float32 logits in float64; own chat prompt and own E set
+  log_digits: stage=-7.782688752748072 mine=-7.805702358993276 abs_diff=0.023013606245203988 rel_diff=0.00295702513312997
+    method: CPU float32 weights/forward, log-softmax of float32 logits in float64; own chat prompt and own E set
+  end_mass: stage=0.9993396972078205 mine=0.9993403597930774 abs_diff=6.625852569941415e-07 rel_diff=6.630230529672952e-07
+    method: CPU float32 weights/forward, log-softmax of float32 logits in float64; own chat prompt and own E set
+  D (stage numerics): stage=0.0004166144793934387 mine=0.0004166145490930808 abs_diff=6.969964210824797e-11 rel_diff=1.6730009530567862e-07
+    method: mps float16 forward (the stage's numerics), log-softmax in float64
+  log_digits (stage numerics): stage=-7.782688752748072 mine=-7.782688556129357 abs_diff=1.9661871508702689e-07 rel_diff=2.5263597367632195e-08
+    method: mps float16 forward (the stage's numerics), log-softmax in float64
+  time 4.5s
+
+[2] bracket, problem 56 (36 * 46 = 1656)
+  lower (won): stage=0.024177879992182842 mine=0.024177522337594168 abs_diff=3.5765458867437205e-07 rel_diff=1.479263644248414e-05
+    method: own best-first expansion, mps float16 forward, log-softmax in float64, budget 512 (stage 4096), children with p > 1e-10 classified exactly, rest and open children with prefix prob < 1e-09 lumped open
+  upper (won + open): stage=0.0242362916070552 mine=0.024247524487947675 abs_diff=1.1232880892473457e-05 rel_diff=0.00046347358228696826
+    method: own best-first expansion, mps float16 forward, log-softmax in float64, budget 512 (stage 4096), children with p > 1e-10 classified exactly, rest and open children with prefix prob < 1e-09 lumped open
+  mine: dead=0.975752475490291 open_frontier=5.393143473544892e-05 open_lumped=1.6070715618059416e-05 total=0.9999999999782386 frontier_size=7945 mean explicit children/node=72536.3
+  stage: dead=0.9757636843683424 open=5.841161487236033e-05 total=0.9999999759753976
+  stage width=5.841161487235916e-05 mine width=7.000215035350699e-05 ratio mine/stage=1.1984286088730027
+  my lower <= stage lower: True (margin 3.5765458867437205e-07); my upper >= stage upper: True (margin 1.1232880892473457e-05)
+  stage bracket contained in mine: True
+  time 245.9s
+
+[3a] plain remainder IS estimate, problem 172 (1322 * 3033 = 4009626); n=1024, won from bracket.jsonl=0.0, contributing (correct & rem)=252
+  p_hat: stage=2.206223681867937e-07 mine=2.206223681867937e-07 abs_diff=0.0 rel_diff=0.0
+    method: float64 numpy from stored teacher-forced lp_* sums; log-sum-exp mixture, weights 0.25 each; SE = sd(ddof=1)/sqrt(n)
+  SE: stage=1.2073136336916815e-08 mine=1.2073136336916815e-08 abs_diff=0.0 rel_diff=0.0
+    method: float64 numpy from stored teacher-forced lp_* sums; log-sum-exp mixture, weights 0.25 each; SE = sd(ddof=1)/sqrt(n)
+  'text' field present: True; checker on stored text disagrees with stored correct: 0; checker on re-decoded ids disagrees: 0; re-decoded ids != stored text: 0
+  with my own correct flags: p_hat=2.206223681867937e-07 SE=1.2073136336916815e-08 contributing=252
+
+[3b] known-answer (D-set) IS estimate, problem 138; n=1024, in_d count=185; my in_d recomputed from ids (own E) disagrees with stored in_d: 0
+  D_hat: stage=0.0003359789466423108 mine=0.0003359789466423108 abs_diff=0.0 rel_diff=0.0
+    method: float64 numpy from stored teacher-forced lp_* sums; log-sum-exp mixture, weights 0.25 each; SE = sd(ddof=1)/sqrt(n)
+  SE: stage=2.2370174070908486e-05 mine=2.2370174070908486e-05 abs_diff=0.0 rel_diff=0.0
+    method: float64 numpy from stored teacher-forced lp_* sums; log-sum-exp mixture, weights 0.25 each; SE = sd(ddof=1)/sqrt(n)
+  z = (D_hat - D_stage)/SE: stage=-3.6046001473002023 mine=-3.6046001473002023 abs_diff=0.0 rel_diff=0.0
+    method: float64 numpy from stored teacher-forced lp_* sums; log-sum-exp mixture, weights 0.25 each; SE = sd(ddof=1)/sqrt(n); D from d.jsonl
+  z against my CPU fp32 D: -3.1809088453496495; with my in_d flags: D_hat=0.0003359789466423108 SE=2.2370174070908486e-05
+  'text' field present: True; checker on stored text disagrees with stored correct: 0; checker on re-decoded ids disagrees: 0; re-decoded ids != stored text: 0
+  time 0.1s
+
+total run time 251.0s

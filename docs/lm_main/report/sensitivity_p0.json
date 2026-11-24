@@ -1,0 +1,423 @@
+{
+  "null_check_passed": false,
+  "null_diagnostic": {
+    "B_minus_A": 0.0047361111111111085,
+    "by_set_A_rate": [
+      {
+        "bucket": "p\u0302A = 0",
+        "contribution": 0.0,
+        "n_problems": 56
+      },
+      {
+        "bucket": "0 < p\u0302A < 0.3",
+        "contribution": -0.0012152777777777778,
+        "n_problems": 26
+      },
+      {
+        "bucket": "0.3 < p\u0302A < 0.7",
+        "contribution": -0.0019097222222222222,
+        "n_problems": 10
+      },
+      {
+        "bucket": "0.7 < p\u0302A < 1",
+        "contribution": -0.0045138888888888885,
+        "n_problems": 52
+      },
+      {
+        "bucket": "p\u0302A = 1",
+        "contribution": 8.680555555555556e-05,
+        "n_problems": 35
+      }
+    ],
+    "mean_success": {
+      "A": 0.5025555555555556,
+      "B": 0.5072916666666667,
+      "null": 0.49947916666666664
+    },
+    "n_per_problem": {
+      "A": 400,
+      "B": 64,
+      "null": 64
+    },
+    "n_problems": 180,
+    "null_minus_A": -0.003076388888888892,
+    "null_minus_B": {
+      "mean": -0.0078125,
+      "n_perm": 20000,
+      "se": 0.0024512852481155274,
+      "sign_flip_p": 0.0012499375031248437,
+      "z": -3.1871035841324504
+    },
+    "untrained_arms": [
+      {
+        "arm": "none",
+        "mean_success": 0.5040798611111111,
+        "minus_A": 0.0015243055555555526,
+        "minus_B": -0.0032118055555555554,
+        "seed": 0
+      },
+      {
+        "arm": "none",
+        "mean_success": 0.5029513888888889,
+        "minus_A": 0.00039583333333333045,
+        "minus_B": -0.004340277777777778,
+        "seed": 1
+      },
+      {
+        "arm": "none",
+        "mean_success": 0.5010416666666667,
+        "minus_A": -0.0015138888888888919,
+        "minus_B": -0.00625,
+        "seed": 2
+      }
+    ],
+    "variance_of_mean_difference": {
+      "binomial_expected": 6.107871915087288e-06,
+      "observed": 6.0087993676288024e-06,
+      "ratio": 0.9837795309338818
+    }
+  },
+  "prereg": {
+    "l1_arms": [
+      "rl"
+    ],
+    "l1_min_problems": 3,
+    "l2_arms": null,
+    "l2_basis": "pooled",
+    "l3_arms": [
+      "sft"
+    ],
+    "l3_basis": "pooled",
+    "notes": "Contributions are sums of per-problem gains divided by the group size (train group for L1, heldout for L2, all problems for L3). Intervals use the measure stage's alpha and n_boot. tau 0.02 matches the toy experiment's near-zero threshold.",
+    "schema": "capsplit.lm_prereg/1",
+    "status": "frozen with docs/preregistration_lm.md at tag lm-prereg-frozen, before any training of configs/lm_main.json",
+    "tau_l1": 0.02,
+    "tau_l2": 0.02,
+    "tau_l3_effect": 0.0
+  },
+  "rule_inputs": {
+    "B": {
+      "L1": {
+        "units": [
+          {
+            "arm": "rl",
+            "never_correct": {
+              "estimate": -0.00013020833333333333,
+              "hi": 0.0,
+              "lo": -0.000390625,
+              "mean_gain_in_subset": -0.000390625,
+              "n_in_subset": 40,
+              "n_problems": 120
+            },
+            "seed": 0,
+            "verdict": "supported"
+          },
+          {
+            "arm": "rl",
+            "never_correct": {
+              "estimate": -0.000390625,
+              "hi": 0.0,
+              "lo": -0.0010416666666666667,
+              "mean_gain_in_subset": -0.0011432926829268292,
+              "n_in_subset": 41,
+              "n_problems": 120
+            },
+            "seed": 1,
+            "verdict": "supported"
+          },
+          {
+            "arm": "rl",
+            "never_correct": {
+              "estimate": -0.0005208333333333333,
+              "hi": 0.0,
+              "lo": -0.001171875,
+              "mean_gain_in_subset": -0.001488095238095238,
+              "n_in_subset": 42,
+              "n_problems": 120
+            },
+            "seed": 2,
+            "verdict": "supported"
+          }
+        ],
+        "verdict": "supported"
+      },
+      "L2": {
+        "units": [
+          {
+            "arm": "rl",
+            "pooled": {
+              "estimate": 0.023177083333333334,
+              "hi": 0.05364583333333333,
+              "lo": 2.2551405187698527e-19,
+              "mean_gain_in_subset": 0.05348557692307692,
+              "n_in_subset": 26,
+              "n_problems": 60
+            }
+          },
+          {
+            "arm": "sft",
+            "pooled": {
+              "estimate": 0.019704861111111107,
+              "hi": 0.04166883680555554,
+              "lo": 0.0006944444444444445,
+              "mean_gain_in_subset": 0.0454727564102564,
+              "n_in_subset": 26,
+              "n_problems": 60
+            }
+          },
+          {
+            "arm": "sft_then_rl",
+            "pooled": {
+              "estimate": 0.03003472222222222,
+              "hi": 0.06945746527777771,
+              "lo": 8.680555555555555e-05,
+              "mean_gain_in_subset": 0.06931089743589744,
+              "n_in_subset": 26,
+              "n_problems": 60
+            }
+          }
+        ],
+        "verdict": "inconclusive"
+      },
+      "L3": {
+        "units": [
+          {
+            "arm": "sft",
+            "pooled": {
+              "estimate": -0.07896412037037037,
+              "hi": -0.04122974537037039,
+              "lo": -0.12008101851851849,
+              "mean_gain_in_subset": -0.13666866987179488,
+              "n_in_subset": 104,
+              "n_problems": 180
+            }
+          }
+        ],
+        "verdict": "supported"
+      }
+    },
+    "null": {
+      "L1": {
+        "units": [
+          {
+            "arm": "rl",
+            "never_correct": {
+              "estimate": -0.00013020833333333333,
+              "hi": 0.0,
+              "lo": -0.000390625,
+              "mean_gain_in_subset": -0.000390625,
+              "n_in_subset": 40,
+              "n_problems": 120
+            },
+            "seed": 0,
+            "verdict": "supported"
+          },
+          {
+            "arm": "rl",
+            "never_correct": {
+              "estimate": -0.00013020833333333333,
+              "hi": 0.0,
+              "lo": -0.000390625,
+              "mean_gain_in_subset": -0.00038109756097560977,
+              "n_in_subset": 41,
+              "n_problems": 120
+            },
+            "seed": 1,
+            "verdict": "supported"
+          },
+          {
+            "arm": "rl",
+            "never_correct": {
+              "estimate": -0.00026041666666666666,
+              "hi": 0.0,
+              "lo": -0.0006510416666666666,
+              "mean_gain_in_subset": -0.000744047619047619,
+              "n_in_subset": 42,
+              "n_problems": 120
+            },
+            "seed": 2,
+            "verdict": "supported"
+          }
+        ],
+        "verdict": "supported"
+      },
+      "L2": {
+        "units": [
+          {
+            "arm": "rl",
+            "pooled": {
+              "estimate": 0.021354166666666667,
+              "hi": 0.05060980902777776,
+              "lo": -8.680555555555548e-05,
+              "mean_gain_in_subset": 0.04927884615384615,
+              "n_in_subset": 26,
+              "n_problems": 60
+            }
+          },
+          {
+            "arm": "sft",
+            "pooled": {
+              "estimate": 0.017881944444444443,
+              "hi": 0.03958333333333333,
+              "lo": 0.0006944444444444447,
+              "mean_gain_in_subset": 0.04126602564102563,
+              "n_in_subset": 26,
+              "n_problems": 60
+            }
+          },
+          {
+            "arm": "sft_then_rl",
+            "pooled": {
+              "estimate": 0.02821180555555556,
+              "hi": 0.06796875,
+              "lo": -0.0006076388888888889,
+              "mean_gain_in_subset": 0.06510416666666667,
+              "n_in_subset": 26,
+              "n_problems": 60
+            }
+          }
+        ],
+        "verdict": "inconclusive"
+      },
+      "L3": {
+        "units": [
+          {
+            "arm": "sft",
+            "pooled": {
+              "estimate": -0.07063078703703704,
+              "hi": -0.03346643518518525,
+              "lo": -0.11193214699074075,
+              "mean_gain_in_subset": -0.12224559294871797,
+              "n_in_subset": 104,
+              "n_problems": 180
+            }
+          }
+        ],
+        "verdict": "supported"
+      }
+    },
+    "pooled B+null": {
+      "L1": {
+        "units": [
+          {
+            "arm": "rl",
+            "never_correct": {
+              "estimate": -0.00013020833333333333,
+              "hi": 0.0,
+              "lo": -0.0003255208333333333,
+              "mean_gain_in_subset": -0.000390625,
+              "n_in_subset": 40,
+              "n_problems": 120
+            },
+            "seed": 0,
+            "verdict": "supported"
+          },
+          {
+            "arm": "rl",
+            "never_correct": {
+              "estimate": -0.00026041666666666666,
+              "hi": 0.0,
+              "lo": -0.0005859375,
+              "mean_gain_in_subset": -0.0007621951219512195,
+              "n_in_subset": 41,
+              "n_problems": 120
+            },
+            "seed": 1,
+            "verdict": "supported"
+          },
+          {
+            "arm": "rl",
+            "never_correct": {
+              "estimate": -0.000390625,
+              "hi": -6.510416666666667e-05,
+              "lo": -0.00078125,
+              "mean_gain_in_subset": -0.0011160714285714285,
+              "n_in_subset": 42,
+              "n_problems": 120
+            },
+            "seed": 2,
+            "verdict": "supported"
+          }
+        ],
+        "verdict": "supported"
+      },
+      "L2": {
+        "units": [
+          {
+            "arm": "rl",
+            "pooled": {
+              "estimate": 0.022265625,
+              "hi": 0.05208333333333333,
+              "lo": 0.00013020833333333333,
+              "mean_gain_in_subset": 0.051382211538461536,
+              "n_in_subset": 26,
+              "n_problems": 60
+            }
+          },
+          {
+            "arm": "sft",
+            "pooled": {
+              "estimate": 0.018793402777777777,
+              "hi": 0.04088758680555554,
+              "lo": 0.0007378472222222224,
+              "mean_gain_in_subset": 0.04336939102564102,
+              "n_in_subset": 26,
+              "n_problems": 60
+            }
+          },
+          {
+            "arm": "sft_then_rl",
+            "pooled": {
+              "estimate": 0.029123263888888893,
+              "hi": 0.06840928819444442,
+              "lo": -4.340277777777778e-05,
+              "mean_gain_in_subset": 0.06720753205128206,
+              "n_in_subset": 26,
+              "n_problems": 60
+            }
+          }
+        ],
+        "verdict": "inconclusive"
+      },
+      "L3": {
+        "units": [
+          {
+            "arm": "sft",
+            "pooled": {
+              "estimate": -0.0747974537037037,
+              "hi": -0.03755678530092593,
+              "lo": -0.11578739872685184,
+              "mean_gain_in_subset": -0.12945713141025642,
+              "n_in_subset": 104,
+              "n_problems": 180
+            }
+          }
+        ],
+        "verdict": "supported"
+      }
+    }
+  },
+  "status": "post-hoc (added after the null check failed; DECISIONS L21); the registered verdicts use p\u03020 from B and are unchanged",
+  "verdicts_by_p0_source": {
+    "L1": {
+      "B": "supported",
+      "null": "supported",
+      "pooled B+null": "supported"
+    },
+    "L2": {
+      "B": "inconclusive",
+      "null": "inconclusive",
+      "pooled B+null": "inconclusive"
+    },
+    "L3": {
+      "B": "supported",
+      "null": "supported",
+      "pooled B+null": "supported"
+    }
+  },
+  "verdicts_stable": {
+    "L1": true,
+    "L2": true,
+    "L3": true
+  }
+}

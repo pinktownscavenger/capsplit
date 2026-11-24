@@ -1,0 +1,2 @@
+arm,group,observations_unreachable,earlier_predicted,earlier_observed,p_a_zero_observations,p_a_zero_discovered,p_a_zero_problems,p_a_zero_predicted_lo,p_a_zero_predicted_hi,p_a_zero_predicted_lo_is,p_a_zero_predicted_hi_is,p_a_zero_usable_estimates,total_predicted_lo,total_predicted_hi,positive_predicted
+rl,8,141,20.097173143714507,18,105,0,35,1.0639639547124848,54.62944832002407,1.0639639547124848,54.62944832002407,0,21.16113709842699,74.72662146373858,20.097173143714507

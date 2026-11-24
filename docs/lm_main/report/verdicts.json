@@ -1,0 +1,1651 @@
+{
+  "inputs": [
+    "base/classes.json",
+    "measure/results.json",
+    "measure/null_check.json",
+    "samples/base/B_*.jsonl",
+    "samples/<arm>/seed<s>/step<k>/eval_*.jsonl",
+    "train/<arm>/seed<s>/training.json"
+  ],
+  "measure": {
+    "alpha": 0.05,
+    "boot_seed": 0,
+    "n": 16,
+    "n_boot": 2000
+  },
+  "null_check_passed": false,
+  "prereg": {
+    "l1_arms": [
+      "rl"
+    ],
+    "l1_min_problems": 3,
+    "l2_arms": null,
+    "l2_basis": "pooled",
+    "l3_arms": [
+      "sft"
+    ],
+    "l3_basis": "pooled",
+    "notes": "Contributions are sums of per-problem gains divided by the group size (train group for L1, heldout for L2, all problems for L3). Intervals use the measure stage's alpha and n_boot. tau 0.02 matches the toy experiment's near-zero threshold.",
+    "schema": "capsplit.lm_prereg/1",
+    "status": "frozen with docs/preregistration_lm.md at tag lm-prereg-frozen, before any training of configs/lm_main.json",
+    "tau_l1": 0.02,
+    "tau_l2": 0.02,
+    "tau_l3_effect": 0.0
+  },
+  "verdicts": {
+    "L1": {
+      "arms": [
+        "rl"
+      ],
+      "claim": "RL gains on training problems classified unreachable occur only where training itself sampled a correct answer.",
+      "rule": "Per rl arm and seed, over train problems classified unreachable, the contribution to the train group's mean gain of those training NEVER sampled correctly (training.json first_success_update null), with a bootstrap interval. A unit is supported if its upper bound <= tau_l1 = 0.02 and that subset has >= 3 problem(s); not supported if its lower bound > tau_l1; else inconclusive. Overall: not supported if any unit is not supported, supported if all are supported, else inconclusive (no correction for multiple seeds).",
+      "units": [
+        {
+          "arm": "rl",
+          "evaluated": true,
+          "ever_correct": {
+            "estimate": 0.046223958333333336,
+            "hi": 0.08242838541666664,
+            "lo": 0.013798828124999999,
+            "mean_gain_in_subset": 0.7924107142857143,
+            "n_in_subset": 7,
+            "n_problems": 120
+          },
+          "n_train_problems": 120,
+          "n_unreachable_ever_correct": 7,
+          "n_unreachable_never_correct": 40,
+          "never_correct": {
+            "estimate": -0.00013020833333333333,
+            "hi": 0.0,
+            "lo": -0.000390625,
+            "mean_gain_in_subset": -0.000390625,
+            "n_in_subset": 40,
+            "n_problems": 120
+          },
+          "p0_source": "base set B",
+          "per_problem": [
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 3
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": 65,
+              "gain": 0.9375,
+              "p0": 0.0,
+              "p1": 0.9375,
+              "problem": 5
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 8
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 9
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 12
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 16
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 18
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 29
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 30
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": -0.015625,
+              "p0": 0.015625,
+              "p1": 0.0,
+              "problem": 34
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 36
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": 15,
+              "gain": 0.8125,
+              "p0": 0.03125,
+              "p1": 0.84375,
+              "problem": 44
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": 2,
+              "gain": -0.015625,
+              "p0": 0.015625,
+              "p1": 0.0,
+              "problem": 45
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 49
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": 52,
+              "gain": 0.984375,
+              "p0": 0.015625,
+              "p1": 1.0,
+              "problem": 56
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 57
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 64
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 65
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 67
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 70
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 73
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 74
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 76
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 81
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 82
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 83
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 89
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 92
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 111
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 112
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": 45,
+              "gain": 0.96875,
+              "p0": 0.015625,
+              "p1": 0.984375,
+              "problem": 113
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 116
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 120
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 129
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 130
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 138
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 141
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 146
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 148
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 149
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 151
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 154
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 155
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": 43,
+              "gain": 1.0,
+              "p0": 0.0,
+              "p1": 1.0,
+              "problem": 165
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 172
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 177
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": 99,
+              "gain": 0.859375,
+              "p0": 0.03125,
+              "p1": 0.890625,
+              "problem": 178
+            }
+          ],
+          "reason": "",
+          "seed": 0,
+          "trainer": "lm_rl",
+          "verdict": "supported"
+        },
+        {
+          "arm": "rl",
+          "evaluated": true,
+          "ever_correct": {
+            "estimate": 0.03997395833333333,
+            "hi": 0.07200520833333333,
+            "lo": 0.008203125,
+            "mean_gain_in_subset": 0.7994791666666666,
+            "n_in_subset": 6,
+            "n_problems": 120
+          },
+          "n_train_problems": 120,
+          "n_unreachable_ever_correct": 6,
+          "n_unreachable_never_correct": 41,
+          "never_correct": {
+            "estimate": -0.000390625,
+            "hi": 0.0,
+            "lo": -0.0010416666666666667,
+            "mean_gain_in_subset": -0.0011432926829268292,
+            "n_in_subset": 41,
+            "n_problems": 120
+          },
+          "p0_source": "base set B",
+          "per_problem": [
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 3
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": 104,
+              "gain": 0.984375,
+              "p0": 0.0,
+              "p1": 0.984375,
+              "problem": 5
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 8
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 9
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 12
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 16
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 18
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 29
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 30
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": -0.015625,
+              "p0": 0.015625,
+              "p1": 0.0,
+              "problem": 34
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 36
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": 42,
+              "gain": 0.953125,
+              "p0": 0.03125,
+              "p1": 0.984375,
+              "problem": 44
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": 31,
+              "gain": -0.015625,
+              "p0": 0.015625,
+              "p1": 0.0,
+              "problem": 45
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 49
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": 51,
+              "gain": 0.921875,
+              "p0": 0.015625,
+              "p1": 0.9375,
+              "problem": 56
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 57
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 64
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 65
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 67
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 70
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 73
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 74
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 76
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 81
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 82
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 83
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 89
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 92
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 111
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 112
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": 49,
+              "gain": 0.953125,
+              "p0": 0.015625,
+              "p1": 0.96875,
+              "problem": 113
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 116
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 120
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 129
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 130
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 138
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 141
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 146
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 148
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 149
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 151
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 154
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 155
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": 58,
+              "gain": 1.0,
+              "p0": 0.0,
+              "p1": 1.0,
+              "problem": 165
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 172
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 177
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": -0.03125,
+              "p0": 0.03125,
+              "p1": 0.0,
+              "problem": 178
+            }
+          ],
+          "reason": "",
+          "seed": 1,
+          "trainer": "lm_rl",
+          "verdict": "supported"
+        },
+        {
+          "arm": "rl",
+          "evaluated": true,
+          "ever_correct": {
+            "estimate": 0.039453125,
+            "hi": 0.07148763020833332,
+            "lo": 0.0078125,
+            "mean_gain_in_subset": 0.946875,
+            "n_in_subset": 5,
+            "n_problems": 120
+          },
+          "n_train_problems": 120,
+          "n_unreachable_ever_correct": 5,
+          "n_unreachable_never_correct": 42,
+          "never_correct": {
+            "estimate": -0.0005208333333333333,
+            "hi": 0.0,
+            "lo": -0.001171875,
+            "mean_gain_in_subset": -0.001488095238095238,
+            "n_in_subset": 42,
+            "n_problems": 120
+          },
+          "p0_source": "base set B",
+          "per_problem": [
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 3
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": 3,
+              "gain": 0.953125,
+              "p0": 0.0,
+              "p1": 0.953125,
+              "problem": 5
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 8
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 9
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 12
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 16
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 18
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 29
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 30
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": -0.015625,
+              "p0": 0.015625,
+              "p1": 0.0,
+              "problem": 34
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 36
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": 5,
+              "gain": 0.859375,
+              "p0": 0.03125,
+              "p1": 0.890625,
+              "problem": 44
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": 5,
+              "gain": 0.984375,
+              "p0": 0.015625,
+              "p1": 1.0,
+              "problem": 45
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 49
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": -0.015625,
+              "p0": 0.015625,
+              "p1": 0.0,
+              "problem": 56
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 57
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 64
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 65
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 67
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 70
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 73
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 74
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 76
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 81
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 82
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 83
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 89
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 92
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 111
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 112
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": 19,
+              "gain": 0.9375,
+              "p0": 0.015625,
+              "p1": 0.953125,
+              "problem": 113
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 116
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 120
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 129
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 130
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 138
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 141
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 146
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 148
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 149
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 151
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 154
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 155
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": 37,
+              "gain": 1.0,
+              "p0": 0.0,
+              "p1": 1.0,
+              "problem": 165
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 112,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 172
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": 0.0,
+              "p0": 0.0,
+              "p1": 0.0,
+              "problem": 177
+            },
+            {
+              "class": "unreachable",
+              "episodes_sampled": 104,
+              "first_success_update": null,
+              "gain": -0.03125,
+              "p0": 0.03125,
+              "p1": 0.0,
+              "problem": 178
+            }
+          ],
+          "reason": "",
+          "seed": 2,
+          "trainer": "lm_rl",
+          "verdict": "supported"
+        }
+      ],
+      "verdict": "supported"
+    },
+    "L2": {
+      "arms": [
+        "rl",
+        "sft",
+        "sft_then_rl"
+      ],
+      "claim": "No arm produces capability gain on held-out unreachable problems beyond a stated near-zero threshold.",
+      "n_heldout_unreachable": 26,
+      "rule": "For every trained arm, the unreachable-class contribution on the heldout group (pooled over seeds), with a bootstrap interval. Supported if every interval's upper bound <= tau_l2 = 0.02; not supported if any lower bound > tau_l2; else inconclusive.",
+      "units": [
+        {
+          "arm": "rl",
+          "per_seed": [
+            {
+              "estimate": 0.015104166666666667,
+              "group": "heldout",
+              "hi": 0.042708333333333334,
+              "lo": -0.0015625,
+              "seed": 0,
+              "source": "measure/results.json"
+            },
+            {
+              "estimate": 0.028125,
+              "group": "heldout",
+              "hi": 0.061738281249999895,
+              "lo": -0.0005208333333333333,
+              "seed": 1,
+              "source": "measure/results.json"
+            },
+            {
+              "estimate": 0.026302083333333334,
+              "group": "heldout",
+              "hi": 0.05755208333333333,
+              "lo": 0.0005208333333333333,
+              "seed": 2,
+              "source": "measure/results.json"
+            }
+          ],
+          "pooled": {
+            "estimate": 0.023177083333333334,
+            "hi": 0.05364583333333333,
+            "lo": 2.2551405187698527e-19,
+            "mean_gain_in_subset": 0.05348557692307692,
+            "n_in_subset": 26,
+            "n_problems": 60
+          }
+        },
+        {
+          "arm": "sft",
+          "per_seed": [
+            {
+              "estimate": 0.016927083333333332,
+              "group": "heldout",
+              "hi": 0.0424544270833333,
+              "lo": 0.00026041666666666666,
+              "seed": 0,
+              "source": "measure/results.json"
+            },
+            {
+              "estimate": 0.005208333333333333,
+              "group": "heldout",
+              "hi": 0.01640625,
+              "lo": -0.0020833333333333333,
+              "seed": 1,
+              "source": "measure/results.json"
+            },
+            {
+              "estimate": 0.03697916666666667,
+              "group": "heldout",
+              "hi": 0.08333333333333333,
+              "lo": 0.00078125,
+              "seed": 2,
+              "source": "measure/results.json"
+            }
+          ],
+          "pooled": {
+            "estimate": 0.019704861111111107,
+            "hi": 0.04166883680555554,
+            "lo": 0.0006944444444444445,
+            "mean_gain_in_subset": 0.0454727564102564,
+            "n_in_subset": 26,
+            "n_problems": 60
+          }
+        },
+        {
+          "arm": "sft_then_rl",
+          "per_seed": [
+            {
+              "estimate": 0.03619791666666667,
+              "group": "heldout",
+              "hi": 0.08412109374999997,
+              "lo": 0.0005208333333333333,
+              "seed": 0,
+              "source": "measure/results.json"
+            },
+            {
+              "estimate": 0.03307291666666667,
+              "group": "heldout",
+              "hi": 0.08203776041666663,
+              "lo": -0.0010416666666666667,
+              "seed": 1,
+              "source": "measure/results.json"
+            },
+            {
+              "estimate": 0.020833333333333332,
+              "group": "heldout",
+              "hi": 0.06563151041666664,
+              "lo": 0.0,
+              "seed": 2,
+              "source": "measure/results.json"
+            }
+          ],
+          "pooled": {
+            "estimate": 0.03003472222222222,
+            "hi": 0.06945746527777771,
+            "lo": 8.680555555555555e-05,
+            "mean_gain_in_subset": 0.06931089743589744,
+            "n_in_subset": 26,
+            "n_problems": 60
+          }
+        }
+      ],
+      "verdict": "inconclusive"
+    },
+    "L3": {
+      "arms": [
+        "sft"
+      ],
+      "claim": "SFT on unreachable training problems lowers success on reachable problems.",
+      "rule": "For the sft arm(s), the reachable-class contribution on all problems (pooled over seeds), with a bootstrap interval. Supported if the upper bound < -tau_l3_effect = -0; not supported if the lower bound >= 0; else inconclusive. Several sft arms (or seeds): not supported if any is, supported if all are, else inconclusive. Train and heldout groups are reported but do not enter the rule.",
+      "units": [
+        {
+          "all": {
+            "per_seed": [
+              {
+                "estimate": -0.07743055555555556,
+                "group": "all",
+                "hi": -0.03879991319444446,
+                "lo": -0.12152994791666666,
+                "seed": 0,
+                "source": "measure/results.json"
+              },
+              {
+                "estimate": -0.08229166666666667,
+                "group": "all",
+                "hi": -0.04304687500000005,
+                "lo": -0.12552083333333333,
+                "seed": 1,
+                "source": "measure/results.json"
+              },
+              {
+                "estimate": -0.07717013888888889,
+                "group": "all",
+                "hi": -0.03923611111111111,
+                "lo": -0.11962022569444444,
+                "seed": 2,
+                "source": "measure/results.json"
+              }
+            ],
+            "pooled": {
+              "estimate": -0.07896412037037037,
+              "hi": -0.04122974537037039,
+              "lo": -0.12008101851851849,
+              "mean_gain_in_subset": -0.13666866987179488,
+              "n_in_subset": 104,
+              "n_problems": 180
+            }
+          },
+          "arm": "sft",
+          "heldout": {
+            "per_seed": [
+              {
+                "estimate": -0.07213541666666666,
+                "group": "heldout",
+                "hi": -0.013014322916666703,
+                "lo": -0.140625,
+                "seed": 0,
+                "source": "measure/results.json"
+              },
+              {
+                "estimate": -0.05572916666666667,
+                "group": "heldout",
+                "hi": -0.004166666666666667,
+                "lo": -0.12109375,
+                "seed": 1,
+                "source": "measure/results.json"
+              },
+              {
+                "estimate": -0.06171875,
+                "group": "heldout",
+                "hi": -0.01328125,
+                "lo": -0.11927734375,
+                "seed": 2,
+                "source": "measure/results.json"
+              }
+            ],
+            "pooled": {
+              "estimate": -0.06319444444444444,
+              "hi": -0.014407552083333348,
+              "lo": -0.12361762152777778,
+              "mean_gain_in_subset": -0.12231182795698924,
+              "n_in_subset": 31,
+              "n_problems": 60
+            }
+          },
+          "train": {
+            "per_seed": [
+              {
+                "estimate": -0.080078125,
+                "group": "train",
+                "hi": -0.028248697916666704,
+                "lo": -0.13736979166666666,
+                "seed": 0,
+                "source": "measure/results.json"
+              },
+              {
+                "estimate": -0.09557291666666666,
+                "group": "train",
+                "hi": -0.04257161458333337,
+                "lo": -0.15481770833333333,
+                "seed": 1,
+                "source": "measure/results.json"
+              },
+              {
+                "estimate": -0.08489583333333334,
+                "group": "train",
+                "hi": -0.03358072916666674,
+                "lo": -0.13919270833333333,
+                "seed": 2,
+                "source": "measure/results.json"
+              }
+            ],
+            "pooled": {
+              "estimate": -0.08684895833333335,
+              "hi": -0.03740125868055562,
+              "lo": -0.13962890625000002,
+              "mean_gain_in_subset": -0.14276541095890413,
+              "n_in_subset": 73,
+              "n_problems": 120
+            }
+          }
+        }
+      ],
+      "verdict": "supported"
+    }
+  }
+}

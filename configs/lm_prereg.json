@@ -1,0 +1,14 @@
+{
+  "schema": "capsplit.lm_prereg/1",
+  "status": "frozen with docs/preregistration_lm.md at tag lm-prereg-frozen, before any training of configs/lm_main.json",
+  "notes": "Contributions are sums of per-problem gains divided by the group size (train group for L1, heldout for L2, all problems for L3). Intervals use the measure stage's alpha and n_boot. tau 0.02 matches the toy experiment's near-zero threshold.",
+  "tau_l1": 0.02,
+  "l1_min_problems": 3,
+  "l1_arms": ["rl"],
+  "tau_l2": 0.02,
+  "l2_basis": "pooled",
+  "l2_arms": null,
+  "tau_l3_effect": 0.0,
+  "l3_basis": "pooled",
+  "l3_arms": ["sft"]
+}

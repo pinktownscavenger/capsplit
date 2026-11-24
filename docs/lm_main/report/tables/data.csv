@@ -1,0 +1,13 @@
+split,difficulty,n_problems
+heldout,d2_add,10
+heldout,d2_mul,10
+heldout,d3_add,10
+heldout,d3_mul,10
+heldout,d4_add,10
+heldout,d4_mul,10
+train,d2_add,20
+train,d2_mul,20
+train,d3_add,20
+train,d3_mul,20
+train,d4_add,20
+train,d4_mul,20

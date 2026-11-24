@@ -1,0 +1,127 @@
+{
+  "name": "seedstudy_base",
+  "task": {
+    "type": "rule_task",
+    "params": {
+      "vocab": 6,
+      "length": 5,
+      "shared_prefix": 2,
+      "seed": 0,
+      "heldout_fraction": 0.3333333333333333
+    }
+  },
+  "base": {
+    "type": "pretrain_gru",
+    "params": {
+      "rho": 0.7,
+      "mu": 0.5,
+      "n_noise": 0,
+      "noise_mass": 0.2,
+      "easy_correct": 0.3,
+      "easy_trap": 0.4,
+      "easy_distractors": 4,
+      "easy_distractor_mass": 0.1,
+      "data_seed": 0,
+      "embedding": 16,
+      "hidden": 64,
+      "adam_steps": 100,
+      "lr": 0.01,
+      "lbfgs_iter": 500,
+      "smoothing": 0.08,
+      "n": 64,
+      "target_ratio": 0.2,
+      "calibration_tol": 1.1,
+      "calibration_max_iter": 6,
+      "log10_w_range": [
+        -6.0,
+        -0.5
+      ]
+    }
+  },
+  "backend": {
+    "type": "exact",
+    "params": {}
+  },
+  "factors": {
+    "task.shared_prefix": [
+      0,
+      2,
+      4
+    ]
+  },
+  "arms": [
+    {
+      "name": "rloo",
+      "trainer": "rloo",
+      "params": {
+        "group": 16,
+        "lr": 0.001
+      }
+    }
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29
+  ],
+  "train_seed": 0,
+  "budget": 1000,
+  "checkpoints": [
+    0,
+    10,
+    25,
+    50,
+    100,
+    150,
+    200,
+    300,
+    500,
+    750,
+    1000
+  ],
+  "measure": {
+    "ns": [
+      16,
+      64
+    ],
+    "cs": [
+      1
+    ],
+    "group_by": [
+      "difficulty",
+      "split"
+    ],
+    "primary": {
+      "n": 64,
+      "c": 1
+    }
+  },
+  "save_policies": "final"
+}

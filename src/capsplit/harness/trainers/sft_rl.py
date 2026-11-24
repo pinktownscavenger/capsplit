@@ -36,6 +36,12 @@ Parameters (unknown keys raise, decision H14):
 * ``rl`` (dict, default {}): parameters for the RL trainer.
 * ``rl_type`` (str, default "rloo"): any registered RL trainer name ("rloo", "grpo",
   "rl_entropy", "hints", ...).
+
+Training log. `training_log()` merges the two phases' `rl.SampleLog`s on the global update
+numbering: the SFT phase samples nothing, and the RL phase's local update k is logged as update
+n_sft + k (so first_success_update is global and correct_by_checkpoint is keyed by the global
+checkpoints passed to `train`). It is None if the RL trainer keeps no sample log (for example
+"tabular_reinforce").
 """
 from __future__ import annotations
 
@@ -45,6 +51,7 @@ import numpy as np
 
 from ..interfaces import CheckpointHook, Policy, Task, Trainer
 from ..registry import TRAINERS
+from .rl import SampleLog
 from .sft import SFT
 
 __all__ = ["SFTThenRL", "phase_seeds", "split_budget"]
@@ -99,6 +106,11 @@ class SFTThenRL(Trainer):
         # Building both sub-trainers now validates their params (and rl_type) at config time.
         self.sft_trainer: Trainer = SFT(**dict(sft_params))
         self.rl_trainer: Trainer = TRAINERS.create(self.rl_type, **dict(rl_params))
+        self.sample_log: SampleLog | None = None
+
+    def training_log(self) -> dict | None:
+        """Both phases' sampling on global update numbers (see the module docstring)."""
+        return None if self.sample_log is None else self.sample_log.to_dict()
 
     def train(
         self,
@@ -114,6 +126,8 @@ class SFTThenRL(Trainer):
         sft_seed, rl_seed = phase_seeds(seed)
         wanted = sorted({int(c) for c in checkpoints})
         done: set[int] = set()
+        self.sample_log = None
+        log = SampleLog([], wanted)
 
         def report(step: int, p: Policy) -> None:
             if step not in done:  # never report a global step twice
@@ -125,6 +139,9 @@ class SFTThenRL(Trainer):
             # Global steps 0..n_sft; local step == global step.
             sft_cps = [c for c in wanted if 0 <= c <= n_sft]
             self.sft_trainer.train(policy, task, n_sft, sft_seed, prompt_ids, sft_cps, report)
+            sft_log = getattr(self.sft_trainer, "sample_log", None)
+            if isinstance(sft_log, SampleLog):
+                log.merge(sft_log, 0)
 
         if n_rl > 0:
             # Local step k is global step n_sft + k. Local step 0 is already reported by SFT.
@@ -135,6 +152,12 @@ class SFTThenRL(Trainer):
                 report(local + n_sft, p)
 
             self.rl_trainer.train(policy, task, n_rl, rl_seed, prompt_ids, rl_cps, rl_report)
+            rl_log = getattr(self.rl_trainer, "sample_log", None)
+            if not isinstance(rl_log, SampleLog):
+                return  # this RL trainer keeps no sample log, so there is no training log
+            log.merge(rl_log, n_sft)
 
         if not ran_sft and n_rl == 0 and 0 in wanted:
             report(0, policy)  # budget 0: only the "before any update" checkpoint exists
+        log.updates = max(int(budget), 0)
+        self.sample_log = log

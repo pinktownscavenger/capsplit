@@ -4,7 +4,9 @@
 base: the success rate J, the split of the gain into **reliability** (`delta_rel`) and
 **capability** (`delta_cap`), the excess over the best tempered base (E_N) and a 2x2 label.
 This guide covers how the pieces fit together and how to add a trainer, a task or a config.
-Design choices are logged in `docs/DECISIONS.md` (entries H1–H39 are referred to below).
+Design choices are logged in `docs/DECISIONS.md` (entries H1–H39 are referred to below; the
+addendum features in sections 7–9 are H48–H51, and the language-model experiment in section 10
+is L1–L19).
 
 Every example below was run against this branch: the plug-ins in a scratch copy of `src/`
 (with `PLUGIN_MODULES` edited as shown) and also as out-of-tree modules.
@@ -398,6 +400,8 @@ python -m capsplit.harness list                                  # registered pl
 python -m capsplit.harness run configs/x.json [--out results] [--workers 4] [--force]
 python -m capsplit.harness report results/<name>                 # -> results/<name>/report/
 python -m capsplit.harness verdicts results/<name>               # -> report/verdicts.{md,json}
+python -m capsplit.harness budget-curve results/<name> [...]     # section 8
+python -m capsplit.harness discovery {predict,analyze} ...       # section 9
 ```
 
 - `run` prints the results folder. A run whose metrics file (and policies file, if required)
@@ -500,3 +504,394 @@ print(rec["excess"], rec["extra"]["ci"]["delta_rel"], rec["extra"]["crossed_coun
   from `seed`; prefer a local `torch.Generator`.
 - A base is cached by (task, base, seed). If you change a base recipe's code without changing
   its params, rerun with `--force`, or the old pickled base is reused.
+
+## 7. Separate seed streams and training logs (addendum B1, B2)
+
+### `base_seed` and `train_seed` (H49)
+
+By default one run seed `s` from `seeds` drives two things: the base build
+(`torch.manual_seed(s)` before `BaseRecipe.build`) and the trainer (`seed=s`). Two optional
+top-level config keys fix one of the two streams, so `seeds` varies only the other:
+
+| Config | Base built with | Trainer seed | What varies across `seeds` |
+|---|---|---|---|
+| neither key (default) | s | s | both (original behaviour) |
+| `"base_seed": 0` | 0 | s | training sampling only; every run shares one cached base |
+| `"train_seed": 0` | s | 0 | the base only |
+
+`configs/seedstudy_base.json` sets `"base_seed": 0` and `configs/seedstudy_train.json` sets
+`"train_seed": 0` (30 run seeds each, `rloo`, k ∈ {0, 2, 4}). Values must be non-negative ints.
+
+What changes in the outputs, and what does not:
+
+- With either key set, each `index.json` run entry, each metrics file and each training log
+  also records `base_seed`, `train_seed` (the effective seeds) and `measure_seed` (the backend's
+  `seed` param; `null` for `exact`, which has no measurement randomness).
+- The keys enter the cell config, and so the cell hash, **only when set**. A config without them
+  produces byte-identical files to the code before the keys existed (checked on the frozen toy
+  configs), and seed-separated results never share a folder with seed-coupled ones.
+- The base cache key hashes the *effective* base seed, so with `base_seed` fixed all runs of a
+  factor combination load one `bases/<key>/policy.pt`.
+
+### Per-prompt training logs (H50, H51)
+
+A trainer that defines `training_log() -> dict | None` gets its log written by the runner as
+`<cell>/seed-<s>.training.json`, and `index.json` gains `files["training"]` for that run (the
+key is absent when there is no log). The built-in `rloo`, `grpo`, `rl_entropy`, `hints`,
+`sft` (an all-zero log: SFT samples nothing) and `sft_then_rl` provide one through
+`trainers.rl.SampleLog`; `none` and `tabular_reinforce` do not. The file is
+`{"arm", "trainer", "seed"}` (plus the effective seeds when the config separates them) merged
+with the log:
+
+```
+{"updates": int,                          # optimizer updates the log covers (numbered 1..budget)
+ "checkpoints": [int],
+ "prompts": {"<prompt id>": {
+     "first_success_update": int | null,  # first update whose sampled group held a correct episode
+     "correct_by_checkpoint": {"<c>": int},   # correct sampled episodes in updates 1..c
+     "episodes_sampled": int,                 # whole run
+     "episodes_by_checkpoint": {"<c>": int},  # episodes sampled in updates 1..c (H51)
+     "tokens_sampled": int}},                 # generated actions; forced hint tokens excluded
+ "totals": {"episodes_sampled", "tokens_sampled", "correct_by_checkpoint"}}
+```
+
+The `hints` trainer adds `first_hinted_success_update`, `hinted_episodes_sampled` and
+`hinted_correct_by_checkpoint`; its `first_success_update` counts un-hinted episodes only.
+`sft_then_rl` merges both phases on global update numbers. To log from your own trainer, create
+a `SampleLog(prompt_ids, checkpoints)` in `train`, call `log.record(update, rollout, rewards)`
+after each sampling step, and return `log.to_dict()` from `training_log()`.
+
+The frozen main toy run predates these logs, so its results have no `training.json` files.
+
+## 8. `budget-curve`: the split as a function of N (addendum A, H48, H51)
+
+```
+python -m capsplit.harness budget-curve results/<name> [--out DIR] [--step K] [--c C] [--n-train ARM=N ...]
+```
+
+**What it computes** (`harness/budget.py`, no retraining). For every run in `index.json` it
+loads the cached base and the saved checkpoint (`--step`, default the final saved one; it needs
+`save_policies` other than `"none"` and a task with an exact table), computes every correct
+solution's q0(s) and q1(s) exactly, and evaluates, on a grid of N (default 1, 2, 4, … up to the
+first power of two ≥ max(2^20, 64 × the largest N_train)):
+
+```
+rel(N) = mean_i sum_{s: q0(s) >= c/N} (q1(s) - q0(s))
+cap(N) = mean_i sum_{s: q0(s) <  c/N} (q1(s) - q0(s))     rel(N) + cap(N) = J1 - J0 (checked to 1e-12)
+```
+
+It also reports the crossover N\* (the smallest grid N with rel(N) ≥ half the total gain; null
+when the total is ≤ 0 or the grid never gets there) and **cap(N_train)**, the capability part
+measured at the number of episodes the arm actually sampled per training prompt.
+
+**Where N_train comes from.**
+
+1. The run's training log: the mean over the prompts the arm actually sampled of
+   `episodes_by_checkpoint[step]` (or `episodes_sampled` for the whole run), with min/max kept.
+   Source `"training_log"`. A log without counts for the requested step gives *unknown*, not 0.
+2. Otherwise `--n-train ARM=N` (matched by arm name, then trainer name), marked
+   `"from_config (not logged)"`. This exists for the frozen main run, which has no logs:
+   `--n-train rloo=16000` is 1,000 updates × G = 16.
+3. Otherwise `"unknown"`, and cap(N_train) is null.
+
+**Output folder.** Default `<results_dir>/budget_curve/`; `--out` picks another. The command
+**refuses a folder that exists and is not empty** (`FileExistsError`, exit code 2), so an earlier
+curve is never overwritten or mixed with a new one. Files: `budget_curve.csv` (arm, factors,
+seed, group, N, rel, cap, total), `summary.json`, `budget_curve.md`, `figures/budget_<arm>.png`.
+The committed outputs are `docs/budget_curve_main/` and `docs/seedstudy/budget_curve/`.
+
+**Sampled-backend truncation.** In a run measured with the `sampled` backend, reachability was
+decided from `m_classify` base samples, and a solution with zero successes in m samples can only
+be bounded by u0 = 1 − (α/2)^(1/m) (the 95% Clopper–Pearson upper bound). Solutions with
+q0 < u0 cannot be told apart from 0, so the grid is cut at N ≤ floor(c/u0)
+(`budget.resolvable_n_max`), and cap(N_train) is null with a note when N_train lies beyond it.
+
+## 9. `discovery predict | analyze`: first success as a waiting time (addendum B4)
+
+This is the code for the pre-registered prediction in `docs/prediction_discovery.md`
+(`harness/discovery.py`). Without drift, a hard training prompt with base success
+probability p, trained with G samples per update, first produces a correct sample at a geometric
+update T: P(T > t) = (1 − p)^(G·t).
+
+```
+python -m capsplit.harness discovery predict CONFIG [--out DIR] [--results-root results] [--workers N]
+python -m capsplit.harness discovery analyze RESULTS_DIR --predictions P/predictions.json [--out DIR]
+                                             [--compare OTHER_RESULTS_DIR OTHER_PREDICTIONS ...]
+```
+
+- **`predict`** builds (or loads from `<results-root>/<name>/bases/`, the same cache the runs
+  use) each distinct effective base of the config and computes p exactly for every hard-train
+  prompt, then E[T], median T and P(undiscovered by the budget). No training. Default output:
+  `docs/seedstudy/predictions/<config name>/` (`predictions.json`, `predictions.md`). These were
+  committed before the seed-study runs.
+- **`analyze`** reads the runs' `first_success_update` from the training logs and compares them
+  with the predictions per factor combination: observed vs predicted medians, never-discovered
+  fraction, a KS-style distance, a randomised PIT z-score, the rank AUC of base p, and drift
+  (J at the last checkpoint before T over p). It prints a verdict per k with the pre-registered
+  thresholds (constants at the top of `discovery.py`). With `--compare` (the other seed study and
+  its predictions) it adds the variance decomposition of final per-prompt Δcap into a
+  training-seed part V_train (the `base_seed` study) and a base-seed part V_base (the `train_seed`
+  study): share = V_train / V_base ≤ 1/3 → "outcome determined by the base", ≥ 2/3 → "outcome
+  depends on sampling luck", else "mixed". Default output `<results_dir>/discovery/`
+  (`analysis.json`, `analysis.md`, `figures/`).
+
+The full seed study:
+
+```
+python -m capsplit.harness discovery predict configs/seedstudy_base.json
+python -m capsplit.harness discovery predict configs/seedstudy_train.json
+python -m capsplit.harness run configs/seedstudy_base.json  --workers 6
+python -m capsplit.harness run configs/seedstudy_train.json --workers 6
+python -m capsplit.harness discovery analyze results/seedstudy_base \
+    --predictions docs/seedstudy/predictions/seedstudy_base/predictions.json \
+    --compare results/seedstudy_train docs/seedstudy/predictions/seedstudy_train/predictions.json
+```
+
+## 10. The language-model experiment (`capsplit.harness.lm`)
+
+The LM experiment post-trains a small local model (`Qwen/Qwen2.5-0.5B-Instruct` at a pinned
+revision, L1) with LoRA on generated arithmetic and splits its gain with *sampled* measurement.
+Design: `docs/lm_design.md`; pre-registration: `docs/preregistration_lm.md`; operations:
+`docs/RUNBOOK.md`. It needs the `lm` extra (torch 2.8.0, transformers, peft; L2) and reuses the
+harness interfaces (`Task`, `Policy`, `Trainer`, `GroupMetrics`) but **not** the toy runner: it
+runs as separate, resumable stages (L5).
+
+| RL object | Here |
+|---|---|
+| Episode | One generated problem, e.g. `347 * 29` |
+| State | The chat-formatted prompt plus the tokens generated so far |
+| Action | The next token (at most `model.max_new_tokens` = 12) |
+| Reward | 1 if the first integer in the completion equals the answer, else 0 |
+| Policy | π0 = the model with the LoRA adapter disabled; π1 = the same model with a trained adapter |
+
+### Why the LM plug-ins are not in `PLUGIN_MODULES` (L8)
+
+`lm/policy.py`, `lm/tasks.py` and `lm/trainers.py` register with the ordinary registries
+(`POLICIES`, `TASKS`, `TRAINERS`), but they import transformers and peft. The registry raises on
+a listed module whose dependencies are missing, so listing them would break `python -m
+capsplit.harness list`, the toy runner and the toy tests on any machine without the `lm` extra.
+Instead the LM stages import them explicitly (`stages._plugins()`), and
+`python -m capsplit.harness list` does not show them. In your own script, import the modules
+first (`import capsplit.harness.lm.trainers`) before calling `TRAINERS.create("lm_rl", ...)`.
+
+### `LocalLMPolicy` (`lm/policy.py`, registered as `local_lm`)
+
+`LocalLMPolicy(config: LMConfig, device=None, use_fallback=False, seed=0)` loads the pinned
+checkpoint once and attaches a LoRA adapter (`lora.r`, `alpha`, `dropout`, `target_modules`)
+whose initialisation is seeded by `seed` (L9). One loaded model serves both π0 (adapter
+disabled) and π1.
+
+- `sample(task, prompt_ids, generator)` generates with the repository's own key-value-cache loop
+  and a CPU generator (not `model.generate`, which fails on MPS; L3). Actions are token-id
+  tuples; the decoded text is what `task.verify` receives.
+- `log_prob(task, prompt_ids, actions)` is a teacher-forced pass; it also accepts answer
+  *strings* (used by SFT, which appends the stop token).
+- The policy's distribution is softmax(logits / `sampling.reference_temperature`).
+- `parameters()` are the LoRA weights only; `state_dict()` is the adapter only;
+  `save_adapter(path)` / `load_adapter(path)` write and read `adapter.safetensors`.
+- `state_logits` raises (no exact backend), forced hint prefixes raise, and `clone()` deep-copies
+  the model, because peft's active adapter is shared module state.
+
+### `LMTask` (`lm/tasks.py`, registered as `lm_arithmetic`)
+
+`LMTask(problems, prompt_template)` wraps the rows of `data/problems.jsonl`
+(`{"id", "generator", "question", "answer", "split", "difficulty"}`, ids 0..P−1). Each prompt is
+`Prompt(id, tokens=(prompt_template.format(question=...),), tags={"split", "generator",
+"difficulty"})`; the default template is `"Compute {question}. Reply with only the final
+number."`. Differences from a toy task:
+
+- `verify(pid, actions)` takes the decoded completion **text** (a `str`; anything else raises
+  `TypeError`). `parse(pid, text)` returns `(valid, correct)`: valid iff the first number is an
+  integer, correct iff it equals the answer (L6: "5.0" reads as 5, "2.5" is invalid, and an
+  echoed "347 * 29 = 10063" reads 347 and is wrong).
+- `initial_state` and `step` raise: the policy generates the episode, not the task.
+  `n_actions` and `horizon` are 0 (the vocabulary and length belong to the policy).
+- `demonstrations(pid)` is `(answer,)`, the string an SFT arm imitates.
+
+### Problem generators and how to add one
+
+The `data` stage calls `tasks.build_problems(config.task)`, which runs every entry of
+`task.generators`. Generator `g` gets a numpy Generator seeded from
+`SeedSequence([task.seed, g])`; its problems are split train/held-out with the same share in
+every `difficulty` cell, and a question produced earlier (by any generator) is excluded, so no
+question appears twice (L7). Two generators are registered: `arithmetic` (params `digits`,
+`ops` ⊆ {"+", "-", "*"}, `negative`) and `gsm8k` (params `path` to a local GSM8K jsonl; rows get
+`"possibly_contaminated": true`).
+
+A generator is a class with one method,
+`generate(rng, count, params, exclude) -> list[Problem]`, registered with
+`@register_generator(name)` (keyword arguments become extra fields on every row it produces). It
+must return exactly `count` problems with distinct questions, none in `exclude`; take all
+randomness from `rng`; and raise `ValueError` on an unknown param. `Problem(question, answer,
+difficulty, generator)` holds the answer as an exact integer string (the checker compares
+integers) and a `difficulty` string, which becomes a tag, a stratum for the split and a
+measurement group (`train:<difficulty>` etc.). The question is inserted into the prompt
+template, so it should read naturally after "Compute".
+
+Worked example: squares of d-digit numbers. Add it to `src/capsplit/harness/lm/tasks.py`
+(below `ArithmeticGenerator`), or put it in its own module and add that module to the import in
+`stages._plugins()`. A generator is found only if its module was imported before the `data`
+stage runs.
+
+```python
+@register_generator("square")
+class SquareGenerator:
+    """`a * a` with a exactly d digits. Params: `digits` (list of ints). Difficulty e.g. "d2_sq"."""
+
+    def generate(self, rng: np.random.Generator, count: int, params: dict,
+                 exclude: Collection[str] = frozenset()) -> list[Problem]:
+        _check_params("square", params, ("digits",), required=("digits",))
+        digits = [int(d) for d in params["digits"]]
+        seen, out = set(exclude), []
+        for i in range(count):
+            d = digits[i % len(digits)]                  # spread problems evenly over digit counts
+            for _ in range(1000):
+                a = int(rng.integers(10 ** (d - 1), 10 ** d))
+                question = f"{a} * {a}"
+                if question not in seen:
+                    break
+            else:
+                raise ValueError(f"square: no new {d}-digit problem left; ask for fewer")
+            seen.add(question)
+            out.append(Problem(question, str(a * a), f"d{d}_sq", "square"))
+        return out
+```
+
+Config snippet (`task` section of an LM config), mixing it with the arithmetic generator:
+
+```json
+"task": {
+  "generators": [
+    {"type": "arithmetic", "params": {"digits": [2, 3], "ops": ["+", "*"]}, "n_train": 6, "n_heldout": 4},
+    {"type": "square", "params": {"digits": [2, 3]}, "n_train": 4, "n_heldout": 2}
+  ],
+  "seed": 0
+}
+```
+
+With `lm_demo.json`'s other sections this gives 16 problems; the square rows look like
+`{"id": 11, "generator": "square", "question": "76 * 76", "answer": "5776", "split": "train",
+"difficulty": "d2_sq"}`. A misspelt param fails at the `data` stage with
+`square: unknown params ['digit']; allowed params are ['digits']`, and an unregistered type with
+`unknown problem generator 'sqaure'; registered: arithmetic, gsm8k, square` (both exit code 2).
+Changing `task` after the `data` stage has run trips the stale-output guard (below).
+
+### LM trainers (`lm/trainers.py`)
+
+All four follow the harness `Trainer` contract (checkpoint 0 before any update, exactly `budget`
+optimizer updates, only `prompt_ids`, all randomness from `seed`, unknown params raise) and
+update only the LoRA parameters with Adam and gradient clipping (`max_grad_norm`, default 1.0).
+They write no files: the `train` stage saves the adapter from `on_checkpoint` and writes
+`training_log()` as `train/<arm>/seed<s>/training.json`.
+
+| Trainer | Update rule | Params (defaults) |
+|---|---|---|
+| `lm_none` | none (control); `training_log()` is None | none |
+| `lm_rl` | GRPO-style: each update takes `problems_per_update` train problems from a seeded shuffle cycle, samples `group` completions each without gradients, A = (r − mean) / (std + eps) per group, loss −mean(A · log π), log-probs recomputed in `micro_batch` chunks with gradient accumulation (L12, L14) | `group` (8), `problems_per_update` (8), `lr` (1e-4), `betas`, `weight_decay` (0), `max_grad_norm` (1.0), `eps` (1e-6), `micro_batch` (16) |
+| `lm_sft` | maximum likelihood of `answer + stop` on train problems in the `target` base class(es); samples nothing | `target` ("unreachable"; a class or list of classes), `batch` (8), `lr` (1e-4), `betas`, `weight_decay`, `max_grad_norm` |
+| `lm_sft_then_rl` | `lm_sft` for round(`sft_fraction` · budget) updates, then `lm_rl` for the rest, phases seeded separately and a fresh optimizer per phase (as the toy H25) | `sft_fraction` (0.5), `sft` (dict of `lm_sft` params), `rl` (dict of `lm_rl` params) |
+
+**How `lm_sft` gets the base classification.** Config params are static and do not know the
+output folder, so `lm_sft` and `lm_sft_then_rl` set `needs_base_classes = True`. Before `train`,
+the stage reads `base/classes.json` and calls `trainer.set_base_classes({problem_id: "reachable"
+| "unreachable" | "ambiguous"})` (int or str keys). `train` then uses only the train problems
+whose class is in `target`; if none are, the `train` stage stops before any training starts and
+says so. The log records `sft_target` and `sft_problem_ids`.
+
+**Training log.** `LMSampleLog` extends the toy `SampleLog` (section 7) with per-prompt and total
+`episodes_by_checkpoint` and `success_rate_by_checkpoint`, plus
+`window_success_rate_by_checkpoint` in the totals. N_train for the LM budget curve is the mean
+of `episodes_by_checkpoint[step]` over the train problems the arm sampled (H51); for the main
+config's `rl` arm it is about 200 · 64 / 120 ≈ 107 (L16).
+
+### Sampled measurement (`lm/measure.py`)
+
+Pure numpy functions on per-problem success counts; nothing in it loads a model. The samples
+come from fixed sets (`docs/lm_design.md`): **A** (base, classification only), **B** (base,
+p̂0), **C** (base, one file per temperature, for the temperature baseline), **null** (a fresh
+base sample) and **eval** (each trained checkpoint, p̂1).
+
+- `clopper_pearson(successes, trials, alpha)` → (lower, upper), exact by bisection (L10).
+- `classify(successes_A, trials_A, n, alpha)`: **reachable** iff lower ≥ 1/N, **unreachable** iff
+  upper < 1/N, otherwise **ambiguous**.
+- `split(classes, p0, p1)`: each class's summed gain divided by *all* problems, so the three
+  contributions add up to mean(p̂1 − p̂0) (checked to 1e-12).
+- `temperature_baseline(...)`: split-half choice of T* on set C, E_1 and E_N against it.
+- `bootstrap(...)`: problems resampled, and each resampled problem's set-A count redrawn and
+  reclassified, so classification noise is in the interval.
+- `null_check(...)`: the pipeline with π1 := the null set; passes iff the total's interval
+  contains 0.
+- `budget_curve(successes_A, trials_A, p0, p1, n_grid, alpha)`: the three-way split at each N,
+  cut at floor(1/u0) for the smallest set-A size (108 for 400 samples at α = 0.05).
+- `group_metrics(...)` adapts all of this to `GroupMetrics`: `delta_cap` = the unreachable
+  contribution, `delta_rel` = reachable + ambiguous (the three-way split is in
+  `extra["split"]`); *beyond reach* needs an unreachable problem whose trained lower bound is
+  ≥ 1/N, and *beyond temperature* needs E_1's bootstrap lower bound > 0 (L11).
+
+```python
+import numpy as np
+from capsplit.harness.lm.measure import classify, split
+
+classes = classify(np.array([0, 30, 6, 48]), 400, n=16, alpha=0.05)
+# ['unreachable' 'ambiguous' 'unreachable' 'reachable']
+split(classes, p0=np.array([0, 5, 1, 8]) / 64, p1=np.array([3, 9, 1, 20]) / 64)
+# {'reachable': 0.046875, 'unreachable': 0.01171875, 'ambiguous': 0.015625, 'total': 0.07421875, ...}
+```
+
+### The staged CLI
+
+```
+python -m capsplit.harness.lm <stage> CONFIG [--out results] [--fallback] [--all-checkpoints] [--prereg P]
+```
+
+| Stage | Does | Writes under `<out>/<name>/` |
+|---|---|---|
+| `doctor` | reports versions, device, memory and disk | `doctor.json` |
+| `fetch`, `speedtest`, `setup` | downloads the pinned model; measures throughput; `setup` = both | their own JSON records |
+| `data` | generates the problems (CPU only) | `data/problems.jsonl`, `data/summary.json` |
+| `base` | samples sets A, B, C and null from π0; classifies | `samples/base/*.jsonl`, `base/classes.json`, `base/summary.json` |
+| `train` | trains every arm × seed | `train/<arm>/seed<s>/step<k>/adapter.safetensors`, `training.json`, `timing.json` |
+| `measure` | samples each run's final checkpoint (`--all-checkpoints`: every checkpoint); split, null check, budget curve | `samples/<arm>/seed<s>/step<k>/eval_T*.jsonl`, `measure/{results,null_check,budget_curve}.json` |
+| `report` | report from files only, byte-identical on rebuild (L18) | `report/report.md`, `summary.json`, `tables/*.csv`, `figures/*.png` |
+| `verdicts` | the pre-registered L1–L3 tests, thresholds from `--prereg` (default `configs/lm_prereg.json`) | `report/verdicts.{md,json}` |
+
+Each stage prints what it wrote and the next command; errors the user can fix exit with code 2
+and say what to do. Every stage checks free memory first, and on MPS caps the allocator at
+`memory.max_process_gb` (L14). Sampling resumes to the row (each problem × set × temperature
+chunk has its own seed); an interrupted training run restarts from update 0 (L15). Run long
+stages under `caffeinate -i nice -n 10` (L13). `--fallback` switches to the fallback model; give
+it to every stage or to none.
+
+```
+python -m capsplit.harness.lm data    configs/lm_demo.json
+python -m capsplit.harness.lm base    configs/lm_demo.json
+python -m capsplit.harness.lm train   configs/lm_demo.json
+python -m capsplit.harness.lm measure configs/lm_demo.json
+python -m capsplit.harness.lm report  configs/lm_demo.json
+```
+
+The config schema is `lm/config.py` (its own, separate from the toy schema; unknown keys raise
+`LMConfigError`). The seed streams are `task.seed` (data), the run seed from `seeds` (training
+sampling and LoRA init) and `sampling.seed` (measurement sampling); the base is a pretrained
+checkpoint, so `base_seed` / `train_seed` do not apply. All three are recorded in every manifest.
+
+### Stale-output guard (L19)
+
+Outputs live under the experiment name, so without a check a changed config could silently
+reuse old samples or adapters. Every stage manifest stores a `fingerprint`: one hash per config
+section its outputs depend on.
+
+| Stage | Sections hashed |
+|---|---|
+| data | `task` |
+| base | data's + `model` (id, revision, max_new_tokens, system prompt, dtype, and whether `--fallback` was given) + `sampling` |
+| train (per arm × seed) | base's + `lora` + `arms.<that arm>` + `budget` + `checkpoints` + `seeds` |
+| measure | train's + `measure` |
+
+Before reusing anything, a stage compares the current fingerprint with the earlier stages'
+manifests and its own, and exits with code 2 naming the differing sections, e.g. `outputs under
+results/lm_main/data were produced with a config that differs from the current config/model in:
+task; use a new experiment name, or delete results/lm_main/data to recompute`. Arms are hashed
+separately, so adding an arm does not invalidate the others. Manifests from older code without a
+fingerprint are checked by recomputing it from their stored config; outputs with no manifest at
+all are reused with a warning.

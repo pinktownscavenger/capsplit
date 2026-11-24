@@ -1,0 +1,10 @@
+counts all 180 {'reachable': 104, 'unreachable': 73, 'ambiguous': 3}
+counts train 120 {'unreachable': 47, 'reachable': 73}
+counts heldout 60 {'reachable': 31, 'unreachable': 26, 'ambiguous': 3}
+Q1 sft pooled reachable contrib all: -0.0790 (raw np.float64(-0.07896412037037036))
+training.json prompt keys: 120 train ids covered: True non-train keys: []
+Q2 rl seed0 train-unreachable first_success notnull: n=7 contrib=0.0462 (raw 0.046223958333333336)
+Q2 rl seed0 train-unreachable first_success null:    n=40 contrib=-0.0001 (raw -0.00013020833333333333)  missing=[]
+Q3 rl pooled unreachable contrib heldout: 0.0232 (raw np.float64(0.02317708333333333))
+Q4 null - B mean: -0.0078 (raw np.float64(-0.0078125))
+ISSUES: none

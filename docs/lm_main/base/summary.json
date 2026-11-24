@@ -1,0 +1,66 @@
+{
+  "alpha": 0.05,
+  "classes": {
+    "ambiguous": 3,
+    "reachable": 104,
+    "unreachable": 73
+  },
+  "classes_by_difficulty": {
+    "d2_add/reachable": 30,
+    "d2_mul/ambiguous": 2,
+    "d2_mul/reachable": 19,
+    "d2_mul/unreachable": 9,
+    "d3_add/reachable": 28,
+    "d3_add/unreachable": 2,
+    "d3_mul/unreachable": 30,
+    "d4_add/ambiguous": 1,
+    "d4_add/reachable": 27,
+    "d4_add/unreachable": 2,
+    "d4_mul/unreachable": 30
+  },
+  "classes_by_split": {
+    "heldout/ambiguous": 3,
+    "heldout/reachable": 31,
+    "heldout/unreachable": 26,
+    "train/reachable": 73,
+    "train/unreachable": 47
+  },
+  "classes_by_split_difficulty": {
+    "heldout/d2_add/reachable": 10,
+    "heldout/d2_mul/ambiguous": 2,
+    "heldout/d2_mul/reachable": 4,
+    "heldout/d2_mul/unreachable": 4,
+    "heldout/d3_add/reachable": 9,
+    "heldout/d3_add/unreachable": 1,
+    "heldout/d3_mul/unreachable": 10,
+    "heldout/d4_add/ambiguous": 1,
+    "heldout/d4_add/reachable": 8,
+    "heldout/d4_add/unreachable": 1,
+    "heldout/d4_mul/unreachable": 10,
+    "train/d2_add/reachable": 20,
+    "train/d2_mul/reachable": 15,
+    "train/d2_mul/unreachable": 5,
+    "train/d3_add/reachable": 19,
+    "train/d3_add/unreachable": 1,
+    "train/d3_mul/unreachable": 20,
+    "train/d4_add/reachable": 19,
+    "train/d4_add/unreachable": 1,
+    "train/d4_mul/unreachable": 20
+  },
+  "n": 16,
+  "success_rate_B": {
+    "all": 0.5072916666666667,
+    "by_difficulty": {
+      "d2_add": 0.9729166666666667,
+      "d2_mul": 0.43333333333333335,
+      "d3_add": 0.8927083333333333,
+      "d3_mul": 0.003125,
+      "d4_add": 0.7416666666666667,
+      "d4_mul": 0.0
+    },
+    "by_split": {
+      "heldout": 0.46901041666666665,
+      "train": 0.5264322916666667
+    }
+  }
+}

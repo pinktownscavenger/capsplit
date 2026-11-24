@@ -1,0 +1,559 @@
+{
+  "adapter_sha256": {
+    "none/seed0/step200": "e09760d20f9aee2b2ec742c0cb7964efe6f52152bb4c7e2c569c1d6e6d261e1e",
+    "none/seed1/step200": "2a0f5d9a81428808f8d0285e30e68a1f4e435fe74deffc98fb782b00f1575919",
+    "none/seed2/step200": "43865f4fca9a521c317fd69e45cbfaf9facb9fe0204f42384e8a9ec1e5deff25",
+    "rl/seed0/step0": "e09760d20f9aee2b2ec742c0cb7964efe6f52152bb4c7e2c569c1d6e6d261e1e",
+    "rl/seed0/step100": "07d77ca2bc39a008b35b24ee5a6dab172afc384a90a6ff70032b0f35c1322237",
+    "rl/seed0/step200": "5bd344ae7e53e7fef2c4ba2c594163e19d345faf44e39fd81230b3f39857a3b1",
+    "rl/seed0/step25": "f0f1b77b4d35f27f17a7ff1f96162bf20821a6e002b82fd55a516e18085767a6",
+    "rl/seed0/step50": "e4c2fee71ca972a12d7192676928cfe79e5a94ff3c28816608cce5eafa4e8e61",
+    "rl/seed1/step0": "2a0f5d9a81428808f8d0285e30e68a1f4e435fe74deffc98fb782b00f1575919",
+    "rl/seed1/step100": "174325dd2b5c7ae59196b53cdbc4af8107eb09efd837271fe8b8708ace29ad7a",
+    "rl/seed1/step200": "8b5b81d9a6721261c43fe42eef7917516f3acaf46fd3303587a018c8b6583d07",
+    "rl/seed1/step25": "1fd868dbd968340535fdce48457060969cfc13978632156e69cf498ce830cd32",
+    "rl/seed1/step50": "f7b11fa8110c79ad07cf8d31d8ec06589d84d9d8ba328f527e0afc2f4186b236",
+    "rl/seed2/step0": "43865f4fca9a521c317fd69e45cbfaf9facb9fe0204f42384e8a9ec1e5deff25",
+    "rl/seed2/step100": "a6ccb92f73320dc8a42fc2ddbca341e91b3efa6f14bcc547e2bdbddab3896532",
+    "rl/seed2/step200": "04d26b539d8796481ecc99e56e45d5b836fec09ff3c9f27008e17716e0893f6f",
+    "rl/seed2/step25": "bdf032e10d2d6999ad6afe22235c75f9cafd512367a630ba5552aaf934582f99",
+    "rl/seed2/step50": "0a8b8bcbe24abefedb55dab750a6b73181ac9e5fee115eecafda9cd8699f46bf",
+    "sft/seed0/step0": "e09760d20f9aee2b2ec742c0cb7964efe6f52152bb4c7e2c569c1d6e6d261e1e",
+    "sft/seed0/step100": "be5b37ef8124684dd7159768b54a5017354cc84ca754bd680fb57808f2404259",
+    "sft/seed0/step200": "e2e3f993a36acac532b68387f3d1a118048ed8c2bd76d6a7a1bd112c64b94139",
+    "sft/seed0/step25": "a89437bd29aea9c29b608862a3d4b26bbc543bb1d98f53445f453eef99abe655",
+    "sft/seed0/step50": "0e557884c65a14535635078aca49c7812a2e60cdbaec1c5acee1fb04daf1551f",
+    "sft/seed1/step0": "2a0f5d9a81428808f8d0285e30e68a1f4e435fe74deffc98fb782b00f1575919",
+    "sft/seed1/step100": "8d6d810603fec6c2c77ab78756b19fe7e8e7f8b4478fa77fd9c8cb53d70c197d",
+    "sft/seed1/step200": "e36bf7be3dc188be18d1f8d1eb4a4c308a3a3d167f862a09d1f2662d498129cc",
+    "sft/seed1/step25": "f0f79a533c3fa6d5166988c749c2c4b62bac5de52f06795a70db1ac8a4f5218f",
+    "sft/seed1/step50": "8c10d00a1cc4815cca55e0d51dc9aa8b0dc094ce59c804bf8df48b5bf08c1650",
+    "sft/seed2/step0": "43865f4fca9a521c317fd69e45cbfaf9facb9fe0204f42384e8a9ec1e5deff25",
+    "sft/seed2/step100": "df78a6fc0843266a2627212e23e927cab0e4d213ec4c26d45cf574b4033d3b45",
+    "sft/seed2/step200": "618c15d4cd027f4b38b400893e8432c8926583e980d7f5c528c397db5119f48c",
+    "sft/seed2/step25": "a6edecb9e2e1c7c5d54f6b36f8caa0bc0c7303fa199edf4f9b5fc0d44b894a0b",
+    "sft/seed2/step50": "80ec85033b11193e832fbee6a89c145c77fa7d07619967d48b9486193514ecb5",
+    "sft_then_rl/seed0/step0": "e09760d20f9aee2b2ec742c0cb7964efe6f52152bb4c7e2c569c1d6e6d261e1e",
+    "sft_then_rl/seed0/step100": "aeebe02d69fb1768bdfe20ef7a5a36e0a38cec950c3c8b20017d4718988eed7a",
+    "sft_then_rl/seed0/step200": "dcbed3225be8c0848221b921da314446ea4a1eba6934da24493a1b548e59d6a5",
+    "sft_then_rl/seed0/step25": "70397562ce67d97c3a94fa6848e1c877fee143aa8d577b22bed350f935aa2056",
+    "sft_then_rl/seed0/step50": "e6f9abfc98f7c093fc6a1032950c502b9d637aef27aae0e3fdc3c0b1c25259d5",
+    "sft_then_rl/seed1/step0": "2a0f5d9a81428808f8d0285e30e68a1f4e435fe74deffc98fb782b00f1575919",
+    "sft_then_rl/seed1/step100": "9bb3be788272ad800459e79bd5090755cc99808e9d241136f6470d4e41d9c6d6",
+    "sft_then_rl/seed1/step200": "26b5e05a057da68f5ae1a062fc51264144e5ee7998db503b2c662eaf9514877c",
+    "sft_then_rl/seed1/step25": "7c2ec38dce07c6a78f560939bdde9be8925159fd7fda925b7d0e28a97de96b9e",
+    "sft_then_rl/seed1/step50": "67588ad2351a9a9493a9adeafcfddef06c602626aebbd2a27aa8e839f4057866",
+    "sft_then_rl/seed2/step0": "43865f4fca9a521c317fd69e45cbfaf9facb9fe0204f42384e8a9ec1e5deff25",
+    "sft_then_rl/seed2/step100": "4638eae9f93bb6d35fd477566f7fa839164219bd01720701a079138d0337a8f6",
+    "sft_then_rl/seed2/step200": "28b69289cea5cd5f7204ff20ad8776992fb547b1ecf45f814b5b3b853577c73d",
+    "sft_then_rl/seed2/step25": "a26ea3a17f856fbec09f5fe7c3484288b80cd50fb6df63e0912b5520f632687c",
+    "sft_then_rl/seed2/step50": "b78c10fc698ce146e44aa72af3070ce93a8099e256006ce209c10ae7f8234e9f"
+  },
+  "commit": "466fdec73a04430bf27af056c330fcf8290a677f",
+  "config": {
+    "arms": [
+      {
+        "name": "none",
+        "params": {},
+        "trainer": "lm_none"
+      },
+      {
+        "name": "rl",
+        "params": {
+          "group": 8,
+          "lr": 0.0001,
+          "micro_batch": 16,
+          "problems_per_update": 8
+        },
+        "trainer": "lm_rl"
+      },
+      {
+        "name": "sft",
+        "params": {
+          "batch": 8,
+          "lr": 0.0001
+        },
+        "trainer": "lm_sft"
+      },
+      {
+        "name": "sft_then_rl",
+        "params": {
+          "rl": {
+            "group": 8,
+            "lr": 0.0001,
+            "micro_batch": 16,
+            "problems_per_update": 8
+          },
+          "sft": {
+            "batch": 8,
+            "lr": 0.0001
+          },
+          "sft_fraction": 0.5
+        },
+        "trainer": "lm_sft_then_rl"
+      }
+    ],
+    "budget": 200,
+    "checkpoints": [
+      0,
+      25,
+      50,
+      100,
+      200
+    ],
+    "lora": {
+      "alpha": 16,
+      "dropout": 0.0,
+      "r": 8,
+      "target_modules": [
+        "q_proj",
+        "v_proj"
+      ]
+    },
+    "measure": {
+      "alpha": 0.05,
+      "boot_seed": 0,
+      "n": 16,
+      "n_boot": 2000,
+      "n_splits": 20
+    },
+    "memory": {
+      "max_process_gb": 8.0,
+      "min_free_gb": 3.0,
+      "mps_hard_cap": true
+    },
+    "model": {
+      "cache_dir": null,
+      "device": "auto",
+      "dtype": "float16",
+      "fallback_id": "HuggingFaceTB/SmolLM2-360M-Instruct",
+      "fallback_revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+      "id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "max_new_tokens": 12,
+      "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+      "system_prompt": "You are a precise calculator."
+    },
+    "name": "lm_main",
+    "runtime": {
+      "nice": 10,
+      "threads": 4
+    },
+    "sampling": {
+      "batch_size": 64,
+      "n_classify": 400,
+      "n_measure": 64,
+      "n_temperature": 32,
+      "n_trained": 64,
+      "reference_temperature": 1.0,
+      "seed": 0,
+      "temperatures": [
+        0.5,
+        0.7,
+        1.0,
+        1.3
+      ],
+      "top_p": 1.0
+    },
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "task": {
+      "generators": [
+        {
+          "n_heldout": 60,
+          "n_train": 120,
+          "params": {
+            "digits": [
+              2,
+              3,
+              4
+            ],
+            "ops": [
+              "+",
+              "*"
+            ]
+          },
+          "type": "arithmetic"
+        }
+      ],
+      "prompt_template": "Compute {question}. Reply with only the final number.",
+      "seed": 0
+    }
+  },
+  "device": "mps",
+  "dirty": false,
+  "jobs": [
+    {
+      "arm": "rl",
+      "m": 64,
+      "role": "final",
+      "seed": 0,
+      "step": 200
+    },
+    {
+      "arm": "rl",
+      "m": 64,
+      "role": "final",
+      "seed": 1,
+      "step": 200
+    },
+    {
+      "arm": "rl",
+      "m": 64,
+      "role": "final",
+      "seed": 2,
+      "step": 200
+    },
+    {
+      "arm": "sft",
+      "m": 64,
+      "role": "final",
+      "seed": 0,
+      "step": 200
+    },
+    {
+      "arm": "sft",
+      "m": 64,
+      "role": "final",
+      "seed": 1,
+      "step": 200
+    },
+    {
+      "arm": "sft",
+      "m": 64,
+      "role": "final",
+      "seed": 2,
+      "step": 200
+    },
+    {
+      "arm": "sft_then_rl",
+      "m": 64,
+      "role": "final",
+      "seed": 0,
+      "step": 200
+    },
+    {
+      "arm": "sft_then_rl",
+      "m": 64,
+      "role": "final",
+      "seed": 1,
+      "step": 200
+    },
+    {
+      "arm": "sft_then_rl",
+      "m": 64,
+      "role": "final",
+      "seed": 2,
+      "step": 200
+    },
+    {
+      "arm": "none",
+      "m": 4,
+      "role": "zero",
+      "seed": 0,
+      "step": 200
+    },
+    {
+      "arm": "none",
+      "m": 4,
+      "role": "zero",
+      "seed": 1,
+      "step": 200
+    },
+    {
+      "arm": "none",
+      "m": 4,
+      "role": "zero",
+      "seed": 2,
+      "step": 200
+    },
+    {
+      "arm": "rl",
+      "m": 4,
+      "role": "zero",
+      "seed": 0,
+      "step": 0
+    },
+    {
+      "arm": "rl",
+      "m": 4,
+      "role": "zero",
+      "seed": 1,
+      "step": 0
+    },
+    {
+      "arm": "rl",
+      "m": 4,
+      "role": "zero",
+      "seed": 2,
+      "step": 0
+    },
+    {
+      "arm": "sft",
+      "m": 4,
+      "role": "zero",
+      "seed": 0,
+      "step": 0
+    },
+    {
+      "arm": "sft",
+      "m": 4,
+      "role": "zero",
+      "seed": 1,
+      "step": 0
+    },
+    {
+      "arm": "sft",
+      "m": 4,
+      "role": "zero",
+      "seed": 2,
+      "step": 0
+    },
+    {
+      "arm": "sft_then_rl",
+      "m": 4,
+      "role": "zero",
+      "seed": 0,
+      "step": 0
+    },
+    {
+      "arm": "sft_then_rl",
+      "m": 4,
+      "role": "zero",
+      "seed": 1,
+      "step": 0
+    },
+    {
+      "arm": "sft_then_rl",
+      "m": 4,
+      "role": "zero",
+      "seed": 2,
+      "step": 0
+    },
+    {
+      "arm": "rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 0,
+      "step": 25
+    },
+    {
+      "arm": "rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 1,
+      "step": 25
+    },
+    {
+      "arm": "rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 2,
+      "step": 25
+    },
+    {
+      "arm": "sft",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 0,
+      "step": 25
+    },
+    {
+      "arm": "sft",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 1,
+      "step": 25
+    },
+    {
+      "arm": "sft",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 2,
+      "step": 25
+    },
+    {
+      "arm": "sft_then_rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 0,
+      "step": 25
+    },
+    {
+      "arm": "sft_then_rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 1,
+      "step": 25
+    },
+    {
+      "arm": "sft_then_rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 2,
+      "step": 25
+    },
+    {
+      "arm": "rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 0,
+      "step": 50
+    },
+    {
+      "arm": "rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 1,
+      "step": 50
+    },
+    {
+      "arm": "rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 2,
+      "step": 50
+    },
+    {
+      "arm": "sft",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 0,
+      "step": 50
+    },
+    {
+      "arm": "sft",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 1,
+      "step": 50
+    },
+    {
+      "arm": "sft",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 2,
+      "step": 50
+    },
+    {
+      "arm": "sft_then_rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 0,
+      "step": 50
+    },
+    {
+      "arm": "sft_then_rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 1,
+      "step": 50
+    },
+    {
+      "arm": "sft_then_rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 2,
+      "step": 50
+    },
+    {
+      "arm": "rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 0,
+      "step": 100
+    },
+    {
+      "arm": "rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 1,
+      "step": 100
+    },
+    {
+      "arm": "rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 2,
+      "step": 100
+    },
+    {
+      "arm": "sft",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 0,
+      "step": 100
+    },
+    {
+      "arm": "sft",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 1,
+      "step": 100
+    },
+    {
+      "arm": "sft",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 2,
+      "step": 100
+    },
+    {
+      "arm": "sft_then_rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 0,
+      "step": 100
+    },
+    {
+      "arm": "sft_then_rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 1,
+      "step": 100
+    },
+    {
+      "arm": "sft_then_rl",
+      "m": 16,
+      "role": "checkpoint",
+      "seed": 2,
+      "step": 100
+    }
+  ],
+  "kl_config": {
+    "alt_smoothing": "laplace",
+    "arms": [
+      "rl",
+      "sft",
+      "sft_then_rl"
+    ],
+    "boot_seed": 0,
+    "checkpoints": [
+      25,
+      50,
+      100
+    ],
+    "m_checkpoint": 16,
+    "m_final": 64,
+    "m_zero": 4,
+    "max_problems": null,
+    "n_boot": 2000,
+    "seed": 0,
+    "smoothing": "jeffreys",
+    "violation_se": 2.0
+  },
+  "missing_adapters": [],
+  "model": {
+    "id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775"
+  },
+  "problems": 180,
+  "python": "3.12.12",
+  "seed": 0,
+  "source": "results/lm_main",
+  "stage": "kl",
+  "torch": "2.8.0",
+  "transformers": "5.23.0"
+}

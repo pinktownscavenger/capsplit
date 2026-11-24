@@ -1,0 +1,16 @@
+{
+  "d_fail": [],
+  "d_fail_unadjusted": [
+    14,
+    77,
+    126
+  ],
+  "bracket_fail": [],
+  "bracket_fail_unadjusted": [
+    14,
+    44,
+    126,
+    135
+  ],
+  "level": 0.9997222222222222
+}

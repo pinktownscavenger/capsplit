@@ -18,7 +18,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-      # Phase 2 (harness) tests need torch; the CPU wheel keeps the install small.
-      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      # Phase 2 (harness) and LM tests need torch. Install the CPU wheel of the version the
+      # lm extra pins first, so that extra does not pull the much larger CUDA build.
+      - run: pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
       - run: pip install -e ".[dev,deep,viz]"
+      # The lm extra's transformers pin needs Python 3.11+; tests/conftest.py leaves tests/lm out without it.
+      - if: matrix.python-version != '3.10'
+        run: pip install -e ".[lm]"
       - run: pytest

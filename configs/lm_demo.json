@@ -1,0 +1,19 @@
+{
+  "name": "lm_demo",
+  "model": {"id": "Qwen/Qwen2.5-0.5B-Instruct", "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+            "fallback_id": "HuggingFaceTB/SmolLM2-360M-Instruct", "fallback_revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+            "dtype": "float16", "device": "auto", "max_new_tokens": 12},
+  "lora": {"r": 8, "alpha": 16, "dropout": 0.0, "target_modules": ["q_proj", "v_proj"]},
+  "memory": {"min_free_gb": 3.0, "max_process_gb": 8.0},
+  "runtime": {"nice": 10, "threads": 4},
+  "task": {"generators": [{"type": "arithmetic", "params": {"digits": [2, 3], "ops": ["+", "*"]}, "n_train": 6, "n_heldout": 4}], "seed": 0},
+  "sampling": {"n_classify": 16, "n_measure": 16, "n_trained": 16, "temperatures": [0.7, 1.0], "n_temperature": 8,
+               "reference_temperature": 1.0, "batch_size": 32},
+  "measure": {"n": 4, "alpha": 0.05, "n_boot": 200, "boot_seed": 0},
+  "arms": [{"name": "none", "trainer": "lm_none", "params": {}},
+           {"name": "rl", "trainer": "lm_rl", "params": {"group": 4, "problems_per_update": 4, "lr": 0.0001}},
+           {"name": "sft", "trainer": "lm_sft", "params": {"batch": 4, "lr": 0.0001}}],
+  "budget": 4,
+  "checkpoints": [0, 4],
+  "seeds": [0]
+}

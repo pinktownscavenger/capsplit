@@ -1,0 +1,198 @@
+{
+  "commit": "21925e33ac2a4b45ea04c6e2f134860314ea2026",
+  "config": {
+    "arms": [
+      {
+        "name": "none",
+        "params": {},
+        "trainer": "lm_none"
+      },
+      {
+        "name": "rl",
+        "params": {
+          "group": 8,
+          "lr": 0.0001,
+          "micro_batch": 16,
+          "problems_per_update": 8
+        },
+        "trainer": "lm_rl"
+      },
+      {
+        "name": "sft",
+        "params": {
+          "batch": 8,
+          "lr": 0.0001
+        },
+        "trainer": "lm_sft"
+      },
+      {
+        "name": "sft_then_rl",
+        "params": {
+          "rl": {
+            "group": 8,
+            "lr": 0.0001,
+            "micro_batch": 16,
+            "problems_per_update": 8
+          },
+          "sft": {
+            "batch": 8,
+            "lr": 0.0001
+          },
+          "sft_fraction": 0.5
+        },
+        "trainer": "lm_sft_then_rl"
+      }
+    ],
+    "budget": 200,
+    "checkpoints": [
+      0,
+      25,
+      50,
+      100,
+      200
+    ],
+    "lora": {
+      "alpha": 16,
+      "dropout": 0.0,
+      "r": 8,
+      "target_modules": [
+        "q_proj",
+        "v_proj"
+      ]
+    },
+    "measure": {
+      "alpha": 0.05,
+      "boot_seed": 0,
+      "n": 16,
+      "n_boot": 2000,
+      "n_splits": 20
+    },
+    "memory": {
+      "max_process_gb": 8.0,
+      "min_free_gb": 3.0,
+      "mps_hard_cap": true
+    },
+    "model": {
+      "cache_dir": null,
+      "device": "auto",
+      "dtype": "float16",
+      "fallback_id": "HuggingFaceTB/SmolLM2-360M-Instruct",
+      "fallback_revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+      "id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "max_new_tokens": 12,
+      "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+      "system_prompt": "You are a precise calculator."
+    },
+    "name": "lm_main",
+    "runtime": {
+      "nice": 10,
+      "threads": 4
+    },
+    "sampling": {
+      "batch_size": 64,
+      "n_classify": 400,
+      "n_measure": 64,
+      "n_temperature": 32,
+      "n_trained": 64,
+      "reference_temperature": 1.0,
+      "seed": 0,
+      "temperatures": [
+        0.5,
+        0.7,
+        1.0,
+        1.3
+      ],
+      "top_p": 1.0
+    },
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "task": {
+      "generators": [
+        {
+          "n_heldout": 60,
+          "n_train": 120,
+          "params": {
+            "digits": [
+              2,
+              3,
+              4
+            ],
+            "ops": [
+              "+",
+              "*"
+            ]
+          },
+          "type": "arithmetic"
+        }
+      ],
+      "prompt_template": "Compute {question}. Reply with only the final number.",
+      "seed": 0
+    }
+  },
+  "device": "mps",
+  "dirty": true,
+  "model": {
+    "id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775"
+  },
+  "problems": 180,
+  "python": "3.12.12",
+  "reference_sets": {
+    "A": 72000,
+    "B": 11520,
+    "C": 5760,
+    "null": 11520
+  },
+  "seed": 0,
+  "source": "results/lm_main",
+  "stage": "tail",
+  "tail_config": {
+    "alpha": 0.05,
+    "batch": 64,
+    "bf_min_trusted": 6,
+    "bf_range": [
+      0.005,
+      0.06
+    ],
+    "budget": 4096,
+    "children": 64,
+    "gate1_min_p": 0.01,
+    "gate1_ratio": 0.1,
+    "grid_max_exp": 20,
+    "hot_temperature": 1.3,
+    "known_min_trusted": 5,
+    "max_problems": null,
+    "n_bf": 4000,
+    "n_bf_problems": 12,
+    "n_is": 1024,
+    "rl": [
+      "rl",
+      0,
+      200
+    ],
+    "rl_scale": 0.5,
+    "seed": 0,
+    "sft": [
+      "sft",
+      0,
+      200
+    ],
+    "trust_max_k": 0.7,
+    "trust_max_share": 0.2,
+    "trust_min_ess": 10.0,
+    "trust_min_success": 20,
+    "weights": [
+      0.25,
+      0.25,
+      0.25,
+      0.25
+    ],
+    "z_bf": 3.0,
+    "z_known": 3.5
+  },
+  "torch": "2.8.0",
+  "transformers": "5.23.0"
+}

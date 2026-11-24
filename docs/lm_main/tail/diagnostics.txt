@@ -1,0 +1,22 @@
+== 1. known-answer control
+trusted problems 46; z mean -0.509 (SE of the mean if calibrated 0.147); z sd 1.028; negative 31; |z| > 3.5: 1
+(a) teacher-forced minus sampling-time log q, all IS rows, by component:
+    base: rows 19570, mean -0.00039, sd 0.0217
+    hot: rows 19578, mean -0.00129, sd 0.0187
+    sft: rows 19321, mean -0.00064, sd 0.0259
+    rl_half: rows 19355, mean -0.00019, sd 0.0225
+(b) batched minus single-path log pi0 of D-set samples (per problem, end factor removed): mean 0.0051, min -0.1013, max 0.1639, median |.| 0.0148
+    correlation of z with (b): 0.350
+(c) SFT episode-count deviation (z units): mean -0.212; correlation with control z 0.376
+(d) log(D-hat / D): mean -0.0328; minus (b): mean -0.0379, SE 0.0153
+most extreme: problem 138, z -3.605, (b) -0.0323, SFT episode deviation -2.309, log(D-hat / D) -0.2151
+== 2. numerics: log pi0 of one D-set completion (sum over tokens)
+mps torch.float16 problem 30: batched -23.0670  alone -23.2311  single-path -23.2311  (stored lp_base -23.0670)
+mps torch.float16 problem 172: batched -15.3516  alone -15.2504  single-path -15.2504  (stored lp_base -15.3516)
+mps torch.float16 problem 138: batched -7.8157  alone -7.7835  single-path -7.7835  (stored lp_base -7.8157)
+cpu torch.float32 problem 30: batched -23.1346  alone -23.1345  single-path -23.1345  (stored lp_base -23.0670)
+cpu torch.float32 problem 172: batched -15.3885  alone -15.3886  single-path -15.3886  (stored lp_base -15.3516)
+cpu torch.float32 problem 138: batched -7.8064  alone -7.8064  single-path -7.8064  (stored lp_base -7.8157)
+== 3. brute force, problem 178 (answer 831300)
+stored 22/4000; same seed re-drawn 22/4000; seed 12345 5/4000; reference 4/560
+bracket [0.0018926, 0.0029915]; pooled 31/8560 = 0.0036215; one-sided P(X >= 31 | p = upper end) = 0.166

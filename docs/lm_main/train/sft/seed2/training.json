@@ -1,0 +1,1319 @@
+{
+  "checkpoints": [
+    0,
+    25,
+    50,
+    100,
+    200
+  ],
+  "prompts": {
+    "111": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "112": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "113": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "116": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "12": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "120": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "129": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "130": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "138": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "141": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "146": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "148": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "149": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "151": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "154": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "155": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "16": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "165": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "172": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "177": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "178": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "18": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "29": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "3": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "30": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "34": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "36": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "44": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "45": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "49": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "5": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "56": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "57": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "64": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "65": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "67": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "70": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "73": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "74": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "76": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "8": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "81": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "82": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "83": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "89": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "9": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    },
+    "92": {
+      "correct_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_by_checkpoint": {
+        "0": 0,
+        "100": 0,
+        "200": 0,
+        "25": 0,
+        "50": 0
+      },
+      "episodes_sampled": 0,
+      "first_success_update": null,
+      "success_rate_by_checkpoint": {
+        "0": null,
+        "100": null,
+        "200": null,
+        "25": null,
+        "50": null
+      },
+      "tokens_sampled": 0
+    }
+  },
+  "sft_problem_ids": [
+    3,
+    5,
+    8,
+    9,
+    12,
+    16,
+    18,
+    29,
+    30,
+    34,
+    36,
+    44,
+    45,
+    49,
+    56,
+    57,
+    64,
+    65,
+    67,
+    70,
+    73,
+    74,
+    76,
+    81,
+    82,
+    83,
+    89,
+    92,
+    111,
+    112,
+    113,
+    116,
+    120,
+    129,
+    130,
+    138,
+    141,
+    146,
+    148,
+    149,
+    151,
+    154,
+    155,
+    165,
+    172,
+    177,
+    178
+  ],
+  "sft_target": [
+    "unreachable"
+  ],
+  "totals": {
+    "correct_by_checkpoint": {
+      "0": 0,
+      "100": 0,
+      "200": 0,
+      "25": 0,
+      "50": 0
+    },
+    "episodes_by_checkpoint": {
+      "0": 0,
+      "100": 0,
+      "200": 0,
+      "25": 0,
+      "50": 0
+    },
+    "episodes_sampled": 0,
+    "success_rate_by_checkpoint": {
+      "0": null,
+      "100": null,
+      "200": null,
+      "25": null,
+      "50": null
+    },
+    "tokens_sampled": 0,
+    "window_success_rate_by_checkpoint": {
+      "0": null,
+      "100": null,
+      "200": null,
+      "25": null,
+      "50": null
+    }
+  },
+  "trainer": "lm_sft",
+  "updates": 200
+}

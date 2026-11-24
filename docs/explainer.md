@@ -1,11 +1,14 @@
 # Explainer: capability vs reliability, for a new teammate
 
-This is the plain-language companion to the RQ3 Phase 2 piece of the project (the harness and its experiment), not to the whole project. Read it before `docs/preregistration.md`, `docs/gate2.md` and `docs/experiment_main/report.md`. It has five parts:
+This is the plain-language companion to the RQ3 Phase 2 piece of the project (the harness and its experiments), not to the whole project. Read it before `docs/preregistration.md`, `docs/gate2.md` and `docs/experiment_main/report.md`. It has six parts:
 - what each piece of the code is;
 - a small worked example of the split;
 - how to read the figures;
 - how to run the code;
-- a glossary.
+- a glossary;
+- the follow-up work: the budget curve, the seed study and the language-model (LM) experiment (section 6).
+
+Sections 1–5 describe the frozen toy experiment and are unchanged.
 
 **One-sentence version.** When post-training raises a policy's success rate, we split the gain exactly into two parts:
 - **reliability**: more probability on solutions the base model could already find within N tries;
@@ -289,3 +292,208 @@ python -m capsplit.harness verdicts results/main
 - **τ0 = 0.02.** The pre-registered "near zero" tolerance, in probability mass.
 - **Tempering.** Reshaping the base by raising its probabilities to a power β (per token or per sequence) and renormalising. It is a free baseline that needs no training.
 - **Trap.** A wrong sequence that the base makes its most likely output, so that tempering alone cannot solve the prompt.
+
+---
+
+## 6. Follow-up work: the budget curve, the seed study and the LM experiment
+
+> **No result of the LM experiment is stated here: when this was written, none existed.** Every LM
+> number below is either a design setting from the config or the pre-registration, or an invented
+> example marked as such.
+
+### 6.1 The LM experiment in RL terms
+
+The toy experiment used a world small enough to compute every probability exactly. The LM
+experiment asks the same question about a real (small) language model. Here sampling is the
+only way to measure anything.
+
+| RL object | In the LM experiment |
+|---|---|
+| Episode | One generated arithmetic problem, e.g. "Compute 347 * 29. Reply with only the final number." 180 problems: 2–4-digit operands, + or ×, 120 train and 60 held out |
+| State | The chat-formatted prompt plus the tokens the model has written so far |
+| Action | The next token, from the model's whole vocabulary; at most 12 tokens per answer |
+| Reward | 1 if the first integer in the answer equals the true result (a program checks it), otherwise 0. Return = reward, so the expected return on a problem is its success probability p |
+| Policy | π0 = the base model `Qwen/Qwen2.5-0.5B-Instruct` (about 0.5 billion parameters, pinned revision); π1 = the same model plus a trained LoRA adapter |
+| Update rule | `rl`: GRPO-style policy gradient (8 problems × 8 sampled answers per update); `sft`: supervised learning on the correct answers of train problems the base cannot reach; `sft_then_rl`: half and half; `none`: control. 200 updates each, seeds 0, 1, 2 |
+
+**LoRA in one paragraph.** Retraining all 0.5 billion weights would need far more memory than a
+laptop has. LoRA ("low-rank adaptation") freezes every original weight. Next to a few chosen
+weight matrices (here the attention layers' query and value projections), it adds a small
+trainable correction: the product of two thin matrices, of rank r = 8. Only these thin matrices
+are trained, which is well under 1% of the parameter count. The correction starts at zero, so a
+fresh adapter leaves the model unchanged. Turning the adapter off gives back the base model
+exactly. That is why one loaded model can serve as both π0 (adapter off) and π1 (adapter on).
+The cost is that LoRA can change less than full fine-tuning, which the report lists as a limit.
+
+The checker is strict about format: an answer that repeats the equation ("347 * 29 = 10063")
+reads 347 and counts as wrong. The report therefore shows **format validity** (did the answer
+start with an integer at all?) separately from correctness.
+
+### 6.2 Reachable, unreachable and ambiguous, with samples
+
+In the toy world we knew q0 exactly. Here we only see how often the base got a problem right in
+a finite number of tries, so each problem's success rate p is only known up to an interval.
+
+- **The line.** Budget N = 16, so the reachability line is 1/N = 1/16 = **0.0625**: the base
+  would find the answer about once or more in 16 tries.
+- **Set A.** 400 base samples per problem, used **only** to classify. Each problem gets a 95%
+  Clopper–Pearson interval on p, an exact interval for a binomial rate.
+- **The rule.**
+  - **reachable** if the whole interval is at or above 0.0625 (lower bound ≥ 1/16);
+  - **unreachable** if the whole interval is below 0.0625 (upper bound < 1/16);
+  - **ambiguous** if the interval straddles the line: the data cannot tell.
+
+> **Invented example (illustrative counts, not experiment data).** The intervals were computed
+> with `capsplit.harness.lm.measure.clopper_pearson` (α = 0.05).
+
+| Problem | Set A successes | Observed rate | 95% interval on p | Against 0.0625 | Class |
+|---|---|---|---|---|---|
+| P1 | 0 / 400 | 0 | [0, 0.0092] | entirely below | **unreachable** |
+| P2 | 30 / 400 | 0.075 | [0.0512, 0.1053] | straddles | **ambiguous** |
+| P3 | 6 / 400 | 0.015 | [0.0055, 0.0324] | entirely below | **unreachable** |
+| P4 | 48 / 400 | 0.12 | [0.0898, 0.1559] | entirely above | **reachable** |
+
+P2 shows why "ambiguous" exists. Its observed rate, 0.075, is above the line. But a true rate of
+0.055, just below the line, would also produce 30 successes in 400 tries quite plausibly. Calling
+it reachable would be a guess. With 400 samples and N = 16, 0–15 successes classify as
+unreachable, 16–35 as ambiguous and 36 or more as reachable.
+
+**Then the split.** Fresh samples, never set A, measure success: set B (64 base samples per
+problem) gives p̂0, and 64 samples of each trained policy give p̂1. Keeping set A apart matters.
+If the same samples both chose the class and measured the rate, problems that were unlucky in
+set A would be filed as unreachable and would then "improve" by luck alone.
+Continuing the invented example:
+
+| Problem | Class | p̂0 (set B) | p̂1 (trained) | gain |
+|---|---|---|---|---|
+| P1 | unreachable | 0/64 | 3/64 | +0.046875 |
+| P2 | ambiguous | 5/64 | 9/64 | +0.0625 |
+| P3 | unreachable | 1/64 | 1/64 | 0 |
+| P4 | reachable | 8/64 | 20/64 | +0.1875 |
+
+Each class's contribution is the sum of its problems' gains divided by **all 4** problems:
+- reachable: 0.1875 / 4 = **0.046875**
+- ambiguous: 0.0625 / 4 = **0.015625**
+- unreachable: (0.046875 + 0) / 4 = **0.01171875**
+- total = mean gain = (3 + 4 + 0 + 12) / 64 / 4 = **0.07421875**, and the three add up to it exactly.
+
+The ambiguous part is reported on its own. The headline capability number (`delta_cap`) counts
+only problems confidently unreachable: a capability claim needs evidence that the base could not
+reach the problem. Even P1 does not count as "beyond reach" here. After training it has 3/64,
+whose interval [0.0098, 0.1309] is not wholly above 0.0625. To count, the trained policy must
+be confidently above the line too.
+
+Intervals in the report come from a bootstrap that resamples problems and also redraws each
+problem's set-A count and reclassifies it, so the chance of misclassification is inside the
+interval.
+
+### 6.3 The budget curve, and why the training budget N_train matters
+
+"Unreachable" always means "unreachable **in N tries**". Section 2, step 3 showed the split
+moving with N. The **budget curve** (`python -m capsplit.harness budget-curve`) draws the
+reliability and capability parts against N on a log axis, from 1 up to very large N. As N grows,
+more solutions cross the line and gain moves from capability to reliability. The total never
+changes.
+
+The natural question is which N matters. During training an RL arm draws many samples of each
+training prompt. **N_train** is that number: episodes sampled per training prompt, read from the
+training logs that trainers now write. If a solution is unreachable at N = 64 but reachable at
+N_train, RL did not need to create anything: it sampled the solution by chance during training
+and then reinforced it.
+
+**The toy finding** (`docs/budget_curve_main/`). The frozen main run predates the logs, so its
+N_train is computed from the config and marked "from_config (not logged)". For `rloo`, that is
+1,000 updates × G = 16 = **16,000 samples per training prompt**. Hard solutions were built to be
+unreachable at N = 64: their base probability is around 0.2/64 ≈ 0.003. But 1/16,000 is about
+0.00006, far below 0.003. In 16,000 tries the base would hit such a solution about
+16,000 × 0.003 ≈ 48 times (a rough figure, for intuition). The budget curve agrees. For `rloo`,
+`grpo` and `rl_entropy` at every k, the hard-train capability part at N_train is +0.0000, and the
+crossover N\* (where reliability holds half the gain) is 512 on hard-train prompts. So the toy's
+"capability at N = 64" by RL was all reachable at the budget RL actually spent.
+
+The LM experiment was sized with this in mind (decision L16). The 400 set-A samples set the
+largest N the experiment can resolve. A problem with 0 successes in 400 still has an upper bound
+of 0.0092, so nothing can be called unreachable beyond N = floor(1/0.0092) = **108**. The
+planned `rl` arm samples about 200 updates × 64 answers / 120 problems ≈ **107** per training
+problem, so the curve can just reach N_train. The report draws the curve only up to 108 and
+marks each arm's logged N_train.
+
+Pre-registered hypothesis L1 tests the same idea problem by problem: RL gains on train problems
+classified unreachable should occur only on problems where training itself sampled a correct
+answer at least once (`first_success_update` in the training log is not empty).
+
+### 6.4 The seed study: luck or the base?
+
+The toy runs showed RL's hard-train capability gain varying a lot between seeds. In the old setup
+one seed controlled two things at once: how the base was built and which samples training drew.
+The seed study pulls them apart with two configs that each fix one stream (config keys
+`base_seed` and `train_seed`):
+
+- `configs/seedstudy_base.json`: **one fixed base**, 30 training seeds. Any spread is sampling
+  luck during training.
+- `configs/seedstudy_train.json`: **one fixed training seed**, 30 different bases. Spread comes
+  from the base (and from how a different base samples).
+
+The question: **is a prompt's outcome decided by the base, or by luck in which samples RL happened
+to draw?** The analysis (`python -m capsplit.harness discovery analyze`) compares the variance of
+each prompt's final capability gain across training seeds (V_train) with the variance across
+bases (V_base). A ratio V_train / V_base of at most 1/3 reads "determined by the base"; at least
+2/3 reads "depends on sampling luck"; anything between is "mixed".
+
+The study also tests a pre-registered model of *discovery* (`docs/prediction_discovery.md`).
+Until RL samples a correct answer on a prompt, every sample in that prompt's group gets reward 0,
+so the group's advantage is exactly zero and that prompt gives no learning signal. The first
+success is then a waiting time: with base success probability p and G samples per update, the
+chance of still waiting after t updates is (1 − p)^(G·t). Predictions were computed from the bases
+and committed before the runs.
+
+### 6.5 How to read the LM report
+
+`python -m capsplit.harness.lm report CONFIG` writes `results/<name>/report/report.md`. Every
+number in it is read from files; nothing is typed by hand. Its sections, in order:
+
+- **WARNINGS** (only if something is wrong). Read this first. It flags a failed null check, an
+  empty base class, missing training logs or measurements, and uncommitted code. A failed null
+  check means the measurement finds "gains" where none can exist, so treat every other number
+  with suspicion.
+- **Setup.** Model and revision actually loaded, device, git commit, library versions, and the
+  sample sizes (set A, set B, trained, temperature sweep). Check that the model and revision are
+  the pinned ones.
+- **Data.** Problems per split and difficulty (for example `d3_mul`).
+- **Base classification.** How many problems are reachable, unreachable and ambiguous, overall
+  and per split and difficulty, plus the base success rate. If a class is empty, every statement
+  about it is vacuous, and the report says so.
+- **Split of the gain (final checkpoint).** One row per arm × seed × group (`all`, `train`,
+  `heldout`): total gain, the three contributions with intervals, E_1 and E_N, the chosen
+  temperature T\*, and the label. E_1 > 0 means the trained policy beats the base at its best
+  temperature, where the temperature is chosen on one half of the problems and scored on the
+  other. This is the LM version of "beyond temperature".
+- **Format validity.** The share of answers that contain an integer, and the share correct. A
+  "gain" that is really the model learning to answer with a bare number shows up here.
+- **Training.** Per arm × seed: updates, episodes and tokens sampled, how many problems were ever
+  answered correctly during training, N_train and wall-clock time. Arms are matched on updates,
+  not samples, so SFT samples nothing and RL samples a lot. The first-success histogram shows
+  when each training problem was first solved during training.
+- **Null check.** A fresh base sample is measured as if it were a trained policy. Every row
+  should read PASS, meaning its total interval contains 0.
+- **Budget curve.** Contributions against N up to the resolvable limit, with N_train marked.
+- **What this cannot show.** One small model, synthetic arithmetic, sampled rather than exact
+  measurement, LoRA only, few seeds.
+
+The pre-registered tests are in `report/verdicts.md` (`python -m capsplit.harness.lm verdicts
+CONFIG`). Each of L1–L3 is "supported", "not supported" or "inconclusive", with the rule and the
+numbers used. The rules and thresholds (τ = 0.02) are in `docs/preregistration_lm.md`.
+
+**New terms:**
+- **Ambiguous.** A problem whose set-A interval straddles 1/N. Reported separately, never counted
+  as capability.
+- **Clopper–Pearson interval.** An exact confidence interval for a success rate from k successes
+  in m tries.
+- **Sets A / B / C / null / eval.** Base samples for classification (A), base success (B), the
+  temperature sweep (C), the null check (null); trained-policy samples (eval).
+- **N_train.** Episodes sampled per training prompt during training, from the training log.
+- **Largest resolvable N.** floor(1/u0), with u0 the upper bound after 0 successes in set A; 108
+  for 400 samples.
+- **LoRA adapter.** The small trainable add-on that turns π0 into π1.
+- **base_seed / train_seed.** Config keys that fix one random stream (base building or training
+  sampling) so that the run seeds vary only the other.

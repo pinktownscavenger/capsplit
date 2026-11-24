@@ -19,3 +19,32 @@ Status values: todo, in progress, verifying, done, failed. A task is **done** on
 | Gate 2 | T5, T6 | `docs/gate2.md` | Independent re-derivation of 3 headline numbers matches; H1–H4 verdicts | PASSED: 3 headline numbers (and all 240 runs) re-derived from saved policies, max diff 3.4e-7; verdicts H1 not supported, H2 not supported, H3 supported (tiny effect), H4 inconclusive |
 | T7 Generality | T1 | `harness/tasks/grid.py`, `harness/trainers/tabular.py`, `harness/backends/sampled.py`, `configs/grid_example.json`, tests | Second config and sampled backend run from the CLI; sampled matches exact within CIs | done (verified: numbers re-derived to 6e-16; update counts and checkpoint timing checked) |
 | T8 Docs | Gate 2, T7 | `docs/report.md`, `docs/harness.md`, `docs/explainer.md`, `docs/slides.md` | A fresh subagent adds a trivial trainer by following harness.md | done: report, harness guide, explainer, slides; a fresh agent added and ran a new trainer from harness.md alone (3 unclear spots fixed). Gap: per-arm sample counts (prereg §4) were not logged; stated in report §6 |
+
+## Addendum (toy): budget curve and discovery
+
+| Task | Status |
+|---|---|
+| A. Budget-curve analysis (`budget-curve`) | done (independently reviewed; 3 defects fixed) |
+| B1–B2. Separate seed streams, per-prompt training logs | done (reviewed; old configs byte-identical) |
+| B4. Prediction committed before runs | done (`docs/prediction_discovery.md`, predictions in `docs/seedstudy/predictions/`; a 3-seed scratch preview by the implementer is disclosed) |
+| B3/B5. Seed study (180 runs) and analysis | done (`docs/seedstudy/`) |
+
+## Local language-model experiment
+
+| Task | Depends on | Status |
+|---|---|---|
+| S1–S4 Model setup (`setup` command, from an empty cache) | — | done (`docs/lm_setup/`); torch pinned to 2.8.0 for macOS 14 MPS |
+| C0 Design note | S | done (`docs/lm_design.md`) |
+| C1 Policy with LoRA | C0 | done, reviewed |
+| C2 Generated arithmetic task | C0 | done, reviewed (commutative-twin leak fixed) |
+| C3 Trainers (+ C3b memory) | C1 | done, reviewed |
+| C4 Sampled measurement | C0 | done, reviewed |
+| C5 Stage commands | C1–C4 | done, reviewed (stale-output guard added) |
+| C6 Report and verdicts | C4, C5 | done |
+| Code gate | C1–C6 | PASSED: 614 tests in the LM environment, ruff clean on LM code, fresh demo end to end on MPS, planted reliability/capability cases (measure tests) |
+| E1 Sizing | speedtest | done (DECISIONS L16) |
+| E2 Pre-registration | E3 base | done, tag `lm-prereg-frozen` |
+| E3 Data and base | E1 | done (104 reachable / 73 unreachable / 3 ambiguous) |
+| E4 Train, measure, report | E2 | in progress |
+| Results gate | E4 | todo |
+| Finish (runbook test, report_lm, PR update) | results gate | runbook written; fresh-clone test todo |

@@ -1,0 +1,18 @@
+{
+  "models": [
+    {
+      "id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "path": "/private/tmp/claude-501/-Users-sazankhalid/fe19c404-324a-4356-b56a-1de4d1377a30/scratchpad/hf_fresh/hub/models--Qwen--Qwen2.5-0.5B-Instruct/snapshots/7ae557604adf67be50417f59c2c2f167def9a775",
+      "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+      "seconds": 31.2,
+      "size_gb": 0.931
+    },
+    {
+      "id": "HuggingFaceTB/SmolLM2-360M-Instruct",
+      "path": "/private/tmp/claude-501/-Users-sazankhalid/fe19c404-324a-4356-b56a-1de4d1377a30/scratchpad/hf_fresh/hub/models--HuggingFaceTB--SmolLM2-360M-Instruct/snapshots/a10cc1512eabd3dde888204e902eca88bddb4951",
+      "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+      "seconds": 19.5,
+      "size_gb": 0.677
+    }
+  ]
+}
