@@ -43,7 +43,8 @@ GOLDEN_DUMMY = {  # files with no computed floats: exact bytes
 # Metrics files hold computed floats, whose last bits differ between platforms (macOS vs
 # Linux), so they are compared by fingerprint: (sha256 of the JSON with every finite float
 # replaced by a placeholder, float count, sum, position-weighted sum). Values were produced
-# by the pre-change code (main before base_seed/train_seed) on Linux.
+# by the pre-change code (main before base_seed/train_seed) on Linux. Sums are compared at
+# rel 1e-6: CI runners differ from a local Linux machine by about 1e-9 after training.
 GOLDEN_DUMMY_METRICS = {
     "40a6eded98d4/seed-0.metrics.json": ("3d0e243180b5ed954ae89ec408e90794498e87db45a25a7ed2dfb2c42b9724fa", 972, 208.48209440812434, 101266.74861237383),
     "40a6eded98d4/seed-1.metrics.json": ("26900dccbf1ab014b10382772b077a4ed86da45f8223e7f1618faebdc26525a4", 972, 219.35484065110614, 106978.46957570134),
@@ -84,8 +85,8 @@ def _fingerprint(path: pathlib.Path) -> tuple[str, int, float, float]:
 def _assert_matches(path: pathlib.Path, golden: tuple[str, int, float, float]) -> None:
     skeleton, count, total, weighted = _fingerprint(path)
     assert (skeleton, count) == golden[:2], path.name
-    assert total == pytest.approx(golden[2], rel=1e-9), path.name
-    assert weighted == pytest.approx(golden[3], rel=1e-9), path.name
+    assert total == pytest.approx(golden[2], rel=1e-6), path.name
+    assert weighted == pytest.approx(golden[3], rel=1e-6), path.name
 
 
 def _rloo_config(**extra) -> dict:
