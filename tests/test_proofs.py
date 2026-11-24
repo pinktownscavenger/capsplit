@@ -7,6 +7,13 @@ import math
 import numpy as np
 import pytest
 
+from capsplit.crossing import (
+    integral_local_slope,
+    integral_time,
+    recursion_bounds,
+    scalar_isolated_trace,
+    scalar_isolated_updates,
+)
 from capsplit.diagnostics import passk_curve
 from capsplit.engine import TrajectoryTable, solution_probs, trajectory_log_probs, trajectory_probs
 from capsplit.estimator import chernoff_size
@@ -146,3 +153,130 @@ def test_chernoff_tails_exact():
         t = eta * max(mean, mu)
         assert pmf[estimate > mean + t].sum() <= delta / 8
         assert pmf[estimate < mean - t].sum() <= delta / 8
+
+
+# ----------------------------------------------------------------------------------------------
+# Section 7: time to cross on an isolated route.
+
+
+def _route_success(logits: np.ndarray, route: np.ndarray) -> float:
+    """J = prod_i softmax(logits[i])[route[i]], the isolated-route success of section 7."""
+    shifted = logits - logits.max(axis=1, keepdims=True)
+    probs = np.exp(shifted) / np.exp(shifted).sum(axis=1, keepdims=True)
+    return float(np.prod(probs[np.arange(len(route)), route]))
+
+
+def _numeric_grad(logits: np.ndarray, route: np.ndarray, step: float = 1e-6) -> np.ndarray:
+    grad = np.zeros_like(logits)
+    for idx in np.ndindex(*logits.shape):
+        up, down = logits.copy(), logits.copy()
+        up[idx] += step
+        down[idx] -= step
+        grad[idx] = (_route_success(up, route) - _route_success(down, route)) / (2 * step)
+    return grad
+
+
+def _off_route_gaps(logits: np.ndarray, route: np.ndarray) -> np.ndarray:
+    """Route logit minus each off-route logit, one row per cell."""
+    rows = np.arange(len(route))
+    off = np.ones_like(logits, dtype=bool)
+    off[rows, route] = False
+    return (logits[rows, route][:, None] - logits)[off].reshape(len(route), -1)
+
+
+# Section 7, statement: full-table gradient ascent, with the gradient taken by finite differences
+# (independent of the closed form in the proof), keeps every route cell identical and moves the
+# gap exactly as g <- g + lr * A / (A - 1) * q (1 - p).
+@pytest.mark.parametrize("n_actions, horizon, lr", [(2, 3, 5.0), (4, 4, 20.0), (5, 6, 50.0)])
+def test_section_7_recursion_matches_full_table_ascent(n_actions, horizon, lr):
+    rng = np.random.default_rng(n_actions * 10 + horizon)
+    route = rng.integers(n_actions, size=horizon)
+    q0 = 0.02
+    p0 = q0 ** (1.0 / horizon)
+    logits = np.zeros((horizon, n_actions))
+    logits[np.arange(horizon), route] = math.log((n_actions - 1) * p0 / (1.0 - p0))
+    steps = 30
+    expected = scalar_isolated_trace(q0, horizon, lr, steps, n_actions)
+    for t in range(steps + 1):
+        assert _route_success(logits, route) == pytest.approx(expected[t], rel=1e-6)
+        assert np.ptp(_off_route_gaps(logits, route)) < 1e-6  # finite-difference noise only
+        logits = logits + lr * _numeric_grad(logits, route)
+    assert expected[-1] > 2 * q0  # the run moved, so the comparison isn't vacuous
+
+
+# Section 7, limits: the symmetry is needed. One unequal off-route logit makes the cells drift apart.
+def test_section_7_symmetry_is_needed():
+    route = np.array([0, 1, 2, 3])
+    logits = np.zeros((4, 4))
+    logits[np.arange(4), route] = 1.0
+    logits[0, 1] = 0.5
+    for _ in range(10):
+        logits = logits + 20.0 * _numeric_grad(logits, route)
+    assert np.ptp(_off_route_gaps(logits, route).mean(axis=1)) > 1e-3
+
+
+ISOLATED = [
+    (n_actions, horizon, lr, line, q0)
+    for n_actions in (2, 4, 5)
+    for horizon in (2, 4, 8)
+    for lr in (0.5, 1.0, 2.0)
+    for line in (0.05, 0.1, 0.2)
+    for q0 in np.logspace(-6, -2, 5)
+    if line <= (horizon / (horizon + 1)) ** horizon and q0 < line
+]
+
+
+# Section 7, addition: the recursion's crossing count N is sandwiched by the integral,
+# T <= N <= T + 1 + ln(h(line) / h(q0)) with h(q) = q (1 - q^(1/H)), when line <= (H / (H + 1))^H.
+@pytest.mark.parametrize("n_actions, horizon, lr, line, q0", ISOLATED)
+def test_section_7_recursion_sandwiched_by_integral(n_actions, horizon, lr, line, q0):
+    lower, upper = recursion_bounds(q0, horizon, lr, line, n_actions)
+    assert lower == pytest.approx(integral_time(q0, horizon, lr, line, n_actions), rel=1e-12)
+    updates = scalar_isolated_updates(q0, horizon, lr, line, 10**8, n_actions)
+    assert lower <= updates <= upper
+
+
+def test_section_7_bounds_refuse_line_past_the_peak():
+    with pytest.raises(ValueError, match="peak"):
+        recursion_bounds(1e-4, 2, 1.0, 0.5)  # (2/3)^2 = 0.444 < 0.5
+
+
+# Section 7, asymptotic: T * A lr H q0 / (A - 1) = 1 + (2H / (H - 1)) q0^(1/H) + o(q0^(1/H)).
+@pytest.mark.parametrize("horizon", [2, 4, 8])
+def test_section_7_asymptotic_leading_and_next_term(horizon):
+    ratios = []
+    for q0 in (1e-8, 1e-12, 1e-16):
+        p0 = q0 ** (1.0 / horizon)
+        scaled = integral_time(q0, horizon, 1.0, 0.1) * 4 * horizon * q0 / 3
+        ratios.append((scaled - 1.0) / p0)
+    target = 2 * horizon / (horizon - 1)
+    errors = [abs(r - target) for r in ratios]
+    assert errors[-1] < 0.02 * target and errors[0] >= errors[1] >= errors[2]
+
+
+# Section 7, addition: exact local slope d log T / d log q0 = -(A - 1) / (A lr H q0 (1 - p0)^2 T).
+@pytest.mark.parametrize("q0", [1e-6, 1e-4, 1e-2])
+def test_section_7_local_slope_formula(q0):
+    eps = 1e-5
+    numeric = (
+        math.log(integral_time(q0 * (1 + eps), 8, 1.0, 0.1)) - math.log(integral_time(q0 * (1 - eps), 8, 1.0, 0.1))
+    ) / (math.log1p(eps) - math.log1p(-eps))
+    assert integral_local_slope(q0, 8, 1.0, 0.1) == pytest.approx(numeric, rel=1e-6)
+
+
+def test_section_7_local_slope_tends_to_minus_one():
+    slopes = [integral_local_slope(q0, 8, 1.0, 0.1) for q0 in (1e-6, 1e-12, 1e-24)]
+    assert slopes[0] == pytest.approx(-0.9346, abs=1e-4)
+    assert slopes[0] > slopes[1] > slopes[2] > -1.0 and slopes[2] == pytest.approx(-1.0, abs=1e-2)
+
+
+# Section 7, "what this means": the numbers quoted in the text.
+def test_section_7_quoted_numbers():
+    q0, horizon = 1e-6, 8
+    p0 = q0 ** (1.0 / horizon)
+    exact = integral_time(q0, horizon, 1.0, 0.1)
+    leading = 3 / (4 * horizon * q0)
+    assert p0 == pytest.approx(0.178, abs=1e-3)
+    assert leading == pytest.approx(93_750)
+    assert round(exact) == 148_403
+    assert 1 - leading / (1 - p0) ** 2 / exact == pytest.approx(0.065, abs=1e-3)  # "within about 7%"
