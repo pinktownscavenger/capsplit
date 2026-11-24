@@ -78,3 +78,14 @@ def test_sharpening_on_a_capability_run_disagrees():
 def test_score_rejects_mismatched_lengths():
     with pytest.raises(ValueError):
         score_rule(["capability"], [])
+
+
+def test_srr_ndr_counts_and_zero_denominators():
+    from capsplit.diagnostics import srr_ndr
+
+    r = srr_ndr(np.array([0.2, 0.0, 0.05]), np.array([0.0, 0.3, 0.5]), eps=0.1)
+    assert (r["P"], r["S"], r["E"]) == (0, 1, 2) and r["srr"] == 0.0 and r["ndr"] == 1.0
+    empty = srr_ndr(np.array([0.0]), np.array([0.0]), eps=0.1)
+    assert empty["srr"] is None and empty["ndr"] is None
+    boundary = srr_ndr(np.array([0.1]), np.array([0.1]), eps=0.1)  # strict > eps, as the note states
+    assert (boundary["P"], boundary["S"], boundary["E"]) == (0, 0, 0)
