@@ -1,6 +1,6 @@
 # Re-deriving the proofs (exit criterion 6, Gate 1)
 
-> **Status: complete.** Munashe re-derived [docs/proofs.md](../proofs.md) by hand on 2026-11-16. A coding agent checked every step and added [tests/test_proofs.py](../../tests/test_proofs.py).
+> **Status: sections 1 to 6 complete; section 7 awaiting hand re-derivation.** Munashe re-derived sections 1 to 6 of [docs/proofs.md](../proofs.md) by hand on 2026-11-16. A coding agent checked every step and added [tests/test_proofs.py](../../tests/test_proofs.py). Section 7 (time to cross), added on 2026-11-19 for RQ2, was checked by a coding agent on 2026-11-24 ([below](#section-7-time-to-cross)) and still needs a teammate's sign-off before `proofs-frozen` is tagged.
 
 ## How to use this
 
@@ -70,3 +70,44 @@ The first row closes the pilot report's "not done" item: Proposition 2 is now ch
 ## Sign-off
 
 - [x] Munashe re-derived Propositions 1 to 3, the corollary, the Lemma and the estimator bound by hand on: 2026-11-16
+
+## Section 7: time to cross
+
+RQ2's P1 verdict rests on this section, so it gets its own pass. The four suggested additions above are now applied in `proofs.md` (Lemma limits and general $c$, Proposition 3 statement, estimator endpoint).
+
+### Steps to rebuild
+
+- [ ] $J = \prod_{i=1}^H \pi(a_i \mid s_i)$ because the route fills the horizon, its cells are distinct and dynamics are deterministic. Differentiate: $\partial J / \partial \theta(s_i, a) = J(\mathbb{1}[a = a_i] - \pi(a \mid s_i))$, and 0 off the route.
+- [ ] Induction: if every route cell has gap $g$ and equal off-route logits, the route action gains $\eta J(1-p)$ and each other action loses $\eta J(1-p)/(A-1)$, the same at every cell. The gap grows by $\eta \frac{A}{A-1} J(1-p)$.
+- [ ] $dp/dg = p(1-p)$, so $dp/dt = \eta \frac{A}{A-1} p^{H+1}(1-p)^2$. Separate variables to get the integral.
+- [ ] Asymptotic: the leading term is $(q_0^{-1} - \ell^{-1})/H$; bound the remainder by $C\int p^{-H}\,dp$, which needs $H \ge 2$. Check the first-order coefficient $2H/(H-1)$.
+- [ ] Part 3: with $G(g) = \int dx/\varphi(x)$ and $\varphi$ increasing below the line, one Euler step advances $G$ by at most 1 (so $T \le N$) and by at least $\varphi(g_s)/\varphi(g_{s+1}) \ge 1 - \ln(\varphi(g_{s+1})/\varphi(g_s))$. Telescope the logs.
+- [ ] Check the peak condition: $p^H(1-p)$ increases for $p < H/(H+1)$, so the line must satisfy $\ell \le (H/(H+1))^H$.
+- [ ] Part 4: differentiate $T$ at its lower limit and use $p_0^{H+1} = q_0 p_0$. Expand to get slope $= -1 + \frac{2}{H-1} p_0 + o(p_0)$.
+- [ ] Recompute: $q_0^{1/8} = 0.178$ at $q_0 = 10^{-6}$; leading term $3/(4 \cdot 8 \cdot 10^{-6}) = 93{,}750$; $T = 148{,}403$; with $(1-p_0)^{-2}$ the leading term is 138,690, 6.5% low.
+
+### What the agent check found (2026-11-24)
+
+**No error in the recursion, the integral, or the RQ2 numbers.** The recursion (part 1) is exact, and P1's slopes ($-0.844$ fitted, $-0.928$ smallest pair) come from it, so P1 stands on part 1 alone. Changes made to `proofs.md`:
+
+1. **The asymptotic was stated for all $H$, but it fails at $H = 1$.** There the next term integrates to a log, so the correction is $O(q_0 \ln(1/q_0))$, not $O(q_0)$. The statement now says $H \ge 2$. RQ2 uses $H = 8$, so no result changes.
+2. **The remainder bound was a series expansion only.** The proof now bounds it explicitly ($r(p) \le Cp$ on $[0, \ell^{1/H}]$), and states the first-order coefficient $2H/(H-1)$.
+3. **New part 3: the recursion and the integral were linked only numerically** (`test_integral_within_5pct_of_recursion`). It's now a theorem: $T \le N \le T + 1 + \ln(\ell(1-\ell^{1/H}) / (q_0(1-q_0^{1/H})))$ when $\ell \le (H/(H+1))^H$. At $q_0 = 10^{-6}$ that is $148{,}403 \le 148{,}409 \le 148{,}414$.
+4. **New part 4: "the local slope tends to $-1$" was argued from the asymptotic of $T$**, which on its own says nothing about the derivative. Part 4 gives the slope in closed form and shows it approaches $-1$ from above as $-1 + \frac{2}{H-1} q_0^{1/H}$.
+
+### Numerical checks (in `tests/test_proofs.py`, run in CI)
+
+| Check | Result |
+|---|---|
+| Part 1 against full-table gradient ascent with finite-difference gradients (independent of the proof's closed form), $(A, H) = (2,3), (4,4), (5,6)$, 30 steps | Same $J$ to rel $10^{-6}$; all cells keep one gap |
+| The same with one off-route logit changed | Cells drift apart, so the check is sensitive |
+| Part 3 over 405 settings ($A$, $H$, $\eta$, $\ell$, $q_0$) | $T \le N \le$ bound in all of them |
+| Part 3 with $\ell$ above the peak | Refused (`ValueError`) |
+| Part 2 coefficient at $q_0 = 10^{-16}$ | Within 2% of $2H/(H-1)$ for $H = 2, 4, 8$, converging |
+| Part 4 against a finite-difference slope | Equal to rel $10^{-6}$; $-0.9346$ at $q_0 = 10^{-6}$, $-0.9906$ at $10^{-12}$ |
+| Numbers quoted in "What this means for RQ2" | 0.178, 93,750, 148,403, "within about 7%" (6.5%) all reproduce |
+
+### Sign-off
+
+- [ ] Munashe (or another teammate) re-derived section 7, parts 1 to 4, by hand on: ____
+- [ ] Then tag `proofs-frozen`.
