@@ -73,6 +73,16 @@ def test_final_shortcut_agrees_with_probes():
         assert tail._final_tail(text[m.start():]), text
 
 
+def test_finality_depends_only_on_character_classes():
+    rng = random.Random(2)
+    for _ in range(3000):
+        text = "".join(rng.choice(ALPHABET) for _ in range(rng.randint(1, 9)))
+        m = tail._NUMBER.search(text)
+        if m is None:
+            continue
+        assert tail._final_tail(text[m.start():]) == tail._final_tail(tail.class_rep(text[m.start():])), text
+
+
 def test_class_rep():
     assert tail.class_rep("a1.,-−") == "x0.,--"
 

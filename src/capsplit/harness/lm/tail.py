@@ -159,7 +159,9 @@ def number_is_final(text: str) -> bool:
         return False
     if len(text) - m.end() >= 6:  # every character the expression could still inspect is fixed
         return True
-    return _final_tail(text[m.start():])
+    # The expression only distinguishes character classes, so the class pattern decides finality
+    # (and is a far better cache key than the text itself).
+    return _final_tail(class_rep(text[m.start():]))
 
 
 def prefix_status(text: str, answer: str) -> str:
