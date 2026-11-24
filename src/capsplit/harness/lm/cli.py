@@ -6,7 +6,8 @@ Each stage prints the files it wrote and the command to run next. Errors that th
 Stages: doctor, fetch, speedtest, setup (fetch + speedtest), data, base, train, measure, report,
 verdicts, discovery (descriptive, DECISIONS L22), the optional post-hoc `sensitivity` (L21), and the
 exploratory function-space layer `kl` / `kl-report` (L23-L31), which read `<out>/<name>/` and write
-only `<out>/<name>_kl/` (their timing lines included).
+only `<out>/<name>_kl/` (their timing lines included), and the tail layer `tail` / `tail-report`
+(L36 onward), which writes only `<out>/<name>_tail/`.
 Long stages should run under `caffeinate -i` (DECISIONS L13) so the machine does not sleep.
 """
 from __future__ import annotations
@@ -22,6 +23,7 @@ from .device import DeviceError, MemoryGuardError
 from .kl import KLConfigError
 from .report import ReportError
 from .storage import append_jsonl
+from .tail import TailConfigError
 
 StageFn = Callable[[LMConfig, Path, argparse.Namespace], list[Path]]
 
@@ -101,20 +103,42 @@ def _experiment_stages() -> dict[str, tuple[StageFn, str]]:
         rep = path.parent
         return [path, rep / "report.md", *sorted((rep / "tables").glob("*")), *sorted((rep / "figures").glob("*"))]
 
+    def tail_stage(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
+        from .tail import load_tail_config, run_tail
+
+        device, factory = _factory(c, a)
+        return run_tail(c, load_tail_config(a.tail_config), o, tail_dir(o), device=device,
+                        factory=factory, use_fallback=a.fallback, force=a.force)  # type: ignore[arg-type]
+
+    def tail_report(c: LMConfig, o: Path, a: argparse.Namespace) -> list[Path]:
+        from .tail import load_tail_config
+        from .tail_report import build_tail_report
+
+        path = build_tail_report(c, o, tail_dir(o), load_tail_config(a.tail_config), kl_dir(o))
+        rep = path.parent
+        return [path, rep / "report.md", *sorted((rep / "tables").glob("*")), *sorted((rep / "figures").glob("*"))]
+
     return {"data": (data, "base"), "base": (base, "train"), "train": (train, "measure"),
             "measure": (measure, "report"), "report": (report, "verdicts"), "verdicts": (verdicts, "discovery"),
             "discovery": (discovery, "sensitivity"), "sensitivity": (sensitivity, ""),
-            "kl": (kl_stage, "kl-report"), "kl-report": (kl_report, "")}
+            "kl": (kl_stage, "kl-report"), "kl-report": (kl_report, ""),
+            "tail": (tail_stage, "tail-report"), "tail-report": (tail_report, "")}
 
 
 STAGE_NAMES = ("doctor", "fetch", "speedtest", "setup", "data", "base", "train", "measure", "report", "verdicts",
-               "discovery", "sensitivity", "kl", "kl-report")
+               "discovery", "sensitivity", "kl", "kl-report", "tail", "tail-report")
 KL_STAGES = ("kl", "kl-report")
+TAIL_STAGES = ("tail", "tail-report")
 
 
 def kl_dir(out: Path) -> Path:
     """`<out>/<name>_kl`: the function-space layer's own folder next to the run it reads (DECISIONS L24)."""
     return out.parent / f"{out.name}_kl"
+
+
+def tail_dir(out: Path) -> Path:
+    """`<out>/<name>_tail`: the tail layer's own folder next to the run it reads (DECISIONS L36)."""
+    return out.parent / f"{out.name}_tail"
 
 
 def stages() -> dict[str, tuple[StageFn, str]]:
@@ -143,6 +167,10 @@ def build_parser() -> argparse.ArgumentParser:
                         help="verdict thresholds for the verdicts and sensitivity stages (default: configs/lm_prereg.json)")
     parser.add_argument("--kl-config", default="configs/lm_kl.json",
                         help="kl and kl-report stages: the KL layer's config (default: configs/lm_kl.json)")
+    parser.add_argument("--tail-config", default="configs/lm_tail.json",
+                        help="tail and tail-report stages: the tail layer's config (default: configs/lm_tail.json)")
+    parser.add_argument("--force", action="store_true",
+                        help="tail: continue to importance sampling even if the bracket check fails")
     parser.add_argument("--all-checkpoints", action="store_true",
                         help="measure: also measure intermediate checkpoints (default: final only)")
     return parser
@@ -159,9 +187,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         run, next_stage = stages()[args.stage]
         started = time.monotonic()
         written = run(config, out, args)
-        timing_out = kl_dir(out) if args.stage in KL_STAGES else out
+        timing_out = kl_dir(out) if args.stage in KL_STAGES else tail_dir(out) if args.stage in TAIL_STAGES else out
         written.append(record_timing(timing_out, args.stage, time.monotonic() - started))
-    except (LMConfigError, KLConfigError, MemoryGuardError, DeviceError, StageError, ReportError) as error:
+    except (LMConfigError, KLConfigError, TailConfigError, MemoryGuardError, DeviceError, StageError, ReportError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 2
     except OSError as error:  # model files not in the cache, network down, unreadable file
