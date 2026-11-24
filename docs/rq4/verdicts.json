@@ -1,0 +1,195 @@
+{
+  "frozen": true,
+  "settings": {
+    "k_large": 10,
+    "tol": 1e-09,
+    "group": "heldout",
+    "n": 64,
+    "c": 1.0,
+    "ks": {
+      "phase2": [
+        1,
+        2,
+        5,
+        10,
+        20,
+        50,
+        77
+      ],
+      "phase1": [
+        1,
+        2,
+        5,
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        655
+      ]
+    },
+    "final_step": {
+      "phase2": 1000,
+      "phase1": 400
+    }
+  },
+  "Q1": {
+    "primary": 0.9857142857142858,
+    "secondary": 0.9761904761904762,
+    "undetermined_rate": 0.0,
+    "ci": [
+      0.961904761904762,
+      1.0
+    ],
+    "n_units": 210,
+    "per_seed_primary": {
+      "0": 1.0,
+      "1": 1.0,
+      "2": 1.0,
+      "3": 0.9523809523809523,
+      "4": 1.0,
+      "5": 0.9047619047619048,
+      "6": 1.0,
+      "7": 1.0,
+      "8": 1.0,
+      "9": 1.0
+    },
+    "per_cell": {
+      "capability": {
+        "runs": 3,
+        "primary": 0.0,
+        "secondary": 0.0,
+        "undetermined_rate": 0.0
+      },
+      "compounded_sharpening": {
+        "runs": 82,
+        "primary": 1.0,
+        "secondary": 1.0,
+        "undetermined_rate": 0.0
+      },
+      "reweighting": {
+        "runs": 2,
+        "primary": 1.0,
+        "secondary": 0.0,
+        "undetermined_rate": 0.0
+      },
+      "pure_sharpening": {
+        "runs": 123,
+        "primary": 1.0,
+        "secondary": 1.0,
+        "undetermined_rate": 0.0
+      }
+    },
+    "verdict": "contradicted"
+  },
+  "Q2": {
+    "primary": 0.55,
+    "secondary": 0.4666666666666667,
+    "undetermined_rate": 0.0,
+    "ci": [
+      0.3833333333333333,
+      0.7166666666666666
+    ],
+    "n_units": 60,
+    "per_seed_primary": {
+      "0": 0.0,
+      "1": 0.6666666666666666,
+      "2": 1.0,
+      "3": 0.0,
+      "4": 0.0,
+      "5": 0.6666666666666666,
+      "6": 1.0,
+      "7": 0.3333333333333333,
+      "8": 1.0,
+      "9": 0.6666666666666666,
+      "10": 1.0,
+      "11": 0.3333333333333333,
+      "12": 0.6666666666666666,
+      "13": 0.0,
+      "14": 0.6666666666666666,
+      "15": 0.0,
+      "16": 1.0,
+      "17": 0.6666666666666666,
+      "18": 0.3333333333333333,
+      "19": 1.0
+    },
+    "per_cell": {
+      "capability": {
+        "runs": 16,
+        "primary": 0.25,
+        "secondary": 0.25,
+        "undetermined_rate": 0.0
+      },
+      "compounded_sharpening": {
+        "runs": 19,
+        "primary": 0.8421052631578947,
+        "secondary": 0.8421052631578947,
+        "undetermined_rate": 0.0
+      },
+      "reweighting": {
+        "runs": 15,
+        "primary": 0.3333333333333333,
+        "secondary": 0.0,
+        "undetermined_rate": 0.0
+      },
+      "pure_sharpening": {
+        "runs": 10,
+        "primary": 0.8,
+        "secondary": 0.8,
+        "undetermined_rate": 0.0
+      }
+    },
+    "verdict": "supported"
+  },
+  "Q3": {
+    "verdict": "inconclusive",
+    "disagreement": {
+      "capability": 0.7894736842105263,
+      "compounded_sharpening": 0.02970297029702973,
+      "reweighting": 0.5882352941176471,
+      "pure_sharpening": 0.015037593984962405
+    },
+    "per_cell": {
+      "capability": {
+        "runs": 19,
+        "primary": 0.21052631578947367,
+        "secondary": 0.21052631578947367,
+        "undetermined_rate": 0.0
+      },
+      "compounded_sharpening": {
+        "runs": 101,
+        "primary": 0.9702970297029703,
+        "secondary": 0.9702970297029703,
+        "undetermined_rate": 0.0
+      },
+      "reweighting": {
+        "runs": 17,
+        "primary": 0.4117647058823529,
+        "secondary": 0.0,
+        "undetermined_rate": 0.0
+      },
+      "pure_sharpening": {
+        "runs": 133,
+        "primary": 0.9849624060150376,
+        "secondary": 0.9849624060150376,
+        "undetermined_rate": 0.0
+      }
+    }
+  },
+  "validity": {
+    "j_lists_consistent": true,
+    "primary_sizes": {
+      "phase2": {
+        "expected": 210,
+        "actual": 210
+      },
+      "phase1": {
+        "expected": 60,
+        "actual": 60
+      }
+    },
+    "primary_sizes_match": true
+  },
+  "overall": "valid"
+}
