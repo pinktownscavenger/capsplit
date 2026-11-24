@@ -62,3 +62,16 @@ Decisions for RQ4 (design: `docs/rq4-passk-design.md`). Same format; ids are `RQ
 | RQ4-2 | T5/T8 | The RQ3 rerun (commit 46490ae, this machine, Python 3.12.14, numpy 2.5.5, torch 2.15.0, 8 workers, 20 min) does **not** reproduce the committed numbers: base success rates differ by up to about 2% relative from pre-training on, and `tables/main.csv` differs by up to 0.257. All four RQ3 verdicts (H1–H4) reproduce | Same code, so most likely a torch or BLAS difference; the original manifests don't record the torch version. Phase 2's data source was the user's decision (resolved: RQ4-3) |
 | RQ4-3 | T7 | Phase 2 uses the RQ3 rerun (copied to `results/main`), not the teammate's original files | Bilal's decision: same code, all files on this machine, verdicts reproduce; the RQ4 report states that the numbers differ from the committed RQ3 report |
 | RQ4-4 | T8 | Phase 1 full sweep ran at the `rq4-frozen` commit, clean tree, 80 runs in 163 s on 8 workers; scoring used `results/main` (the rerun) and `results/rq4_grid` | Recorded for anyone re-running |
+
+## RQ2 time-to-cross
+
+Decisions for `experiments/rq2_time_to_cross.py` (design: `docs/rq2-time-to-cross-design.md`). Same format; ids are `RQ2-*`.
+
+| # | Task | Decision | Reason |
+|---|---|---|---|
+| RQ2-1 | T4 | Noise σ = 1.0 for the robustness and arm B draws; arm B's fixed common-route bonuses are W1 0.75, W2 1.0, W3 1.75, giving q₀(common) = 0.0240, 0.0199 and 0.0226 at ratio 1 with σ = 0 | σ is the middle of the design's [0.5, 1.5]; the bonuses put q₀(common) near the middle of [0.01, 0.04], so 10 × q₀(rare) ≤ 0.4 stays reachable |
+| RQ2-2 | T5 | R2 uses H = 10 | One exact-PG step at H = 10 takes 0.76 ms, so the full R2 sweep is about 3 minutes, far under the 2 CPU-hour limit |
+| RQ2-3 | T9 | Full runs at the `rq2-frozen` commit, clean tree, four runs in parallel: arm-a 114 s, robust 905 s, arm-b 886 s, sampled 2,176 s of wall time | Recorded for anyone re-running |
+| RQ2-4 | T9 | P4 is reported as inconclusive under the frozen primary rule, with the secondary-line result beside it; the rule was not changed after seeing the W2 transients | Changing the rule after the run would be tuning it to the result (D8) |
+| RQ2-5 | Review | In W2 the bisected rare-route bonus also lands on the two moves shared with the common route, so lower ratios push the shared moves down and q₀(common) drifts (0.0199 at ratio 1 to 0.0069 at 0.01 without noise). Disclosed in the report; the frozen code and runs are unchanged | Found after the run; changing the construction now would be a post-freeze change and a rerun. A rare-own-moves-only W2 variant would be a labelled post-hoc check |
+| RQ2-6 | Review | `report` now prefers full runs over newer `--quick` runs in the same root, and marks any report built from quick runs (`quick_runs_used`, a warning in `verdicts.md`) | Reporting tooling only: the analysis and the selected runs are unchanged, and regenerating the report gave identical verdicts |
