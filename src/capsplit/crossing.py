@@ -78,3 +78,29 @@ def integral_time(q0: float, horizon: int, lr: float, line: float, n_actions: in
     p = np.exp(u)
     integrand = np.exp(-horizon * u) / (1.0 - p) ** 2  # f(p) dp with dp = p du
     return float(0.5 * (b - a) * np.dot(_WEIGHTS, integrand) * (n_actions - 1) / n_actions / lr)
+
+
+def integral_local_slope(q0: float, horizon: int, lr: float, line: float, n_actions: int = 4) -> float:
+    """Exact d log T / d log q0 of `integral_time`: -(A-1) / (A lr H q0 (1 - p0)^2 T), p0 = q0^(1/H).
+
+    It tends to -1 as q0 -> 0, at rate O(q0^(1/H)) (docs/proofs.md section 7).
+    """
+    p0 = q0 ** (1.0 / horizon)
+    time = integral_time(q0, horizon, lr, line, n_actions)
+    return -(n_actions - 1) / (n_actions * lr * horizon * q0 * (1.0 - p0) ** 2 * time)
+
+
+def recursion_bounds(q0: float, horizon: int, lr: float, line: float, n_actions: int = 4) -> tuple[float, float]:
+    """(T, T + 1 + ln(h(line) / h(q0))), with h(q) = q (1 - q^(1/H)) and T = `integral_time`.
+
+    The scalar recursion's crossing count lies in this interval when the per-update gain q (1 - p)
+    is still increasing at the line, i.e. line <= (H / (H + 1))^H (docs/proofs.md section 7).
+    """
+    if line > (horizon / (horizon + 1.0)) ** horizon:
+        raise ValueError("line is past the peak of q (1 - p), where the bound no longer holds")
+
+    def gain(q: float) -> float:
+        return q * (1.0 - q ** (1.0 / horizon))
+
+    time = integral_time(q0, horizon, lr, line, n_actions)
+    return time, time + 1.0 + float(np.log(gain(line) / gain(q0)))
