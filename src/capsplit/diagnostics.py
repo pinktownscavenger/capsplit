@@ -59,14 +59,27 @@ def score_rule(rule_outputs: list[str], cells: list[str]) -> dict:
 
 
 def srr_ndr(q0, q1, eps: float) -> dict:
-    """SRR and NDR (The Invisible Leash, Def. 3.3) for one prompt, from exact solution probabilities.
+    """SRR and NDR (The Invisible Leash, arXiv:2507.14843v4, Def. 3.3) for one prompt, from exact solution probabilities.
 
-    UNVERIFIED: follows docs/notes/invisible-leash-scores.md, which a person has not yet checked
-    against the paper. Counts correct solutions, not mass, with the note's strict `> eps`:
+    Definitions checked against v4 on 2026-11-24 (docs/notes/invisible-leash-scores.md). Counts correct
+    solutions, not mass, with the paper's strict `> eps` (supp_eps, Section 3.1):
     P = kept (q0 > eps and q1 > eps), S = shrunk (q0 > eps, q1 <= eps), E = expanded
-    (q0 <= eps, q1 > eps). SRR = P / (P + S) and NDR = E / (P + E), None when the denominator is 0.
+    (q0 <= eps, q1 > eps). SRR = P / (P + S) and NDR = E / (P + E), None when the denominator is 0
+    (the paper states no convention and prints "-").
     """
     q0, q1 = np.asarray(q0, dtype=float), np.asarray(q1, dtype=float)
     in0, in1 = q0 > eps, q1 > eps
     p, s, e = int((in0 & in1).sum()), int((in0 & ~in1).sum()), int((~in0 & in1).sum())
     return {"P": p, "S": s, "E": e, "srr": p / (p + s) if p + s else None, "ndr": e / (p + e) if p + e else None}
+
+
+def pool_srr_ndr(counts) -> dict:
+    """SRR and NDR over several prompts: sum P, S and E first, then divide.
+
+    This is how the paper's aggregate rows are built (Appendix A, e.g. Table 6's Overall row is the
+    sum of its Math and Non-Math counts). `counts` holds dicts with keys P, S, E.
+    """
+    counts = list(counts)
+    p, s, e = (sum(int(c[k]) for c in counts) for k in ("P", "S", "E"))
+    return {"P": p, "S": s, "E": e, "prompts": len(counts),
+            "srr": p / (p + s) if p + s else None, "ndr": e / (p + e) if p + e else None}

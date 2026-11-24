@@ -183,3 +183,72 @@ def test_repro_identical_perturbed_and_tiny_numeric(tmp_path):
     (tmp_path / "tiny/summary.json").write_text(json.dumps(s, indent=2))
     r = repro_compare(tmp_path / "tiny")
     assert r["files"]["summary.json"]["status"] in {"numeric", "different"}
+
+
+# ------------------------------------------------------------------- SRR/NDR report
+
+
+def _srr_row(seed, prompt, split, p, s, e, arm="rloo", step=4, factors="{}"):
+    return ["phase", arm, seed, step, factors, prompt, split, p, s, e, None, None]
+
+
+def test_srr_ndr_units_pool_heldout_prompts_and_carry_labels():
+    from rq4_passk import srr_ndr_units
+
+    rows = [_srr_row(0, 0, "train", 9, 9, 9), _srr_row(0, 1, "heldout", 2, 1, 0), _srr_row(0, 2, "heldout", 1, 0, 1),
+            _srr_row(1, 1, "heldout", 0, 2, 0)]
+    units = [Unit("rloo", "rloo", (), 0, 4, "heldout", (0.1,), (0.2,), "capability", "capability"),
+             Unit("rloo", "rloo", (), 1, 4, "heldout", (0.1,), (0.0,), "pure_sharpening", "pure_sharpening")]
+    out = srr_ndr_units(rows, units, group="heldout")
+    assert [(u["seed"], u["P"], u["S"], u["E"], u["label"]) for u in out] == [(0, 3, 1, 1, "capability"),
+                                                                             (1, 0, 2, 0, "pure_sharpening")]
+    assert out[0]["srr"] == 0.75 and out[0]["ndr"] == 0.25 and out[1]["ndr"] is None
+
+
+def test_srr_ndr_units_refuses_rows_without_a_label():
+    from rq4_passk import srr_ndr_units
+
+    with pytest.raises(KeyError):
+        srr_ndr_units([_srr_row(5, 1, "heldout", 1, 0, 0)], [], group="heldout")
+
+
+def test_srr_ndr_summary_pools_per_cell_and_lists_all_cells():
+    from rq4_passk import srr_ndr_summary
+
+    units = [{"label": "capability", "P": 1, "S": 1, "E": 2, "prompts": 2},
+             {"label": "capability", "P": 3, "S": 1, "E": 0, "prompts": 2},
+             {"label": "pure_sharpening", "P": 0, "S": 0, "E": 0, "prompts": 2}]
+    s = srr_ndr_summary(units)
+    assert s["overall"]["units"] == 3 and s["overall"]["prompts"] == 6 and s["overall"]["srr"] == pytest.approx(4 / 6)
+    assert s["per_cell"]["capability"]["srr"] == pytest.approx(4 / 6) and s["per_cell"]["capability"]["ndr"] == 2 / 6
+    assert s["per_cell"]["pure_sharpening"]["srr"] is None
+    assert s["per_cell"]["reweighting"]["units"] == 0  # every cell reported, even if empty
+    assert s["undefined_units"] == {"srr": 1, "ndr": 1}
+
+
+def test_insert_srr_section_replaces_pending_line_and_is_idempotent(tmp_path):
+    from rq4_passk import SRR_PENDING, insert_srr_section
+
+    path = tmp_path / "verdicts.md"
+    path.write_text(f"# head\n\nbody\n\n{SRR_PENDING}\n")
+    insert_srr_section(path, ["## SRR and NDR", "", "first"])
+    text = path.read_text()
+    assert SRR_PENDING not in text and "first" in text and text.startswith("# head\n\nbody\n")
+    insert_srr_section(path, ["## SRR and NDR", "", "second"])
+    text = path.read_text()
+    assert "second" in text and "first" not in text and text.count("## SRR and NDR") == 1
+
+
+def test_srr_ndr_report_cli_end_to_end(tmp_path, quick_grid_with_policies):
+    out = tmp_path / "report"
+    main(["score", "--phase2", str(quick_grid_with_policies), "--phase1", str(quick_grid_with_policies),
+          "--out", str(out), "--allow-unfrozen"])
+    main(["srr-ndr-report", "--phase2", str(quick_grid_with_policies), "--phase1", str(quick_grid_with_policies),
+          "--out", str(out)])
+    text = (out / "verdicts.md").read_text()
+    assert "SRR/NDR pending" not in text and "## SRR and NDR" in text
+    data = json.loads((out / "srr_ndr.json").read_text())
+    assert set(data["phases"]) == {"phase2", "phase1"} and data["settings"]["eps"] == pytest.approx(1 / 64)
+    units = (out / "tables/srr_ndr_units.csv").read_text().splitlines()
+    assert units[0].split(",")[:4] == ["phase", "arm", "factors", "seed"]
+    assert len(units) - 1 == 2 * data["phases"]["phase1"]["overall"]["units"]

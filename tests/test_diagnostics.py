@@ -89,3 +89,24 @@ def test_srr_ndr_counts_and_zero_denominators():
     assert empty["srr"] is None and empty["ndr"] is None
     boundary = srr_ndr(np.array([0.1]), np.array([0.1]), eps=0.1)  # strict > eps, as the note states
     assert (boundary["P"], boundary["S"], boundary["E"]) == (0, 0, 0)
+
+
+def test_pool_srr_ndr_sums_counts_before_dividing():
+    """The paper's aggregate rows (Appendix A) sum P, S, E over problems, then divide."""
+    from capsplit.diagnostics import pool_srr_ndr
+
+    # Table 6, ProRL-1.5B-v1: Math (1355, 56, 5) + Non-Math (1045, 107, 31) = Overall SRR 0.936, NDR 0.0148.
+    r = pool_srr_ndr([{"P": 1355, "S": 56, "E": 5}, {"P": 1045, "S": 107, "E": 31}])
+    assert (r["P"], r["S"], r["E"]) == (2400, 163, 36)
+    assert round(r["srr"], 3) == 0.936 and round(r["ndr"], 4) == 0.0148
+    assert r["prompts"] == 2
+
+
+def test_pool_srr_ndr_is_not_the_mean_of_ratios_and_handles_zero():
+    from capsplit.diagnostics import pool_srr_ndr
+
+    r = pool_srr_ndr([{"P": 1, "S": 0, "E": 0}, {"P": 0, "S": 3, "E": 1}])
+    assert r["srr"] == 0.25 and r["ndr"] == 0.5  # mean of per-prompt SRRs would be 0.5
+    empty = pool_srr_ndr([{"P": 0, "S": 0, "E": 0}])
+    assert empty["srr"] is None and empty["ndr"] is None
+    assert pool_srr_ndr([])["prompts"] == 0
