@@ -32,20 +32,33 @@ is known.
 
 ## Status
 
-The pilot is built: exact engine and metrics, planted cases, tabular and sequence
-training, the sample estimator and the pass@k rule. Results and open issues are in
-[docs/pilot-report.md](docs/pilot-report.md), which is a draft for team review. The
-proofs in [docs/proofs.md](docs/proofs.md), sections 1 to 6, have been checked and
-independently re-derived by a teammate; section 7 (time to cross) still needs that check.
-The metric definitions may change as the team ratifies the proposals in the blueprint.
+As of 2026-11-24. The final report is not written yet.
 
-The experiment harness (`src/capsplit/harness/`) and the pre-registered RQ3 Phase 2
-experiment are done. Results are in [docs/report.md](docs/report.md). RQ2's
-pre-registered time-to-cross experiment is done; results are in
-[docs/rq2-time-to-cross.md](docs/rq2-time-to-cross.md). RQ4's pre-registered pass@k
-misdiagnosis experiment is done; results are in [docs/rq4-passk.md](docs/rq4-passk.md),
-with provisional SRR/NDR scores for both phases. Still to do: RQ2's training
-dynamics and RQ3 in the tabular grid worlds (Phase 1).
+**Done**
+
+- **Proofs.** [docs/proofs.md](docs/proofs.md) is frozen at tag `proofs-frozen`. A teammate
+  re-derived sections 1 to 6; section 7 (time to cross) was checked and signed off by Bilal.
+- **RQ2, time to cross.** Pre-registered and run; results in
+  [docs/rq2-time-to-cross.md](docs/rq2-time-to-cross.md).
+- **RQ3, Phase 2 (sequence task).** Pre-registered and run with the experiment harness
+  (`src/capsplit/harness/`), 240 runs at 10 seeds; results in [docs/report.md](docs/report.md).
+- **RQ4, pass@k misdiagnosis.** Pre-registered and run in both phases, with SRR/NDR scores;
+  results in [docs/rq4-passk.md](docs/rq4-passk.md).
+- **Label rule decided.** H12/H39 is the primary 2×2 label and D2 is reported alongside it
+  (`docs/DECISIONS.md`, F-1). RQ3 Phase 2 stays at 10 seeds, a disclosed deviation from the
+  blueprint's 20 (F-2).
+- **Code pre-review.** [docs/notes/code-review-metrics.md](docs/notes/code-review-metrics.md)
+  found no bug that changes a reported number.
+
+**Still to do**
+
+- **RQ1 final sweep.** Only the pilot run exists ([docs/pilot-report.md](docs/pilot-report.md)).
+  `experiments/pilot_rq1.py` must record the H12 label as well as D2 first (review finding M1).
+- **RQ2 training dynamics and RQ3 in the tabular grid worlds (Phase 1).** Not run.
+- **One command that regenerates every report figure** from a fresh clone.
+- **The final report**, covering RQ1 to RQ4.
+
+The pilot report is kept as the record of the pilot and is not updated.
 
 ## Setup
 
@@ -60,7 +73,8 @@ pytest
 python experiments/run_pilot.py --quick    # about 2 minutes; drop --quick for every trial
 ```
 
-Results go under `results/`, which is git-ignored.
+Raw runs go under `results/`, which is git-ignored. Outputs the docs cite are
+copied to the tracked `results/published/`.
 
 ## Layout
 

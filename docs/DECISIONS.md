@@ -121,3 +121,12 @@ Decisions for `experiments/rq2_time_to_cross.py` (design: `docs/rq2-time-to-cros
 | RQ2-4 | T9 | P4 is reported as inconclusive under the frozen primary rule, with the secondary-line result beside it; the rule was not changed after seeing the W2 transients | Changing the rule after the run would be tuning it to the result (D8) |
 | RQ2-5 | Review | In W2 the bisected rare-route bonus also lands on the two moves shared with the common route, so lower ratios push the shared moves down and q₀(common) drifts (0.0199 at ratio 1 to 0.0069 at 0.01 without noise). Disclosed in the report; the frozen code and runs are unchanged | Found after the run; changing the construction now would be a post-freeze change and a rerun. A rare-own-moves-only W2 variant would be a labelled post-hoc check |
 | RQ2-6 | Review | `report` now prefers full runs over newer `--quick` runs in the same root, and marks any report built from quick runs (`quick_runs_used`, a warning in `verdicts.md`) | Reporting tooling only: the analysis and the selected runs are unchanged, and regenerating the report gave identical verdicts |
+
+## Team decisions for the final report
+
+Decisions that settle open items from the blueprint and the pilot report. Ids are `F-*`.
+
+| # | Date | Decision | Reason |
+|---|---|---|---|
+| F-1 | 2026-11-24 | **Label rule: H12/H39 is primary; D2 is reported alongside as a sensitivity check.** Beyond reach follows H12 (some correct solution unreachable under the base reaches q1 ≥ c/N), and beyond temperature follows H39 (E_1 / J gap with one shared β). Decided by Bilal, who delegated the choice. This replaces the "proposed" status of D2 in `docs/blueprint.md` and the "unratified" notes on H12/H39 above | Every finished run (RQ2, RQ3 Phase 2, RQ4) already labels with H12/H39, so no reported result changes. D2 misfires on the planted 6×6 `b_param` case (3/8 under D2 against 8/8 under H12, H29 and `docs/notes/code-review-metrics.md` M1). The RQ1 final sweep must record both labels |
+| F-2 | 2026-11-24 | **Seeds: RQ3 Phase 2 stays at 10 seeds; it is not rerun at 20.** Decided by Bilal | **Deviation from the blueprint:** section 11 lists "at least 20 seeds for reported training curves" as never cut. The final report must state this deviation in its limitations, and every interval in `docs/report.md` is a bootstrap over 10 seeds |
