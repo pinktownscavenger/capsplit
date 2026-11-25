@@ -1055,7 +1055,7 @@ def analysis_markdown(data: dict, figures: Sequence[Path]) -> str:
 def predict_main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m capsplit.harness discovery predict")
     parser.add_argument("config", help="experiment config (JSON)")
-    parser.add_argument("--out", help="output folder (default: docs/seedstudy/predictions/<config name>)")
+    parser.add_argument("--out", help="output folder (default: results/published/seedstudy/predictions/<config name>)")
     parser.add_argument("--results-root", default="results", help="where the base cache lives (default: results)")
     parser.add_argument("--workers", type=int, default=1, help="processes for building bases (default: 1)")
     args = parser.parse_args(argv)
@@ -1063,7 +1063,7 @@ def predict_main(argv: Sequence[str] | None = None) -> int:
     if out is None:
         from .config import load_config
 
-        out = str(Path("docs/seedstudy/predictions") / load_config(args.config).name)
+        out = str(Path("results/published/seedstudy/predictions") / load_config(args.config).name)
     try:
         print(predict(args.config, out, args.results_root, workers=args.workers))
     except (ValueError, FileNotFoundError) as error:

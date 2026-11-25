@@ -100,7 +100,7 @@ Base success rate (set B): all 0.5073; by split heldout 0.4690, train 0.5264.
 
 ## Split of the gain (final checkpoint)
 
-Per arm and seed: total gain = mean(p̂1 - p̂0) and its three class contributions (each sums its class's gains and divides by all problems in the group), with bootstrap intervals (level 0.95; problems resampled, set-A counts redrawn and reclassified). E_1 / E_N: trained minus the base at the best temperature T* (chosen on the other half of a random split; T* is the modal choice and its frequency). Per-difficulty groups are in `lm_main/report/tables/split.csv`.
+Per arm and seed: total gain = mean(p̂1 - p̂0) and its three class contributions (each sums its class's gains and divides by all problems in the group), with bootstrap intervals (level 0.95; problems resampled, set-A counts redrawn and reclassified). E_1 / E_N: trained minus the base at the best temperature T* (chosen on the other half of a random split; T* is the modal choice and its frequency). Per-difficulty groups are in `../results/published/lm_main/report/tables/split.csv`.
 
 | arm | seed | group | total | reachable | unreachable | ambiguous | E_1 [lo, hi] | T*(E_1) | E_N [lo, hi] | label |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -141,7 +141,7 @@ Per arm and seed: total gain = mean(p̂1 - p̂0) and its three class contributio
 | sft_then_rl | 2 | train | +0.1672 [+0.1116, +0.2251] | +0.0655 [+0.0336, +0.0983] | +0.1017 [+0.0500, +0.1518] | +0.0000 [-0.0013, +0.0233] | +0.1569 [+0.0973, +0.2176] | 0.5 (98%) | +0.0973 [+0.0386, +0.1572] | capability |
 | sft_then_rl | 2 | heldout | +0.0380 [-0.0026, +0.0922] | +0.0039 [-0.0232, +0.0333] | +0.0208 [+0.0000, +0.0656] | +0.0133 [-0.0010, +0.0380] | +0.0331 [-0.0151, +0.0891] | 0.5 (50%) | -0.0307 [-0.0855, +0.0230] | compounded_sharpening |
 
-![contributions](lm_main/report/figures/contributions.png)
+![contributions](../results/published/lm_main/report/figures/contributions.png)
 
 ## Format validity
 
@@ -222,9 +222,9 @@ Arms are matched on optimizer updates, not on samples (H20): the episodes and to
 | sft_then_rl | 1 | present | 200 | 6400 | 36865 | 120 | 91 | 53.3 | 521.3 | 2.61 |
 | sft_then_rl | 2 | present | 200 | 6400 | 36637 | 120 | 91 | 53.3 | 465.7 | 2.33 |
 
-First update in which training sampled a correct answer, per training problem (`lm_main/report/tables/first_success.csv`):
+First update in which training sampled a correct answer, per training problem (`../results/published/lm_main/report/tables/first_success.csv`):
 
-![first success](lm_main/report/figures/first_success.png)
+![first success](../results/published/lm_main/report/figures/first_success.png)
 
 ## Null check
 
@@ -240,11 +240,11 @@ The same pipeline with a fresh base sample (set `null`) in place of the trained 
 
 Contributions as a function of N (log axis), reclassifying at each N from the same counts. The curve is truncated at the largest resolvable N = 108: with 400 set-A samples per problem no problem can be classified unreachable beyond it (the Clopper-Pearson upper bound for 0 successes exceeds 1/N). The vertical line marks N_train from the training log.
 
-![budget curve all](lm_main/report/figures/budget_curve_all.png)
-![budget curve train](lm_main/report/figures/budget_curve_train.png)
-![budget curve heldout](lm_main/report/figures/budget_curve_heldout.png)
+![budget curve all](../results/published/lm_main/report/figures/budget_curve_all.png)
+![budget curve train](../results/published/lm_main/report/figures/budget_curve_train.png)
+![budget curve heldout](../results/published/lm_main/report/figures/budget_curve_heldout.png)
 
-Full values: `lm_main/report/tables/budget_curve.csv`.
+Full values: `../results/published/lm_main/report/tables/budget_curve.csv`.
 
 ## What this cannot show
 
@@ -256,15 +256,15 @@ Full values: `lm_main/report/tables/budget_curve.csv`.
 
 ## Files
 
-- `lm_main/report/tables/base_classes.csv`
-- `lm_main/report/tables/budget_curve.csv`
-- `lm_main/report/tables/data.csv`
-- `lm_main/report/tables/first_success.csv`
-- `lm_main/report/tables/format_validity.csv`
-- `lm_main/report/tables/null_check.csv`
-- `lm_main/report/tables/setup.csv`
-- `lm_main/report/tables/split.csv`
-- `lm_main/report/tables/training.csv`
+- `../results/published/lm_main/report/tables/base_classes.csv`
+- `../results/published/lm_main/report/tables/budget_curve.csv`
+- `../results/published/lm_main/report/tables/data.csv`
+- `../results/published/lm_main/report/tables/first_success.csv`
+- `../results/published/lm_main/report/tables/format_validity.csv`
+- `../results/published/lm_main/report/tables/null_check.csv`
+- `../results/published/lm_main/report/tables/setup.csv`
+- `../results/published/lm_main/report/tables/split.csv`
+- `../results/published/lm_main/report/tables/training.csv`
 - `figures/budget_curve_all.png`
 - `figures/budget_curve_heldout.png`
 - `figures/budget_curve_train.png`

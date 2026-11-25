@@ -17,7 +17,7 @@ git clone https://github.com/sazandkhalid/capsplit.git
 cd capsplit
 git checkout harness/capability-vs-reliability
 git log -1 --format=%H                 # to reproduce the published lm_main results, compare with the
-                                       # `commit` in docs/lm_main/measure/manifest.measure.json
+                                       # `commit` in results/published/lm_main/measure/manifest.measure.json
 python3.12 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev,lm,viz,lint]"   # lint = ruff, for section 8
@@ -55,7 +55,7 @@ python -m capsplit.harness.lm sensitivity $C # report/sensitivity_p0.md, sensiti
 - `discovery` compares each RL training problem's first success with the waiting-time model (descriptive; DECISIONS L22).
 - `sensitivity` is post-hoc (DECISIONS L21): it diagnoses the null check from the saved samples and re-applies the L1–L3 rules with the base rate taken from set B, from the null set, and from both pooled. It never changes `verdicts.md`.
 - `report`, `verdicts`, `discovery` and `sensitivity` only read files; they do not load the model and take seconds.
-- `scripts/publish_lm_report.sh results/lm_main docs/lm_main` copies a finished run's generated outputs (reports, summaries, training logs, timings; not samples or adapters) into `docs/lm_main/`, runs the independent check `scripts/rederive_lm_headlines.py` (output `docs/lm_main/rederive_headlines.txt`; set `PYTHON` to the venv's python if `python` is not it), and assembles `docs/report_lm.md` from the generated markdown.
+- `scripts/publish_lm_report.sh results/lm_main results/published/lm_main` copies a finished run's generated outputs (reports, summaries, training logs, timings; not samples or adapters) into `results/published/lm_main/`, runs the independent check `scripts/rederive_lm_headlines.py` (output `results/published/lm_main/rederive_headlines.txt`; set `PYTHON` to the venv's python if `python` is not it), and assembles `docs/report_lm.md` from the generated markdown.
 - The stages that load the model or write data (`speedtest`, `data`, `base`, `train`, `measure`) write a `manifest.<stage>.json` next to their outputs (commit, config, seeds, device, versions); each training checkpoint also gets `manifest.step.json`. Every stage appends its wall time to `timing/<stage>.jsonl`. The read-only stages (`report`, `verdicts`, `discovery`, `sensitivity`) write no manifest.
 - **Expected messages that are harmless:** torch's `Redirects are currently not supported in Windows or MacOs` on every stage, a `requires_grad` UserWarning from `speedtest`, and Hugging Face download progress bars.
 - **Expected warnings on the demo:** with only 10 problems the demo usually has an empty class (often `ambiguous`), and `base` and the report print a large warning about it; L1 is then typically inconclusive for having too few problems. That is expected for the demo and does not mean the run is broken. `verdicts.md` is titled "pre-registered" for every config, but the thresholds are pre-registered only for `configs/lm_main.json`; the file says so.

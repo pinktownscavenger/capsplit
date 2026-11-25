@@ -598,7 +598,7 @@ measured at the number of episodes the arm actually sampled per training prompt.
 **refuses a folder that exists and is not empty** (`FileExistsError`, exit code 2), so an earlier
 curve is never overwritten or mixed with a new one. Files: `budget_curve.csv` (arm, factors,
 seed, group, N, rel, cap, total), `summary.json`, `budget_curve.md`, `figures/budget_<arm>.png`.
-The committed outputs are `docs/budget_curve_main/` and `docs/seedstudy/budget_curve/`.
+The committed outputs are `results/published/budget_curve_main/` and `results/published/seedstudy/budget_curve/`.
 
 **Sampled-backend truncation.** In a run measured with the `sampled` backend, reachability was
 decided from `m_classify` base samples, and a solution with zero successes in m samples can only
@@ -622,7 +622,7 @@ python -m capsplit.harness discovery analyze RESULTS_DIR --predictions P/predict
 - **`predict`** builds (or loads from `<results-root>/<name>/bases/`, the same cache the runs
   use) each distinct effective base of the config and computes p exactly for every hard-train
   prompt, then E[T], median T and P(undiscovered by the budget). No training. Default output:
-  `docs/seedstudy/predictions/<config name>/` (`predictions.json`, `predictions.md`). These were
+  `results/published/seedstudy/predictions/<config name>/` (`predictions.json`, `predictions.md`). These were
   committed before the seed-study runs.
 - **`analyze`** reads the runs' `first_success_update` from the training logs and compares them
   with the predictions per factor combination: observed vs predicted medians, never-discovered
@@ -643,8 +643,8 @@ python -m capsplit.harness discovery predict configs/seedstudy_train.json
 python -m capsplit.harness run configs/seedstudy_base.json  --workers 6
 python -m capsplit.harness run configs/seedstudy_train.json --workers 6
 python -m capsplit.harness discovery analyze results/seedstudy_base \
-    --predictions docs/seedstudy/predictions/seedstudy_base/predictions.json \
-    --compare results/seedstudy_train docs/seedstudy/predictions/seedstudy_train/predictions.json
+    --predictions results/published/seedstudy/predictions/seedstudy_base/predictions.json \
+    --compare results/seedstudy_train results/published/seedstudy/predictions/seedstudy_train/predictions.json
 ```
 
 ## 10. The language-model experiment (`capsplit.harness.lm`)

@@ -164,17 +164,17 @@ def test_repro_identical_perturbed_and_tiny_numeric(tmp_path):
 
     from rq4_passk import repro_compare
 
-    shutil.copytree("docs/experiment_main", tmp_path / "same")
+    shutil.copytree("results/published/experiment_main", tmp_path / "same")
     assert repro_compare(tmp_path / "same")["match"] is True
 
-    shutil.copytree("docs/experiment_main", tmp_path / "bad")
+    shutil.copytree("results/published/experiment_main", tmp_path / "bad")
     v = json.loads((tmp_path / "bad/verdicts.json").read_text())
     v["tests"]["H1"]["verdict"] = "supported"
     (tmp_path / "bad/verdicts.json").write_text(json.dumps(v))
     r = repro_compare(tmp_path / "bad")
     assert r["match"] is False and r["files"]["verdicts.json"]["status"] == "different"
 
-    shutil.copytree("docs/experiment_main", tmp_path / "tiny")
+    shutil.copytree("results/published/experiment_main", tmp_path / "tiny")
     s = json.loads((tmp_path / "tiny/summary.json").read_text())
     s["tau0"] = s.get("tau0", 0.02) + 1e-9 if "tau0" in s else None
     if s["tau0"] is None:

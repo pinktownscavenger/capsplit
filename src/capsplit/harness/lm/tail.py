@@ -1,4 +1,4 @@
-"""The base model's tail success probability p0 (exploratory; `docs/lm_main/tail/preregistration_tail.md`).
+"""The base model's tail success probability p0 (exploratory; `results/published/lm_main/tail/preregistration_tail.md`).
 
 For a problem x, p0 is the probability that the base model (LoRA adapter disabled), sampled at the
 reference temperature for at most `model.max_new_tokens` tokens, writes a completion the strict

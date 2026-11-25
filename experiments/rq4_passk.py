@@ -578,7 +578,7 @@ def _parse(path: Path):
         return list(csv.reader(f))
 
 
-def repro_compare(new_report_dir: str | Path, committed_dir: str | Path = Path("docs/experiment_main")) -> dict:
+def repro_compare(new_report_dir: str | Path, committed_dir: str | Path = Path("results/published/experiment_main")) -> dict:
     """Compare a rerun RQ3 report with the committed one: identical bytes, numeric-only differences, or different."""
     new_report_dir, committed_dir = Path(new_report_dir), Path(committed_dir)
     files = {}
@@ -638,7 +638,7 @@ def main(argv: list[str] | None = None) -> None:
                             help="text shown for an omitted phase")
     srr_report.add_argument("--out", default="results/rq4_report", help="folder holding verdicts.md from `score`")
     srr_report.set_defaults(func=_cmd_srr_ndr_report)
-    repro = sub.add_parser("repro", help="compare a rerun RQ3 report with docs/experiment_main")
+    repro = sub.add_parser("repro", help="compare a rerun RQ3 report with results/published/experiment_main")
     repro.add_argument("new_report_dir")
     repro.set_defaults(func=_cmd_repro)
     args = parser.parse_args(argv)

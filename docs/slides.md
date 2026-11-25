@@ -2,7 +2,7 @@
 
 > These slides cover the RQ3 Phase 2 piece only. RQ2's time-to-cross curve, tabular RQ3 and RQ4 (pass@k misdiagnosis) are still to come and will need their own slides in the final talk.
 
-13 slides, about 55 seconds each. Every number comes from `docs/experiment_main/` or `docs/gate2.md`. Primary setting throughout: N = 64, c = 1, update 1000, seeds 0–9. Each value is a seed mean, with a bootstrap 95% interval over seeds where given.
+13 slides, about 55 seconds each. Every number comes from `results/published/experiment_main/` or `docs/gate2.md`. Primary setting throughout: N = 64, c = 1, update 1000, seeds 0–9. Each value is a seed mean, with a bootstrap 95% interval over seeds where given.
 
 ---
 

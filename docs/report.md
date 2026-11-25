@@ -8,9 +8,9 @@
 > The final report will combine these with this piece. Seeds here are 10, below the blueprint's Target of 20.
 
 Every number here is copied from a generated file:
-- `docs/experiment_main/tables/main.csv`
-- `docs/experiment_main/verdicts.md` and `verdicts.json`
-- `docs/experiment_main/tables/frontier.csv` and `labels.csv`
+- `results/published/experiment_main/tables/main.csv`
+- `results/published/experiment_main/verdicts.md` and `verdicts.json`
+- `results/published/experiment_main/tables/frontier.csv` and `labels.csv`
 - `docs/base_verification.md` and `docs/gate2.md`
 - the decisions log, `docs/DECISIONS.md`
 - the per-run metrics files under `results/main/`
@@ -181,7 +181,7 @@ Negative and null results are reported as prominently as positive ones. Each ver
 
 ### 4.2 Main numbers
 
-Values are the seed mean [95% bootstrap interval over 10 seeds], at N = 64, c = 1 and update 1,000, from `docs/experiment_main/tables/main.csv`. The `none` rows give the base.
+Values are the seed mean [95% bootstrap interval over 10 seeds], at N = 64, c = 1 and update 1,000, from `results/published/experiment_main/tables/main.csv`. The `none` rows give the base.
 
 | Arm | k | Δcap, hard train | Δcap, hard held-out | J1, easy train |
 |---|---|---|---|---|
@@ -274,16 +274,16 @@ A related negative result: post-training lowers J on **held-out easy** prompts f
 ## 5. Traceability
 
 - **Raw data.** Each of the 240 runs writes `results/main/<run_dir>/seed-<s>.metrics.json`, with one record per (checkpoint, group, N, c) holding Δrel, Δcap, J0, J1, E_N, E_1 and the labels. Each run directory has a `manifest.json` with the git commit, a `dirty` flag and the full resolved config. `results/` is git-ignored because of its size; the run command in Section 8 regenerates it.
-- **Index.** `docs/experiment_main/index.json` (identical to `results/main/index.json`) lists all 240 runs with arm, k, seed, base cache id, `run_dir` and file paths.
+- **Index.** `results/published/experiment_main/index.json` (identical to `results/main/index.json`) lists all 240 runs with arm, k, seed, base cache id, `run_dir` and file paths.
 - **Tables and verdicts.**
   - `python -m capsplit.harness report results/main` writes `results/main/report/`: `report.md`, `summary.json`, `tables/*.csv` and `figures/*.png`.
   - `python -m capsplit.harness verdicts results/main` writes `verdicts.json` and `verdicts.md` to the same folder.
-  - `docs/experiment_main/` is a committed copy of that folder, plus `index.json` and `config.json`.
+  - `results/published/experiment_main/` is a committed copy of that folder, plus `index.json` and `config.json`.
 
 **Worked example: `rloo`, k = 0, hard train, Δcap = +0.5819.**
 
-1. In `docs/experiment_main/tables/main.csv`, row `rloo,rloo,task.shared_prefix=0,hard_train,delta_cap` gives mean 0.5819450795806658, min 0.4907595325568311, max 0.8639174982292378 and interval [0.5317027083703034, 0.6564292573117824].
-2. In `docs/experiment_main/index.json`, the `runs` entries with `arm = rloo` and `factors.task.shared_prefix = 0` are ten entries, seeds 0–9, all with `run_dir = 07feaf655290`.
+1. In `results/published/experiment_main/tables/main.csv`, row `rloo,rloo,task.shared_prefix=0,hard_train,delta_cap` gives mean 0.5819450795806658, min 0.4907595325568311, max 0.8639174982292378 and interval [0.5317027083703034, 0.6564292573117824].
+2. In `results/published/experiment_main/index.json`, the `runs` entries with `arm = rloo` and `factors.task.shared_prefix = 0` are ten entries, seeds 0–9, all with `run_dir = 07feaf655290`.
 3. `results/main/07feaf655290/manifest.json` has `commit = dc59770785dadb825d7518045fdd7e0d3be25895`, `dirty = false`, and the config (arm rloo, group 16, lr 0.001; task `shared_prefix = 0`).
 4. In `results/main/07feaf655290/seed-0.metrics.json`, the record with `step = 1000`, `n = 64`, `c = 1.0` and `group = hard_train` has `delta_cap = 0.8639174982292378`, `delta_rel = 0.0`, `n_prompts = 24` and `label = capability`. The ten seeds give 0.8639, 0.5746, 0.4921, 0.5326, 0.5321, 0.5331, 0.6139, 0.5702, 0.4908 and 0.6161, whose mean is the 0.5819 in step 1.
 

@@ -583,7 +583,7 @@ def compute_kl(out: Path, kl_out: Path, kcfg: KLConfig) -> dict[str, Any]:
                 early.append({"arm": arm, "seed": seed, **{f"fraction_at_{s}": by[s] / by[final]
                                                             for s in sorted(by) if s not in (0, final)}})
     return {"status": "exploratory function-space layer on the completed lm_main run; pre-registered in "
-                      "docs/lm_main/kl/preregistration_kl.md (DECISIONS L23-L34); no verdict on L1-L3",
+                      "results/published/lm_main/kl/preregistration_kl.md (DECISIONS L23-L34); no verdict on L1-L3",
             "kl_config": _kl_dict(kcfg), "source_run": str(out), "n_problems": n_problems,
             "n_train_ambiguous_excluded_from_k2": len({r["problem"] for r in rows if r["group"] is None}),
             "p0_source": f"base sets A and B pooled ({n_a} + {n_b} samples per problem)",

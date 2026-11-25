@@ -5,6 +5,7 @@ __pycache__/
 .pytest_cache/
 *.egg-info/
 data/
-results/
+results/*
+!results/published/
 *.pt
 .DS_Store

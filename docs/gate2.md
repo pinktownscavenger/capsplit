@@ -12,7 +12,7 @@
 
 Beyond these three, the verifier recomputed **every** run, group and metric (Δcap, Δrel, J1). All 240 runs agree with the metrics files to within 3.4e-7.
 
-## Verdicts (from `docs/experiment_main/verdicts.md`; independently re-checked with a fresh bootstrap)
+## Verdicts (from `results/published/experiment_main/verdicts.md`; independently re-checked with a fresh bootstrap)
 
 | Hypothesis | Verdict | Independent check | Caveat that must accompany it |
 |---|---|---|---|
@@ -23,4 +23,4 @@ Beyond these three, the verifier recomputed **every** run, group and metric (Δc
 
 **No verdict flips** across N ∈ {16, 64} and c ∈ {0.5, 1, 2}.
 
-**Validity:** completeness, coverage, Proposition 1 (worst residual 3.9e-16), exact zero gain for the `none` arm, and exact zero gain at step 0 all pass. The remaining warnings are sensitivity flips in labels and E_N signs, plus saturation on easy prompts at N = 64. They are listed in full in `docs/experiment_main/report.md`.
+**Validity:** completeness, coverage, Proposition 1 (worst residual 3.9e-16), exact zero gain for the `none` arm, and exact zero gain at step 0 all pass. The remaining warnings are sensitivity flips in labels and E_N signs, plus saturation on easy prompts at N = 64. They are listed in full in `results/published/experiment_main/report.md`.
