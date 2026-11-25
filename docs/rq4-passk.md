@@ -86,7 +86,7 @@ Only the second failure matches the prediction: reweighting was one of the two c
   - **Q2 doesn't hinge on them.** On seeds 5–19 alone, agreement is 0.622, 95% CI [0.444, 0.800], still below 0.95. That split is not pre-registered and is given only as a check.
 - **Seeds.** Phase 2 has 10 seeds, Phase 1 has 20. The intervals reflect seed-to-seed spread only.
 - **Phase 2 is a rerun.** Its numbers differ slightly from the committed RQ3 report (RQ4-2).
-- **SRR/NDR are pending.** They are computed into `results/rq4_srr_unverified/`, but not reported until a person has checked `docs/notes/invisible-leash-scores.md` against the paper and the team has settled its open points.
+- **SRR/NDR: Phase 1 only, provisional.** `docs/notes/invisible-leash-scores.md` was checked against arXiv v4 (by Claude, 2026-11-24; a person's sign-off is still pending), and the settings are proposed as RQ4-5, not ratified. Phase 1 (policies regenerated at `rq4-frozen`; all 60 primary units reproduce the frozen labels and rule calls): SRR 0.459, NDR 0.259 over 60 units, with NDR 0.000 in both the reweighting and pure-sharpening cells (`verdicts.md`, `srr_ndr.json`, `tables/srr_ndr_units.csv`). Phase 2 is not computed: the frozen `results/main` isn't in the repo, and a rerun here matched only 151 of 210 frozen labels (all 210 rule calls match).
 - **The rule is D10 as frozen.** Other pass@k rules (other k_large, other tie handling) could behave differently. The sensitivity table covers k_large only.
 
 ## 6. Reproduce

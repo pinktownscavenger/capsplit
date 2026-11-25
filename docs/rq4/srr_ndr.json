@@ -1,0 +1,70 @@
+{
+  "settings": {
+    "group": "heldout",
+    "n": 64,
+    "c": 1.0,
+    "eps": 0.015625,
+    "boundary": "strict > eps",
+    "aggregation": "sum P, S, E over prompts and units, then divide",
+    "zero_denominator": null,
+    "label": "H12/H39, unratified"
+  },
+  "phases": {
+    "phase1": {
+      "overall": {
+        "P": 183,
+        "S": 216,
+        "E": 64,
+        "prompts": 240,
+        "srr": 0.45864661654135336,
+        "ndr": 0.2591093117408907,
+        "units": 60
+      },
+      "per_cell": {
+        "capability": {
+          "P": 41,
+          "S": 43,
+          "E": 35,
+          "prompts": 64,
+          "srr": 0.4880952380952381,
+          "ndr": 0.4605263157894737,
+          "units": 16
+        },
+        "compounded_sharpening": {
+          "P": 55,
+          "S": 61,
+          "E": 29,
+          "prompts": 76,
+          "srr": 0.47413793103448276,
+          "ndr": 0.34523809523809523,
+          "units": 19
+        },
+        "reweighting": {
+          "P": 48,
+          "S": 74,
+          "E": 0,
+          "prompts": 60,
+          "srr": 0.39344262295081966,
+          "ndr": 0.0,
+          "units": 15
+        },
+        "pure_sharpening": {
+          "P": 39,
+          "S": 38,
+          "E": 0,
+          "prompts": 40,
+          "srr": 0.5064935064935064,
+          "ndr": 0.0,
+          "units": 10
+        }
+      },
+      "undefined_units": {
+        "srr": 0,
+        "ndr": 0
+      }
+    }
+  },
+  "missing": {
+    "phase2": "The frozen Phase 2 run folder (results/main from RQ4-3) is not in the repo, and a rerun at rq4-frozen in a different environment (Python 3.13, numpy 2.5.3, torch 2.15.0) reproduced only 151 of the 210 frozen primary labels (all 210 rule calls match), so its policies are not the scored ones. Needs the original results/main."
+  }
+}

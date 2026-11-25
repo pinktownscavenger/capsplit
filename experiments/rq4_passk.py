@@ -25,7 +25,7 @@ from pilot_rq4 import k_grid
 
 import numpy as np
 
-from capsplit.diagnostics import passk_curve, passk_rule, score_rule, srr_ndr
+from capsplit.diagnostics import pool_srr_ndr, passk_curve, passk_rule, score_rule, srr_ndr
 from capsplit.harness.report import bootstrap_ci
 
 PRIMARY_N, PRIMARY_C = 64, 1.0
@@ -374,8 +374,9 @@ def _figures(out: Path, phases: dict, primary: dict, scores: dict) -> None:
 # ----------------------------------------------------------------------------- SRR / NDR (unverified)
 
 
-def srr_ndr_rows(results_dir: str | Path, n: int = PRIMARY_N, c: float = PRIMARY_C) -> list[list]:
-    """Per-prompt SRR/NDR for every saved checkpoint after update 0, at eps = c / n. UNVERIFIED."""
+def srr_ndr_rows(results_dir: str | Path, n: int = PRIMARY_N, c: float = PRIMARY_C,
+                 steps: Sequence[int] | None = None) -> list[list]:
+    """Per-prompt SRR/NDR for every saved checkpoint after update 0 (or only `steps`), at eps = c / n."""
     import torch
 
     from capsplit.engine import solution_probs
@@ -396,7 +397,7 @@ def srr_ndr_rows(results_dir: str | Path, n: int = PRIMARY_N, c: float = PRIMARY
         saved = torch.load(results_dir / run["files"]["policies"], weights_only=False)
         q0 = {p.id: solution_probs(task.table(p.id), base.trajectory_probs(task, p.id)) for p in task.prompts()}
         for step, state in sorted(saved.items()):
-            if int(step) == 0:
+            if int(step) == 0 or (steps is not None and int(step) not in steps):
                 continue
             trained = base.clone()
             trained.load_state_dict(state)
@@ -413,6 +414,111 @@ def _cmd_srr_ndr(args) -> None:
     out.mkdir(parents=True, exist_ok=True)
     _csv(out / "srr_ndr_UNVERIFIED.csv", ["phase", "arm", "seed", "step", "factors", "prompt", "split", "P", "S", "E",
                                           "srr", "ndr"], srr_ndr_rows(args.results_dir))
+
+
+SRR_START, SRR_END = "<!-- srr-ndr:start -->", "<!-- srr-ndr:end -->"
+
+
+def srr_ndr_units(rows: Sequence[Sequence], units: Sequence[Unit], group: str = PRIMARY_GROUP) -> list[dict]:
+    """Pool `srr_ndr_rows` output over each unit's prompts in `group` (prompt split tag), with the unit's label.
+
+    Raises KeyError if a pooled unit has no matching label in `units`.
+    """
+    labels = {(u.arm, json.dumps(dict(u.factors), sort_keys=True), u.seed, u.step): u.label
+              for u in units if u.group == group}
+    pooled: dict[tuple, list[dict]] = {}
+    for _phase, arm, seed, step, factors, _prompt, split, p, s, e, *_ in rows:
+        if split != group:
+            continue
+        pooled.setdefault((arm, factors, int(seed), int(step)), []).append({"P": p, "S": s, "E": e})
+    out = []
+    for key in sorted(pooled, key=lambda k: (k[0], k[1], k[2], k[3])):
+        arm, factors, seed, step = key
+        out.append({"arm": arm, "factors": factors, "seed": seed, "step": step, "group": group,
+                    **pool_srr_ndr(pooled[key]), "label": labels[key]})
+    return out
+
+
+def srr_ndr_summary(unit_rows: Sequence[dict]) -> dict:
+    """Counts pooled over all units and per 2x2 cell (every cell listed), plus how many units have a 0 denominator."""
+    def pool(rows):
+        return pool_srr_ndr(rows) | {"units": len(rows), "prompts": sum(int(r["prompts"]) for r in rows)}
+    return {
+        "overall": pool(unit_rows),
+        "per_cell": {cell: pool([u for u in unit_rows if u["label"] == cell]) for cell in CELLS},
+        "undefined_units": {"srr": sum(u["P"] + u["S"] == 0 for u in unit_rows),
+                            "ndr": sum(u["P"] + u["E"] == 0 for u in unit_rows)},
+    }
+
+
+def _fmt(x) -> str:
+    return "undefined" if x is None else f"{x:.3f}"
+
+
+def srr_ndr_markdown(summaries: dict, settings: dict, missing: dict | None = None) -> list[str]:
+    """The SRR/NDR section of verdicts.md (one table per phase; `missing` maps a skipped phase to the reason)."""
+    lines = ["## SRR and NDR (The Invisible Leash, Def. 3.3)", "",
+             f"Group `{settings['group']}`, final checkpoint, eps = c/N = {settings['eps']:.6g}, solution counted when "
+             "its exact probability is > eps. P, S and E are summed over each unit's prompts and then over units "
+             "before dividing; \"undefined\" means a zero denominator. Cells use each record's primary label "
+             f"({settings['label']}).", ""]
+    for name, title in (("phase2", "Phase 2 (RQ3 runs)"), ("phase1", "Phase 1 (grid sweep)")):
+        if name not in summaries:
+            if missing and name in missing:
+                lines += [f"### {title}: not computed. {missing[name]}", ""]
+            continue
+        sm = summaries[name]
+        o = sm["overall"]
+        lines += [f"### {title}", "",
+                  f"SRR {_fmt(o['srr'])}, NDR {_fmt(o['ndr'])} over {o['units']} units "
+                  f"(P {o['P']}, S {o['S']}, E {o['E']}); units with undefined SRR {sm['undefined_units']['srr']}, "
+                  f"NDR {sm['undefined_units']['ndr']}.", "",
+                  "| Cell | Units | P | S | E | SRR | NDR |", "|---|---|---|---|---|---|---|"]
+        for cell, r in sm["per_cell"].items():
+            lines.append(f"| {cell} | {r['units']} | {r['P']} | {r['S']} | {r['E']} | {_fmt(r['srr'])} | {_fmt(r['ndr'])} |")
+        lines.append("")
+    return lines[:-1] if lines[-1] == "" else lines
+
+
+def insert_srr_section(verdicts_md: str | Path, section: Sequence[str]) -> None:
+    """Replace the SRR/NDR pending line (or an earlier generated section) in verdicts.md with `section`."""
+    path = Path(verdicts_md)
+    text = path.read_text()
+    block = "\n".join([SRR_START, *section, SRR_END])
+    if SRR_START in text and SRR_END in text:
+        head, rest = text.split(SRR_START, 1)
+        text = head + block + rest.split(SRR_END, 1)[1]
+    elif SRR_PENDING in text:
+        text = text.replace(SRR_PENDING, block)
+    else:
+        raise ValueError(f"{path} has neither the SRR/NDR pending line nor a generated section")
+    path.write_text(text)
+
+
+def _cmd_srr_ndr_report(args) -> None:
+    out = Path(args.out)
+    (out / "tables").mkdir(parents=True, exist_ok=True)
+    eps = PRIMARY_C / PRIMARY_N
+    summaries, table, missing = {}, [], {}
+    for name, results_dir in (("phase2", args.phase2), ("phase1", args.phase1)):
+        if results_dir is None:
+            missing[name] = args.missing_reason
+            continue
+        final = int(json.loads((Path(results_dir) / "index.json").read_text())["budget"])
+        rows = srr_ndr_rows(results_dir, steps=[final])
+        units = [u for u in load_units(results_dir, groups=[PRIMARY_GROUP]) if u.step == final]
+        unit_rows = srr_ndr_units(rows, units)
+        summaries[name] = srr_ndr_summary(unit_rows)
+        table += [[name, u["arm"], u["factors"], u["seed"], u["step"], u["group"], u["prompts"], u["P"], u["S"], u["E"],
+                   u["srr"], u["ndr"], u["label"]] for u in unit_rows]
+    settings = {"group": PRIMARY_GROUP, "n": PRIMARY_N, "c": PRIMARY_C, "eps": eps, "boundary": "strict > eps",
+                "aggregation": "sum P, S, E over prompts and units, then divide", "zero_denominator": None,
+                "label": "H12/H39, unratified"}
+    _csv(out / "tables/srr_ndr_units.csv", ["phase", "arm", "factors", "seed", "step", "group", "prompts", "P", "S", "E",
+                                            "srr", "ndr", "label"], table)
+    (out / "srr_ndr.json").write_text(json.dumps({"settings": settings, "phases": summaries, "missing": missing},
+                                                 indent=2) + "\n")
+    insert_srr_section(out / "verdicts.md", srr_ndr_markdown(summaries, settings, missing))
 
 
 def _cmd_score(args) -> None:
@@ -525,6 +631,13 @@ def main(argv: list[str] | None = None) -> None:
     srr.add_argument("results_dir")
     srr.add_argument("--out", default="results/rq4_report")
     srr.set_defaults(func=_cmd_srr_ndr)
+    srr_report = sub.add_parser("srr-ndr-report", help="SRR/NDR per unit and per cell; fills verdicts.md's SRR section")
+    srr_report.add_argument("--phase2", help="RQ3 results folder with saved policies; omit to mark Phase 2 not computed")
+    srr_report.add_argument("--phase1", help="grid sweep results folder with saved policies")
+    srr_report.add_argument("--missing-reason", default="Its results folder was not given.",
+                            help="text shown for an omitted phase")
+    srr_report.add_argument("--out", default="results/rq4_report", help="folder holding verdicts.md from `score`")
+    srr_report.set_defaults(func=_cmd_srr_ndr_report)
     repro = sub.add_parser("repro", help="compare a rerun RQ3 report with results/published/experiment_main")
     repro.add_argument("new_report_dir")
     repro.set_defaults(func=_cmd_repro)
