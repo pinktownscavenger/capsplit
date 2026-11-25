@@ -1,6 +1,6 @@
 # Re-deriving the proofs (exit criterion 6, Gate 1)
 
-> **Status: sections 1 to 6 complete; section 7 awaiting hand re-derivation.** Munashe re-derived sections 1 to 6 of [docs/proofs.md](../proofs.md) by hand on 2026-11-16. A coding agent checked every step and added [tests/test_proofs.py](../../tests/test_proofs.py). Section 7 (time to cross), added on 2026-11-19 for RQ2, was checked by a coding agent on 2026-11-24 ([below](#section-7-time-to-cross)) and still needs a teammate's sign-off before `proofs-frozen` is tagged.
+> **Status: complete.** Munashe re-derived sections 1 to 6 of [docs/proofs.md](../proofs.md) by hand on 2026-11-16. A coding agent checked every step and added [tests/test_proofs.py](../../tests/test_proofs.py). Section 7 (time to cross), added on 2026-11-19 for RQ2, was checked by a coding agent on 2026-11-24 ([below](#section-7-time-to-cross)). Bilal accepted that check as the sign-off on 2026-11-24, without a separate hand re-derivation, and `proofs-frozen` was tagged.
 
 ## How to use this
 
@@ -109,5 +109,5 @@ RQ2's P1 verdict rests on this section, so it gets its own pass. The four sugges
 
 ### Sign-off
 
-- [ ] Munashe (or another teammate) re-derived section 7, parts 1 to 4, by hand on: ____
-- [ ] Then tag `proofs-frozen`.
+- [ ] Hand re-derivation of section 7 by a teammate: waived. Bilal accepted the agent check as the sign-off on 2026-11-24.
+- [x] `proofs-frozen` tagged on 2026-11-24.

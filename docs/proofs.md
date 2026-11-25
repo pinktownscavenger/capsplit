@@ -185,7 +185,7 @@ So each tail has probability at most $\delta/8$. There are four means with two t
 
 ## 7. Time to cross on an isolated route
 
-> **Status: written 2026-11-19. Checked step by step by a coding agent on 2026-11-24, which found no error in the recursion or the integral, added parts 3 and 4 below and a restriction to $H \ge 2$ on the asymptotic, and added `tests/test_proofs.py` coverage. Not yet re-derived by hand by a second teammate** (see [docs/notes/proofs-rederivation.md](notes/proofs-rederivation.md)). Don't tag `proofs-frozen` until that sign-off.
+> **Status: written 2026-11-19. Checked step by step by a coding agent on 2026-11-24, which found no error in the recursion or the integral, added parts 3 and 4 below and a restriction to $H \ge 2$ on the asymptotic, and added `tests/test_proofs.py` coverage. Bilal accepted this check as the sign-off on 2026-11-24, without a separate hand re-derivation, and the proofs are frozen at tag `proofs-frozen`** (see [docs/notes/proofs-rederivation.md](notes/proofs-rederivation.md)).
 
 **Setting.** A grid world has exactly one correct route $\tau^* = (s_1, a_1, \ldots, s_H, a_H)$, whose length equals the horizon $H$, so any trajectory that leaves it fails. Its cells $s_1, \ldots, s_H$ are distinct. The policy is tabular softmax with logits $\theta(s, a)$ over $A$ actions, so $J(\theta) = \prod_{i=1}^{H} \pi(a_i \mid s_i)$. The base gives the route action $a_i$ the logit $g_0$ and every other action at $s_i$ the logit 0. Training is exact gradient ascent, $\theta \leftarrow \theta + \eta \nabla J$.
 
