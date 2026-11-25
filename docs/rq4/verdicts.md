@@ -35,7 +35,16 @@ capability 0.789, compounded_sharpening 0.030, reweighting 0.588, pure_sharpenin
 
 Group `heldout`, final checkpoint, eps = c/N = 0.015625, solution counted when its exact probability is > eps. P, S and E are summed over each unit's prompts and then over units before dividing; "undefined" means a zero denominator. Cells use each record's primary label (H12/H39, unratified).
 
-### Phase 2 (RQ3 runs): not computed. The frozen Phase 2 run folder (results/main from RQ4-3) is not in the repo, and a rerun at rq4-frozen in a different environment (Python 3.13, numpy 2.5.3, torch 2.15.0) reproduced only 151 of the 210 frozen primary labels (all 210 rule calls match), so its policies are not the scored ones. Needs the original results/main.
+### Phase 2 (RQ3 runs)
+
+SRR 0.422, NDR 0.061 over 210 units (P 2127, S 2913, E 139); units with undefined SRR 0, NDR 0.
+
+| Cell | Units | P | S | E | SRR | NDR |
+|---|---|---|---|---|---|---|
+| capability | 3 | 47 | 25 | 8 | 0.653 | 0.145 |
+| compounded_sharpening | 82 | 896 | 1072 | 131 | 0.455 | 0.128 |
+| reweighting | 2 | 25 | 23 | 0 | 0.521 | 0.000 |
+| pure_sharpening | 123 | 1159 | 1793 | 0 | 0.393 | 0.000 |
 
 ### Phase 1 (grid sweep)
 
