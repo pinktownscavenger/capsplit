@@ -44,7 +44,7 @@ experiment are done. Results are in [docs/report.md](docs/report.md). RQ2's
 pre-registered time-to-cross experiment is done; results are in
 [docs/rq2-time-to-cross.md](docs/rq2-time-to-cross.md). RQ4's pre-registered pass@k
 misdiagnosis experiment is done; results are in [docs/rq4-passk.md](docs/rq4-passk.md),
-with SRR/NDR pending a person's check of the paper. Still to do: RQ2's training
+with provisional SRR/NDR for Phase 1 only (Phase 2 needs the original run folder). Still to do: RQ2's training
 dynamics and RQ3 in the tabular grid worlds (Phase 1).
 
 ## Setup
@@ -94,7 +94,7 @@ Results go under `results/`, which is git-ignored.
 | `docs/rq2-time-to-cross-design.md` | RQ2 time-to-cross design |
 | `docs/rq2-preregistration.md` | Frozen RQ2 time-to-cross predictions and decision rules |
 | `docs/rq2-time-to-cross.md` | RQ2 time-to-cross results |
-| `experiments/rq4_passk.py` | RQ4: score the pass@k rule against the 2×2 label (`labels`, `score`, `srr-ndr`, `repro`) |
+| `experiments/rq4_passk.py` | RQ4: score the pass@k rule against the 2×2 label (`labels`, `score`, `srr-ndr`, `srr-ndr-report`, `repro`) |
 | `configs/rq4_grid.json` | RQ4 Phase 1 grid sweep with the shared tabular policy (`tabular_grid_shared`) |
 | `docs/rq4-passk-design.md` | RQ4 design |
 | `docs/rq4-preregistration.md` | Frozen RQ4 rule settings and decision rules |

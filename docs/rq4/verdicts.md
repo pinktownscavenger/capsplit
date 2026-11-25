@@ -30,4 +30,21 @@ Primary agreement 0.550, 95% CI [0.383, 0.717], 60 units; undetermined 0.000; se
 
 capability 0.789, compounded_sharpening 0.030, reweighting 0.588, pure_sharpening 0.015
 
-SRR/NDR pending a person's check of docs/notes/invisible-leash-scores.md.
+<!-- srr-ndr:start -->
+## SRR and NDR (The Invisible Leash, Def. 3.3)
+
+Group `heldout`, final checkpoint, eps = c/N = 0.015625, solution counted when its exact probability is > eps. P, S and E are summed over each unit's prompts and then over units before dividing; "undefined" means a zero denominator. Cells use each record's primary label (H12/H39, unratified).
+
+### Phase 2 (RQ3 runs): not computed. The frozen Phase 2 run folder (results/main from RQ4-3) is not in the repo, and a rerun at rq4-frozen in a different environment (Python 3.13, numpy 2.5.3, torch 2.15.0) reproduced only 151 of the 210 frozen primary labels (all 210 rule calls match), so its policies are not the scored ones. Needs the original results/main.
+
+### Phase 1 (grid sweep)
+
+SRR 0.459, NDR 0.259 over 60 units (P 183, S 216, E 64); units with undefined SRR 0, NDR 0.
+
+| Cell | Units | P | S | E | SRR | NDR |
+|---|---|---|---|---|---|---|
+| capability | 16 | 41 | 43 | 35 | 0.488 | 0.461 |
+| compounded_sharpening | 19 | 55 | 61 | 29 | 0.474 | 0.345 |
+| reweighting | 15 | 48 | 74 | 0 | 0.393 | 0.000 |
+| pure_sharpening | 10 | 39 | 38 | 0 | 0.506 | 0.000 |
+<!-- srr-ndr:end -->

@@ -252,3 +252,12 @@ def test_srr_ndr_report_cli_end_to_end(tmp_path, quick_grid_with_policies):
     units = (out / "tables/srr_ndr_units.csv").read_text().splitlines()
     assert units[0].split(",")[:4] == ["phase", "arm", "factors", "seed"]
     assert len(units) - 1 == 2 * data["phases"]["phase1"]["overall"]["units"]
+
+
+def test_srr_ndr_markdown_says_when_a_phase_is_missing():
+    from rq4_passk import srr_ndr_markdown, srr_ndr_summary
+
+    settings = {"group": "heldout", "eps": 1 / 64, "label": "label"}
+    lines = srr_ndr_markdown({"phase1": srr_ndr_summary([])}, settings, missing={"phase2": "no matching policies"})
+    text = "\n".join(lines)
+    assert "### Phase 1 (grid sweep)" in text and "Phase 2 (RQ3 runs): not computed. no matching policies" in text

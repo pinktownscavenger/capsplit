@@ -455,15 +455,17 @@ def _fmt(x) -> str:
     return "undefined" if x is None else f"{x:.3f}"
 
 
-def srr_ndr_markdown(summaries: dict, settings: dict) -> list[str]:
-    """The SRR/NDR section of verdicts.md (one table per phase)."""
+def srr_ndr_markdown(summaries: dict, settings: dict, missing: dict | None = None) -> list[str]:
+    """The SRR/NDR section of verdicts.md (one table per phase; `missing` maps a skipped phase to the reason)."""
     lines = ["## SRR and NDR (The Invisible Leash, Def. 3.3)", "",
              f"Group `{settings['group']}`, final checkpoint, eps = c/N = {settings['eps']:.6g}, solution counted when "
              "its exact probability is > eps. P, S and E are summed over each unit's prompts and then over units "
-             "before dividing; \"undefined\" means a zero denominator. Cells use the primary label "
-             f"(`{settings['label']}`).", ""]
+             "before dividing; \"undefined\" means a zero denominator. Cells use each record's primary label "
+             f"({settings['label']}).", ""]
     for name, title in (("phase2", "Phase 2 (RQ3 runs)"), ("phase1", "Phase 1 (grid sweep)")):
         if name not in summaries:
+            if missing and name in missing:
+                lines += [f"### {title}: not computed. {missing[name]}", ""]
             continue
         sm = summaries[name]
         o = sm["overall"]
@@ -497,8 +499,11 @@ def _cmd_srr_ndr_report(args) -> None:
     out = Path(args.out)
     (out / "tables").mkdir(parents=True, exist_ok=True)
     eps = PRIMARY_C / PRIMARY_N
-    summaries, table = {}, []
+    summaries, table, missing = {}, [], {}
     for name, results_dir in (("phase2", args.phase2), ("phase1", args.phase1)):
+        if results_dir is None:
+            missing[name] = args.missing_reason
+            continue
         final = int(json.loads((Path(results_dir) / "index.json").read_text())["budget"])
         rows = srr_ndr_rows(results_dir, steps=[final])
         units = [u for u in load_units(results_dir, groups=[PRIMARY_GROUP]) if u.step == final]
@@ -508,11 +513,12 @@ def _cmd_srr_ndr_report(args) -> None:
                    u["srr"], u["ndr"], u["label"]] for u in unit_rows]
     settings = {"group": PRIMARY_GROUP, "n": PRIMARY_N, "c": PRIMARY_C, "eps": eps, "boundary": "strict > eps",
                 "aggregation": "sum P, S, E over prompts and units, then divide", "zero_denominator": None,
-                "label": "label"}
+                "label": "H12/H39, unratified"}
     _csv(out / "tables/srr_ndr_units.csv", ["phase", "arm", "factors", "seed", "step", "group", "prompts", "P", "S", "E",
                                             "srr", "ndr", "label"], table)
-    (out / "srr_ndr.json").write_text(json.dumps({"settings": settings, "phases": summaries}, indent=2) + "\n")
-    insert_srr_section(out / "verdicts.md", srr_ndr_markdown(summaries, settings))
+    (out / "srr_ndr.json").write_text(json.dumps({"settings": settings, "phases": summaries, "missing": missing},
+                                                 indent=2) + "\n")
+    insert_srr_section(out / "verdicts.md", srr_ndr_markdown(summaries, settings, missing))
 
 
 def _cmd_score(args) -> None:
@@ -626,8 +632,10 @@ def main(argv: list[str] | None = None) -> None:
     srr.add_argument("--out", default="results/rq4_report")
     srr.set_defaults(func=_cmd_srr_ndr)
     srr_report = sub.add_parser("srr-ndr-report", help="SRR/NDR per unit and per cell; fills verdicts.md's SRR section")
-    srr_report.add_argument("--phase2", required=True)
-    srr_report.add_argument("--phase1", required=True)
+    srr_report.add_argument("--phase2", help="RQ3 results folder with saved policies; omit to mark Phase 2 not computed")
+    srr_report.add_argument("--phase1", help="grid sweep results folder with saved policies")
+    srr_report.add_argument("--missing-reason", default="Its results folder was not given.",
+                            help="text shown for an omitted phase")
     srr_report.add_argument("--out", default="results/rq4_report", help="folder holding verdicts.md from `score`")
     srr_report.set_defaults(func=_cmd_srr_ndr_report)
     repro = sub.add_parser("repro", help="compare a rerun RQ3 report with docs/experiment_main")
