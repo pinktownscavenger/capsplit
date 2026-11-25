@@ -44,7 +44,7 @@ experiment are done. Results are in [docs/report.md](docs/report.md). RQ2's
 pre-registered time-to-cross experiment is done; results are in
 [docs/rq2-time-to-cross.md](docs/rq2-time-to-cross.md). RQ4's pre-registered pass@k
 misdiagnosis experiment is done; results are in [docs/rq4-passk.md](docs/rq4-passk.md),
-with provisional SRR/NDR for Phase 1 only (Phase 2 needs the original run folder). Still to do: RQ2's training
+with provisional SRR/NDR scores for both phases. Still to do: RQ2's training
 dynamics and RQ3 in the tabular grid worlds (Phase 1).
 
 ## Setup

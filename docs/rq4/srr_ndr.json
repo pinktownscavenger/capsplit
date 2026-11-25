@@ -10,6 +10,59 @@
     "label": "H12/H39, unratified"
   },
   "phases": {
+    "phase2": {
+      "overall": {
+        "P": 2127,
+        "S": 2913,
+        "E": 139,
+        "prompts": 5040,
+        "srr": 0.4220238095238095,
+        "ndr": 0.061341571050308914,
+        "units": 210
+      },
+      "per_cell": {
+        "capability": {
+          "P": 47,
+          "S": 25,
+          "E": 8,
+          "prompts": 72,
+          "srr": 0.6527777777777778,
+          "ndr": 0.14545454545454545,
+          "units": 3
+        },
+        "compounded_sharpening": {
+          "P": 896,
+          "S": 1072,
+          "E": 131,
+          "prompts": 1968,
+          "srr": 0.45528455284552843,
+          "ndr": 0.12755598831548198,
+          "units": 82
+        },
+        "reweighting": {
+          "P": 25,
+          "S": 23,
+          "E": 0,
+          "prompts": 48,
+          "srr": 0.5208333333333334,
+          "ndr": 0.0,
+          "units": 2
+        },
+        "pure_sharpening": {
+          "P": 1159,
+          "S": 1793,
+          "E": 0,
+          "prompts": 2952,
+          "srr": 0.3926151761517615,
+          "ndr": 0.0,
+          "units": 123
+        }
+      },
+      "undefined_units": {
+        "srr": 0,
+        "ndr": 0
+      }
+    },
     "phase1": {
       "overall": {
         "P": 183,
@@ -64,7 +117,5 @@
       }
     }
   },
-  "missing": {
-    "phase2": "The frozen Phase 2 run folder (results/main from RQ4-3) is not in the repo, and a rerun at rq4-frozen in a different environment (Python 3.13, numpy 2.5.3, torch 2.15.0) reproduced only 151 of the 210 frozen primary labels (all 210 rule calls match), so its policies are not the scored ones. Needs the original results/main."
-  }
+  "missing": {}
 }
